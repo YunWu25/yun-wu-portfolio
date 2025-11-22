@@ -22,7 +22,7 @@ const About: React.FC = () => {
           I watching some movies and documentaries, and also enjoying the likes of Animal Crossing...... Sometimes obsessed with documenting my life and the lives of my friends, and for the past few years I've been picking out, on average, almost weekly, photos that I feel comfortable sharing at this stage of my life.
         </p>
         <blockquote className="border-l-4 border-coral pl-4 italic text-gray-700 my-8 bg-gray-50 py-4 pr-4 rounded-r-lg">
-          "Design is not just what it looks like and feels like. Design is how it works."
+          "Design is not just what it looks like and feels like. Design is how it works." <cite className="text-sm not-italic text-gray-500"> — Steve Jobs</cite>
         </blockquote>
         <p className={TYPOGRAPHY.bodySmall}>
           Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?
