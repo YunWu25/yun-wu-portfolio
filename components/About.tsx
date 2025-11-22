@@ -16,13 +16,10 @@ const About: React.FC = () => {
 
       <div id="about-body" data-debug="about-body" className={`${COLORS.gray500} font-light leading-loose`}>
         <p className={`${TYPOGRAPHY.bodySmall} mb-6`}>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+          My past experience communicating with clients had made me good at understanding them and helping them find the solutions they wanted, and using that thinking as a starting point was one of the ways I wanted to dedicate myself, I think. The past life experience I have gained from working as a consultant and building on that has made me better at dealing with and solving problems, and I know I will have more fun on this journey as well ......
         </p>
         <p className={`${TYPOGRAPHY.bodySmall} mb-6`}>
-          Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.
-        </p>
-        <p className={`${TYPOGRAPHY.bodySmall} mb-6`}>
-          Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem.
+          I watching some movies and documentaries, and also enjoying the likes of Animal Crossing...... Sometimes obsessed with documenting my life and the lives of my friends, and for the past few years I've been picking out, on average, almost weekly, photos that I feel comfortable sharing at this stage of my life.
         </p>
         <blockquote className="border-l-4 border-coral pl-4 italic text-gray-700 my-8 bg-gray-50 py-4 pr-4 rounded-r-lg">
           "Design is not just what it looks like and feels like. Design is how it works."

@@ -9,7 +9,7 @@ interface TypewriterProps {
 const Typewriter: React.FC<TypewriterProps> = ({ text, className = '', startDelay = 500 }) => {
   const [displayedText, setDisplayedText] = useState('');
   const [started, setStarted] = useState(false);
-  
+
   // Use a Ref to track the current character index without triggering re-renders
   const indexRef = useRef(0);
 
@@ -40,7 +40,7 @@ const Typewriter: React.FC<TypewriterProps> = ({ text, className = '', startDela
         const nextText = text.slice(0, currentIndex + 1);
         setDisplayedText(nextText);
         indexRef.current = currentIndex + 1;
-        
+
         // Increased Jitter: Random delay between 50ms and 250ms for a more "human" feel
         const randomDelay = Math.random() * 150 + 50;
         timeoutId = setTimeout(typeCharacter, randomDelay);
@@ -56,8 +56,8 @@ const Typewriter: React.FC<TypewriterProps> = ({ text, className = '', startDela
   return (
     <span className={`${className} font-light`}>
       {displayedText}
-      {/* Cursor is always rendered and blinking */}
-      <span className="animate-pulse text-coral font-bold inline-block ml-1">|</span>
+      {/* Cursor blinks continuously */}
+      <span className="animate-blink text-coral font-bold inline-block ml-1">|</span>
     </span>
   );
 };

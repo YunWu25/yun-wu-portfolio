@@ -21,13 +21,12 @@ const Splash: React.FC<SplashProps> = ({ isVisible, onDismiss }) => {
   }, [isVisible]);
 
   return (
-    <div 
-      className={`fixed inset-0 z-50 bg-white flex flex-col items-center justify-between py-16 md:py-24 transition-transform duration-[800ms] cubic-bezier(0.77, 0, 0.175, 1) ${
-        isVisible ? 'translate-y-0' : '-translate-y-full'
-      }`}
+    <div
+      className={`fixed inset-0 z-50 bg-white flex flex-col items-center justify-between py-16 md:py-24 transition-transform duration-[800ms] cubic-bezier(0.77, 0, 0.175, 1) ${isVisible ? 'translate-y-0' : '-translate-y-full'
+        }`}
     >
       {/* Top Section: Main Title */}
-      <div className="flex-grow flex flex-col justify-center items-center w-full max-w-[90%]">
+      <div className="flex-grow flex flex-col justify-center items-center w-full max-w-[95%] px-4">
         <h1 className={TYPOGRAPHY.splashTitle}>
           YUN DESIGN PORTFOLIO
         </h1>
@@ -35,10 +34,10 @@ const Splash: React.FC<SplashProps> = ({ isVisible, onDismiss }) => {
 
       {/* Bottom Section: Typewriter Text */}
       <div className="w-full max-w-6xl px-6 flex flex-col items-center mb-12 md:mb-20">
-        <div className={`text-lg md:text-2xl text-darkgray font-serif tracking-wide text-center min-h-[3rem]`}>
-          <Typewriter 
+        <div className={`text-lg md:text-2xl text-darkgray tracking-wide text-center min-h-[3rem]`}>
+          <Typewriter
             key={typewriterKey}
-            text="Hi Yun 专注于视觉叙事、创意影像和艺术表达。" 
+            text="Hi Yun 专注于视觉叙事、创意影像和艺术表达。"
             startDelay={800}
           />
         </div>

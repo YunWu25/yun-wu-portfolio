@@ -22,7 +22,7 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
       }));
     };
     updateTime();
-    const interval = setInterval(updateTime, 60000);
+    const interval = setInterval(updateTime, 1000);
     return () => clearInterval(interval);
   }, []);
 
@@ -31,22 +31,22 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
       className={`group flex flex-col md:flex-row md:items-center justify-between border-b border-transparent hover:border-gray-100 pb-2 ${TYPOGRAPHY.link}`}
       onClick={onClick}
     >
-      <span className={`${TYPOGRAPHY.navItem} ${COLORS.gray500} group-hover:text-coral transition-colors`}>
+      <span className={`font-sans text-xl md:text-2xl font-light ${COLORS.gray500} group-hover:text-coral transition-colors`}>
         {label}
       </span>
-      <div className={`flex items-center ${TYPOGRAPHY.body} ${COLORS.gray400} group-hover:text-coral transition-colors mt-2 md:mt-0`}>
+      <div className={`flex items-center font-sans text-lg md:text-xl font-light leading-relaxed ${COLORS.gray400} group-hover:text-coral transition-colors mt-2 md:mt-0`}>
         <span>View</span>
-        <ArrowRight size={24} className="ml-2 transform group-hover:translate-x-1 transition-transform" />
+        <ArrowRight size={20} className="ml-2 transform group-hover:translate-x-1 transition-transform" />
       </div>
     </div>
   );
 
   const ContactRow = ({ label, value, href, className = '' }: { label: string; value: string; href: string; className?: string }) => (
-    <div className={`flex flex-col md:flex-row md:items-center justify-between ${className}`}>
-      <span className={`${TYPOGRAPHY.navItem} ${COLORS.gray500}`}>{label}</span>
+    <div className={`flex flex-col md:flex-row md:items-center justify-between border-transparent hover:border-gray-100 pb-2 ${className}`}>
+      <span className={`font-sans text-xl md:text-2xl font-light ${COLORS.gray500}`}>{label}</span>
       <a
         href={href}
-        className={`${TYPOGRAPHY.body} ${COLORS.gray400} hover:text-gray-800 hover:underline decoration-coral decoration-1 underline-offset-8 transition-all mt-2 md:mt-0`}
+        className={`font-sans text-lg md:text-xl font-light leading-relaxed ${COLORS.gray400} hover:text-gray-800 hover:underline decoration-coral decoration-1 underline-offset-8 transition-all mt-2 md:mt-0`}
       >
         {value}
       </a>
@@ -54,23 +54,21 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
   );
 
   return (
-    <div id="home-root" data-debug="home-root" className="flex flex-col space-y-8 md:space-y-10 w-full">
-      {/* Navigation Rows */}
-      <NavRow label="Photography" onClick={() => onNavigate(ViewState.PHOTOGRAPHY)} />
-      <NavRow label="Design" onClick={() => { }} />
-
-      {/* Contact Rows */}
-      <div className="space-y-8 md:space-y-0">
-        <ContactRow label="Call, text, WhatsApp" value="+1 4258372524" href="tel:+14258372524" className="pt-4" />
+    <div id="home-root" data-debug="home-root" className="flex flex-col justify-end space-y-8 md:space-y-10 w-full min-h-[40vh]">
+      {/* Navigation and Contact Rows */}
+      <div className="flex flex-col space-y-4">
+        <NavRow label="Photography" onClick={() => onNavigate(ViewState.PHOTOGRAPHY)} />
+        <NavRow label="Design" onClick={() => { }} />
+        <ContactRow label="Call, text, WhatsApp" value="+1 4258372524" href="tel:+14258372524" />
         <ContactRow label="Send Email" value="Yunwustudio@gmail.com" href="mailto:Yunwustudio@gmail.com" />
       </div>
 
       {/* Location / Time Row */}
       <div className="flex flex-col md:flex-row md:items-center justify-between pt-8">
-        <span className={`${TYPOGRAPHY.body} ${COLORS.gray400}`}>
+        <span className={`font-sans text-lg md:text-xl font-light leading-relaxed ${COLORS.gray400}`}>
           Currently based in Seattle, WA
         </span>
-        <span className={`${TYPOGRAPHY.body} text-coral font-mono mt-2 md:mt-0`}>
+        <span className={`font-sans text-lg md:text-xl font-light leading-relaxed text-coral font-mono mt-2 md:mt-0`}>
           {currentTime}
         </span>
       </div>

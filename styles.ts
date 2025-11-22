@@ -21,7 +21,7 @@ export const TYPOGRAPHY = {
   h1: 'font-serif text-6xl md:text-8xl text-coral tracking-tight leading-none',
 
   // Splash specific title
-  splashTitle: 'font-bold text-coral tracking-widest whitespace-nowrap text-[6vw] md:text-[7vw] lg:text-[5vw] xl:text-8xl leading-none select-none',
+  splashTitle: 'font-bold text-coral tracking-widest whitespace-nowrap text-[5vw] md:text-[5vw] lg:text-[5vw] xl:text-7xl leading-tight select-none px-6 md:px-12',
 
   // Page Headers (About, Project Flow, Photography)
   h2: 'font-serif text-3xl md:text-4xl text-gray-900 mb-6',

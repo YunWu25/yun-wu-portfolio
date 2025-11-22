@@ -37,6 +37,20 @@ const MainContent: React.FC<MainContentProps> = ({ activeView, onNavigate }) => 
     }
   };
 
+  const getCenterTitle = () => {
+    switch (activeView) {
+      case ViewState.ABOUT:
+        return 'About Me';
+      case ViewState.PROJECT_FLOW:
+        return 'Project Flow';
+      case ViewState.PHOTOGRAPHY:
+        return 'Visual Narratives';
+      case ViewState.HOME:
+      default:
+        return 'Yun Wu';
+    }
+  };
+
   return (
     <div id="container-card" className="min-h-screen bg-offwhite flex items-center justify-center p-4 md:p-8">
 
@@ -72,7 +86,7 @@ const MainContent: React.FC<MainContentProps> = ({ activeView, onNavigate }) => 
           <div className="flex flex-col items-center justify-center md:-mt-4">
             <button onClick={() => onNavigate(ViewState.HOME)} className="text-center group">
               <h1 className={`${TYPOGRAPHY.h1} group-hover:opacity-90 transition-opacity whitespace-nowrap`}>
-                Yun Wu
+                {getCenterTitle()}
               </h1>
               <div className="w-32 md:w-64 mt-4 mx-auto opacity-60">
                 <WaveDecoration />
@@ -133,7 +147,7 @@ const MainContent: React.FC<MainContentProps> = ({ activeView, onNavigate }) => 
         </div>
 
         {/* === FOOTER (Inside the box) === */}
-        <footer className="px-8 md:px-16 py-8 md:py-12 flex flex-col md:flex-row justify-between items-center text-gray-300 font-light mt-auto">
+        <footer className="px-8 md:px-20 py-8 md:py-12 flex flex-col md:flex-row justify-between items-center text-gray-300 font-light mt-auto">
           <div className={`${TYPOGRAPHY.body} text-lg tracking-wide text-gray-300`}>2025 Yun Wu</div>
           <div className="flex gap-8 mt-4 md:mt-0">
             <a href="#" className={`hover:text-coral hover:underline transition-colors ${TYPOGRAPHY.small}`}>EMAIL</a>
