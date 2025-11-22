@@ -11,11 +11,9 @@ Help contributors and AI agents be immediately productive in this repo: a small 
 - Install deps: `npm install` (project uses Vite + React + TypeScript). See `package.json` scripts.
 - Local dev server: `npm run dev` → Vite serves at port 3000 (see `vite.config.ts`, host 0.0.0.0). If you need to reach the app from another device, use the machine IP + :3000.
 - Build for production: `npm run build` then `npm run preview` to locally preview the built output.
-- Environment variable: `GEMINI_API_KEY` is injected via `vite.config.ts` into `process.env.GEMINI_API_KEY`. Create a `.env.local` file at project root with a line like `GEMINI_API_KEY=your_key` before `npm run dev` if relevant. Vite define maps it to a string at build time.
 
-PowerShell example to create a local env file and start dev (Windows PowerShell):
+PowerShell example to start dev (Windows PowerShell):
 ```
-echo 'GEMINI_API_KEY=your_key' > .env.local
 npm install
 npm run dev
 ```
@@ -28,12 +26,11 @@ npm run dev
 - Icons: `lucide-react` is used for icons. Note `index.html` provides an importmap to load some libs from CDN; the repo also installs them via `package.json`. Keep versions consistent if changing.
 
 ## Integration points & external deps
-- Gemini/API: `GEMINI_API_KEY` expected by runtime (set it in `.env.local` or CI). Vite maps it into `process.env.GEMINI_API_KEY` in `vite.config.ts`.
 - TailwindCSS: injected via CDN inside `index.html` using `tailwind.config` inline — editing theme colors or fonts can be done directly in `index.html` or by switching to a local Tailwind setup. The project relies on the CDN setup today.
 
 ## Key files to review when modifying behavior
 - `index.html` — mount point, Tailwind CDN config, importmap
-- `vite.config.ts` — dev server settings and env defines
+- `vite.config.ts` — dev server settings
 - `App.tsx` — global UX (splash, global wheel/touch logic)
 - `components/MainContent.tsx` — header/navigation, main layout, internal scrollable area
 - `components/Splash.tsx` & `components/Typewriter.tsx` — splash and typing UX
