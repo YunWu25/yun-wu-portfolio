@@ -38,31 +38,29 @@ const MainContent: React.FC<MainContentProps> = ({ activeView, onNavigate }) => 
   };
 
   return (
-    <div className="min-h-screen bg-offwhite flex items-center justify-center p-4 md:p-8">
-      
+    <div id="container-card" className="min-h-screen bg-offwhite flex items-center justify-center p-4 md:p-8">
+
       {/* THE MAIN WHITE BOX CONTAINER */}
-      <div className={LAYOUT.mainCard}>
-        
+      <div id="main-card" data-debug="main-card" className={LAYOUT.mainCard}>
+
         {/* === HEADER SECTION (Inside the box) === */}
-        <div className="grid grid-cols-1 md:grid-cols-3 p-8 md:p-16 pb-4 md:pb-8">
-          
+        <div className="grid grid-cols-1 md:grid-cols-3 p-8 md:p-16 pb-4 md:pb-8 items-start">
+
           {/* Left Column: Navigation */}
-          <nav className="hidden md:flex flex-col space-y-8 items-start pt-2">
+          <nav className="hidden md:flex flex-col space-y-8 items-start h-full justify-center">
             {navItems.map((item) => (
               <button
                 key={item.label}
                 onClick={() => onNavigate(item.view)}
                 className="flex items-center group w-fit text-left focus:outline-none"
               >
-                <span 
-                  className={`w-3 h-3 rounded-sm bg-coral mr-4 transition-all duration-300 ${
-                    activeView === item.view ? 'opacity-100 scale-100' : 'opacity-0 group-hover:opacity-40 scale-0 group-hover:scale-75'
-                  }`} 
+                <span
+                  className={`w-3 h-3 rounded-sm bg-coral mr-4 transition-all duration-300 ${activeView === item.view ? 'opacity-100 scale-100' : 'opacity-0 group-hover:opacity-40 scale-0 group-hover:scale-75'
+                    }`}
                 />
-                <span 
-                  className={`${TYPOGRAPHY.navItem} transition-colors duration-300 ${
-                    activeView === item.view ? 'text-gray-900 font-medium' : 'text-gray-500 group-hover:text-coral'
-                  }`}
+                <span
+                  className={`${TYPOGRAPHY.navItem} transition-colors duration-300 ${activeView === item.view ? 'text-gray-900 font-medium' : 'text-gray-500 group-hover:text-coral'
+                    }`}
                 >
                   {item.label}
                 </span>
@@ -71,19 +69,19 @@ const MainContent: React.FC<MainContentProps> = ({ activeView, onNavigate }) => 
           </nav>
 
           {/* Center Column: Title */}
-          <div className="flex flex-col items-center justify-start md:-mt-4">
-             <button onClick={() => onNavigate(ViewState.HOME)} className="text-center group">
+          <div className="flex flex-col items-center justify-center md:-mt-4">
+            <button onClick={() => onNavigate(ViewState.HOME)} className="text-center group">
               <h1 className={`${TYPOGRAPHY.h1} group-hover:opacity-90 transition-opacity whitespace-nowrap`}>
                 Yun Wu
               </h1>
               <div className="w-32 md:w-64 mt-4 mx-auto opacity-60">
-                 <WaveDecoration />
+                <WaveDecoration />
               </div>
             </button>
           </div>
 
           {/* Right Column: Social Icons */}
-          <div className="hidden md:flex flex-col space-y-8 items-end pt-2">
+          <div className="hidden md:flex flex-col space-y-8 items-end h-full justify-center pt-2">
             <a href="mailto:Yunwustudio@gmail.com" className={`${COLORS.coral} hover:scale-110 transition-transform p-1`}>
               <Mail size={32} strokeWidth={1.5} />
             </a>
@@ -97,19 +95,19 @@ const MainContent: React.FC<MainContentProps> = ({ activeView, onNavigate }) => 
 
           {/* Mobile Menu Toggle */}
           <div className="md:hidden absolute top-8 right-8">
-             <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="text-gray-800">
-               {isMobileMenuOpen ? <X size={32} /> : <Menu size={32} />}
-             </button>
+            <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="text-gray-800">
+              {isMobileMenuOpen ? <X size={32} /> : <Menu size={32} />}
+            </button>
           </div>
         </div>
 
         {/* === MOBILE NAV OVERLAY === */}
         {isMobileMenuOpen && (
           <div className="absolute inset-0 bg-white z-50 flex flex-col items-center justify-center space-y-8 md:hidden">
-             <button onClick={() => setIsMobileMenuOpen(false)} className="absolute top-8 right-8">
-               <X size={32} />
-             </button>
-             {navItems.map((item) => (
+            <button onClick={() => setIsMobileMenuOpen(false)} className="absolute top-8 right-8">
+              <X size={32} />
+            </button>
+            {navItems.map((item) => (
               <button
                 key={item.label}
                 onClick={() => {
@@ -125,9 +123,12 @@ const MainContent: React.FC<MainContentProps> = ({ activeView, onNavigate }) => 
         )}
 
         {/* === MAIN CONTENT BODY === */}
-        <div className="flex-grow px-6 md:px-16 py-4 md:py-8 w-full overflow-y-auto custom-scrollbar">
-          <div className="animate-slide-up">
-            {renderBodyContent()}
+        <div className="flex-grow w-full overflow-y-auto custom-scrollbar">
+          {/* Centralized content wrapper: keep page widths consistent here */}
+          <div id="content-container" data-debug="content-container" className={LAYOUT.contentContainer}>
+            <div className="animate-slide-up" data-debug="body-animate">
+              {renderBodyContent()}
+            </div>
           </div>
         </div>
 

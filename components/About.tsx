@@ -4,8 +4,8 @@ import { TYPOGRAPHY, COLORS, LAYOUT } from '../styles';
 
 const About: React.FC = () => {
   return (
-    <div className={`${LAYOUT.contentContainer}`}>
-      <div className="text-center mb-16">
+    <div id="about-root" data-debug="about-root" className="w-full">
+      <div id="about-header" data-debug="about-header" className="text-center mb-16">
         <h2 className={TYPOGRAPHY.h2}>About Yun</h2>
         <div className="h-1 w-16 bg-coral mx-auto rounded-full mb-8"></div>
         <p className={`${TYPOGRAPHY.body} ${COLORS.gray600}`}>
@@ -14,7 +14,7 @@ const About: React.FC = () => {
         </p>
       </div>
 
-      <div className={`mx-auto ${COLORS.gray500} font-light leading-loose max-w-4xl`}>
+      <div id="about-body" data-debug="about-body" className={`${COLORS.gray500} font-light leading-loose`}>
         <p className={`${TYPOGRAPHY.bodySmall} mb-6`}>
           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
         </p>
@@ -32,7 +32,7 @@ const About: React.FC = () => {
         </p>
       </div>
 
-      <div className={`mt-16 pt-8 border-t border-gray-100 flex justify-between ${TYPOGRAPHY.small} ${COLORS.gray400}`}>
+      <div id="about-footer" data-debug="about-footer" className={`mt-16 pt-8 border-t border-gray-100 flex justify-between ${TYPOGRAPHY.small} ${COLORS.gray400}`}>
         <span>Seattle, WA</span>
         <span>Available for freelance</span>
       </div>

@@ -17,23 +17,23 @@ const photoAssets = [
 
 const Photography: React.FC = () => {
   return (
-    <div className={LAYOUT.contentContainer}>
-      <div className="mb-12 text-center">
+    <div id="photography-root" data-debug="photography-root" className="w-full">
+      <div id="photography-header" data-debug="photography-header" className="mb-12 text-center">
         <h2 className={TYPOGRAPHY.h2}>Visual Narratives</h2>
-        <p className={`${TYPOGRAPHY.body} ${COLORS.gray500} max-w-2xl mx-auto`}>
+        <p data-debug="photography-intro" className={`${TYPOGRAPHY.body} ${COLORS.gray500}`}>
           Capturing moments of silence, texture, and light. A collection of works exploring the relationship between natural landscapes and human perception.
         </p>
       </div>
 
       {/* Masonry / Waterfall Grid using CSS columns */}
-      <div className="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6">
+      <div id="photography-grid" data-debug="photography-grid" className="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6">
         {photoAssets.map((photo) => (
-          <div 
-            key={photo.id} 
+          <div
+            key={photo.id}
             className="break-inside-avoid rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 group relative"
           >
-            <img 
-              src={photo.src} 
+            <img
+              src={photo.src}
               alt={photo.alt}
               className="w-full h-auto object-cover transform group-hover:scale-[1.02] transition-transform duration-500"
               loading="lazy"

@@ -42,22 +42,22 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
   );
 
   const ContactRow = ({ label, value, href, className = '' }: { label: string; value: string; href: string; className?: string }) => (
-     <div className={`flex flex-col md:flex-row md:items-center justify-between ${className}`}>
-        <span className={`${TYPOGRAPHY.navItem} ${COLORS.gray500}`}>{label}</span>
-        <a
-          href={href}
-          className={`${TYPOGRAPHY.body} ${COLORS.gray400} hover:text-gray-800 hover:underline decoration-coral decoration-1 underline-offset-8 transition-all mt-2 md:mt-0`}
-        >
-          {value}
-        </a>
+    <div className={`flex flex-col md:flex-row md:items-center justify-between ${className}`}>
+      <span className={`${TYPOGRAPHY.navItem} ${COLORS.gray500}`}>{label}</span>
+      <a
+        href={href}
+        className={`${TYPOGRAPHY.body} ${COLORS.gray400} hover:text-gray-800 hover:underline decoration-coral decoration-1 underline-offset-8 transition-all mt-2 md:mt-0`}
+      >
+        {value}
+      </a>
     </div>
   );
 
   return (
-    <div className="flex flex-col space-y-8 md:space-y-10 w-full max-w-6xl mx-auto py-8">
+    <div id="home-root" data-debug="home-root" className="flex flex-col space-y-8 md:space-y-10 w-full">
       {/* Navigation Rows */}
       <NavRow label="Photography" onClick={() => onNavigate(ViewState.PHOTOGRAPHY)} />
-      <NavRow label="Design" onClick={() => {}} />
+      <NavRow label="Design" onClick={() => { }} />
 
       {/* Contact Rows */}
       <div className="space-y-8 md:space-y-0">
