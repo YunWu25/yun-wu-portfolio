@@ -21,7 +21,7 @@ const About: React.FC = () => {
         <blockquote className="border-l-4 border-coral pl-4 italic text-gray-700 my-8 bg-gray-50 py-4 pr-4 rounded-r-lg">
           "Design is not just what it looks like and feels like. Design is how it works." <cite className="text-sm not-italic text-gray-500 ml-3"> — Steve Jobs</cite>
         </blockquote>
-        <img src="assets/images/about-page-yun.jpg" alt="Yun Wu" className="w-full rounded-lg my-4" />
+        <img src="images/about-page-yun.jpg" alt="Yun Wu" className="w-full rounded-lg my-4" />
         <p className={`${TYPOGRAPHY.bodySmall} mb-6`}>
           I enjoy watching films and documentaries, and also love games like Animal Crossing. I'm passionate about documenting my life and the lives of my friends—for the past few years, I've been carefully selecting and sharing photos on a near-weekly basis that capture this stage of my journey.
         </p>

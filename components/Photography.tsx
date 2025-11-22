@@ -19,7 +19,6 @@ const Photography: React.FC = () => {
   return (
     <div id="photography-root" data-debug="photography-root" className="w-full">
       <div id="photography-header" data-debug="photography-header" className="mb-12 text-center">
-        <h2 className={TYPOGRAPHY.h2}>Visual Narratives</h2>
         <p data-debug="photography-intro" className={`${TYPOGRAPHY.body} ${COLORS.gray500}`}>
           Capturing moments of silence, texture, and light. A collection of works exploring the relationship between natural landscapes and human perception.
         </p>
