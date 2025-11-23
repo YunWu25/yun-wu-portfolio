@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Instagram, Linkedin, Mail, Menu, X } from 'lucide-react';
 import { ViewState, NavItem } from '../types';
 import { WaveDecoration } from './WaveDecoration';
@@ -16,6 +16,34 @@ interface MainContentProps {
 
 const MainContent: React.FC<MainContentProps> = ({ activeView, onNavigate }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [headerOpacity, setHeaderOpacity] = useState(1);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (!scrollContainerRef.current) return;
+
+      const scrollTop = scrollContainerRef.current.scrollTop;
+      // Fade out over first 50 pixels of scroll
+      const fadeDistance = 50;
+      const opacity = Math.max(0, 1 - (scrollTop / fadeDistance));
+      setHeaderOpacity(opacity);
+    };
+
+    const scrollContainer = scrollContainerRef.current;
+    if (scrollContainer) {
+      scrollContainer.addEventListener('scroll', handleScroll);
+      return () => scrollContainer.removeEventListener('scroll', handleScroll);
+    }
+  }, []);
+
+  // Reset scroll and header opacity when view changes
+  useEffect(() => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTop = 0;
+      setHeaderOpacity(1);
+    }
+  }, [activeView]);
 
   const navItems: NavItem[] = [
     { label: 'Home', view: ViewState.HOME },
@@ -58,10 +86,17 @@ const MainContent: React.FC<MainContentProps> = ({ activeView, onNavigate }) => 
       <div id="main-card" data-debug="main-card" className={LAYOUT.mainCard}>
 
         {/* === HEADER SECTION (Inside the box) === */}
-        <div className="grid grid-cols-1 md:grid-cols-3 p-8 md:p-16 pb-4 md:pb-8 items-start">
+        <div
+          id="main-card-header"
+          className="grid grid-cols-1 md:grid-cols-3 p-8 md:p-16 pb-4 md:pb-8 items-start sticky top-0 bg-white z-10 transition-opacity duration-200"
+          style={{
+            opacity: headerOpacity,
+            pointerEvents: headerOpacity < 0.1 ? 'none' : 'auto'
+          }}
+        >
 
           {/* Left Column: Navigation */}
-          <nav className="hidden md:flex flex-col space-y-8 items-start h-full justify-center">
+          <nav id="main-card-nav" className="hidden md:flex flex-col space-y-8 items-start h-full justify-center">
             {navItems.map((item) => (
               <button
                 key={item.label}
@@ -137,17 +172,21 @@ const MainContent: React.FC<MainContentProps> = ({ activeView, onNavigate }) => 
         )}
 
         {/* === MAIN CONTENT BODY === */}
-        <div className="flex-grow w-full overflow-y-auto custom-scrollbar">
+        <div
+          id="main-content-body"
+          ref={scrollContainerRef}
+          className="flex-grow w-full overflow-y-auto custom-scrollbar -mt-32"
+        >
           {/* Centralized content wrapper: keep page widths consistent here */}
           <div id="content-container" data-debug="content-container" className={LAYOUT.contentContainer}>
-            <div className="animate-slide-up" data-debug="body-animate">
+            <div className="animate-slide-up pt-32" data-debug="body-animate">
               {renderBodyContent()}
             </div>
           </div>
         </div>
 
         {/* === FOOTER (Inside the box) === */}
-        <footer className="px-8 md:px-20 py-8 md:py-12 flex flex-col md:flex-row justify-between items-center text-gray-300 font-light mt-auto">
+        <footer id="main-card-footer" className="px-8 md:px-20 py-8 md:py-12 flex flex-col md:flex-row justify-between items-center text-gray-300 font-light mt-auto">
           <div className={`${TYPOGRAPHY.body} text-lg tracking-wide text-gray-300`}>2025 Yun Wu</div>
           <div className="flex gap-8 mt-4 md:mt-0">
             <a href="#" className={`hover:text-coral hover:underline transition-colors ${TYPOGRAPHY.small}`}>EMAIL</a>
