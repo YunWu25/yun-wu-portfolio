@@ -15,7 +15,7 @@ const App: React.FC = () => {
 
     // Find the closest scrollable container (in MainContent.tsx, it has overflow-y-auto)
     const scrollableContainer = target.closest('.overflow-y-auto');
-    
+
     if (scrollableContainer) {
       // If scrollTop > 0, we are scrolled down, so scrolling up should just scroll content, not show splash
       if (scrollableContainer.scrollTop > 0) {
@@ -38,15 +38,15 @@ const App: React.FC = () => {
   const handleWheel = useCallback((e: WheelEvent) => {
     const now = Date.now();
     // Debounce scroll events to prevent jittery state flipping
-    if (now - lastScrollTime < 1000) return;
+    if (now - lastScrollTime < 1200) return;
 
     if (e.deltaY > 50 && showSplash) {
       // Scrolling Down: Hide Splash
       setShowSplash(false);
       setLastScrollTime(now);
-    } else if (e.deltaY < -50 && !showSplash) {
+    } else if (e.deltaY < -80 && !showSplash) {
       // Scrolling Up
-      
+
       // Check if we are inside scrollable content that is NOT at the top
       if (isScrollableAndNotAtTop(e.target)) {
         return; // Allow default scrolling behavior inside the div
@@ -67,20 +67,20 @@ const App: React.FC = () => {
 
   const handleTouchMove = useCallback((e: TouchEvent) => {
     if (touchStart === null) return;
-    
+
     const currentY = e.touches[0].clientY;
     const diff = touchStart - currentY;
     const now = Date.now();
 
-    if (now - lastScrollTime < 800) return;
+    if (now - lastScrollTime < 1000) return;
 
     if (diff > 50 && showSplash) {
       // Swipe Up (Scroll Down equivalent): Hide Splash
       setShowSplash(false);
       setLastScrollTime(now);
-    } else if (diff < -50 && !showSplash) {
+    } else if (diff < -80 && !showSplash) {
       // Swipe Down (Scroll Up equivalent): Show Splash
-      
+
       // Check if internal content is scrolled down
       if (isScrollableAndNotAtTop(e.target)) {
         return;
@@ -106,20 +106,20 @@ const App: React.FC = () => {
 
   return (
     <div className="relative w-full min-h-screen bg-offwhite text-darkgray font-sans selection:bg-coral selection:text-white overflow-hidden">
-      
+
       {/* Overlay Splash Screen */}
-      <Splash 
-        isVisible={showSplash} 
-        onDismiss={() => setShowSplash(false)} 
+      <Splash
+        isVisible={showSplash}
+        onDismiss={() => setShowSplash(false)}
       />
 
       {/* Main Site Content */}
-      <div 
+      <div
         className={`transition-opacity duration-1000 h-screen w-full flex items-center justify-center ${showSplash ? 'opacity-0 pointer-events-none' : 'opacity-100 pointer-events-auto'}`}
       >
-        <MainContent 
-          activeView={activeView} 
-          onNavigate={handleNavigate} 
+        <MainContent
+          activeView={activeView}
+          onNavigate={handleNavigate}
         />
       </div>
     </div>
