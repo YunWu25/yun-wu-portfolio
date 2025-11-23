@@ -143,17 +143,17 @@ const MainContent: React.FC<MainContentProps> = ({ activeView, onNavigate }) => 
             <div className="animate-slide-up" data-debug="body-animate">
               {renderBodyContent()}
             </div>
-
-            {/* === FOOTER (Inside scrollable content) === */}
-            <footer id="main-card-footer" className="px-8 md:px-20 py-8 md:py-12 flex flex-col md:flex-row justify-between items-center text-gray-300 font-light mt-16">
-              <div className={`${TYPOGRAPHY.body} text-lg tracking-wide text-gray-300`}>2025 Yun Wu</div>
-              <div className="flex gap-8 mt-4 md:mt-0">
-                <a href="#" className={`hover:text-coral hover:underline transition-colors ${TYPOGRAPHY.small}`}>EMAIL</a>
-                <span className="hidden md:inline text-gray-200">|</span>
-                <a href="#" className={`hover:text-coral hover:underline transition-colors ${TYPOGRAPHY.small}`}>INSTAGRAM</a>
-              </div>
-            </footer>
           </div>
+
+          {/* === FOOTER (Outside content container to align with header) === */}
+          <footer id="main-card-footer" className="px-8 md:px-16 py-8 md:py-12 flex flex-col md:flex-row justify-between items-center text-gray-300 font-light mt-16">
+            <div className={`${TYPOGRAPHY.body} text-lg tracking-wide text-gray-300`}>2025 Yun Wu</div>
+            <div className="flex gap-8 mt-4 md:mt-0">
+              <a href="#" className={`hover:text-coral hover:underline transition-colors ${TYPOGRAPHY.small}`}>EMAIL</a>
+              <span className="hidden md:inline text-gray-200">|</span>
+              <a href="#" className={`hover:text-coral hover:underline transition-colors ${TYPOGRAPHY.small}`}>INSTAGRAM</a>
+            </div>
+          </footer>
         </div>
 
       </div>
@@ -162,3 +162,4 @@ const MainContent: React.FC<MainContentProps> = ({ activeView, onNavigate }) => 
 };
 
 export default MainContent;
+
