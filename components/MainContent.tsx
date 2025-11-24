@@ -5,6 +5,7 @@ import { ViewState, NavItem } from '../types';
 import { WaveDecoration } from './WaveDecoration';
 import ProjectFlow from './ProjectFlow';
 import Photography from './Photography';
+import Design from './Design';
 import About from './About';
 import Home from './Home';
 import { COLORS, TYPOGRAPHY, LAYOUT } from '../styles';
@@ -31,6 +32,8 @@ const MainContent: React.FC<MainContentProps> = ({ activeView, onNavigate }) => 
         return <About />;
       case ViewState.PHOTOGRAPHY:
         return <Photography />;
+      case ViewState.DESIGN:
+        return <Design />;
       case ViewState.HOME:
       default:
         return <Home onNavigate={onNavigate} />;
@@ -42,7 +45,7 @@ const MainContent: React.FC<MainContentProps> = ({ activeView, onNavigate }) => 
       case ViewState.ABOUT:
         return 'About';
       case ViewState.PROJECT_FLOW:
-        return 'Project Flow';
+        return 'Progress';
       case ViewState.PHOTOGRAPHY:
         return 'Gallery';
       case ViewState.HOME:

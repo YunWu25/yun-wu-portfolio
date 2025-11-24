@@ -57,7 +57,7 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
     <div id="home-root" data-debug="home-root" className="flex flex-col justify-end space-y-8 md:space-y-10 w-full min-h-[40vh]">
       {/* Navigation and Contact Rows */}
       <div className="flex flex-col space-y-4">
-        <NavRow label="Design" onClick={() => { }} />
+        <NavRow label="Design" onClick={() => onNavigate(ViewState.DESIGN)} />
         <NavRow label="Photography" onClick={() => onNavigate(ViewState.PHOTOGRAPHY)} />
 
         <ContactRow label="Send Email" value="Yunwustudio@gmail.com" href="mailto:Yunwustudio@gmail.com" />

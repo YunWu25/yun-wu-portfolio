@@ -1,5 +1,5 @@
 ## Quick goal
-Help contributors and AI agents be immediately productive in this repo: a small React + Vite portfolio app (no backend). Focus on predictable edits (content, styles, small UX tweaks) and how to run/build locally.
+A small React + Vite portfolio app. Focus on predictable edits (content, styles, small UX tweaks)
 
 ## Big picture (what to know)
 - Single-page React app mounted at `#root` (`index.html` → `index.tsx` → `App.tsx`).

@@ -2,7 +2,8 @@ export enum ViewState {
   HOME = 'HOME',
   ABOUT = 'ABOUT',
   PROJECT_FLOW = 'PROJECT_FLOW',
-  PHOTOGRAPHY = 'PHOTOGRAPHY'
+  PHOTOGRAPHY = 'PHOTOGRAPHY',
+  DESIGN = 'DESIGN',
 }
 
 export interface ProjectTask {

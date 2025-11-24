@@ -7,7 +7,6 @@ const ProjectFlow: React.FC = () => {
   return (
     <div id="projectflow-root" data-debug="projectflow-root" className="w-full">
       <div id="projectflow-header" data-debug="projectflow-header" className="mb-12 border-b border-gray-100 pb-8">
-        <h2 className={TYPOGRAPHY.h2}>Project Flow</h2>
         <p data-debug="projectflow-intro" className={`${TYPOGRAPHY.body} ${COLORS.gray500}`}>
           A collection of case studies, design processes, and architectural workflows.
         </p>
