@@ -55,3 +55,8 @@ export const LAYOUT = {
   // Flex center utility
   flexCenter: 'flex items-center justify-center',
 };
+
+export const REPETITIONS = 50;
+// Duration per repetition in seconds for animation timing
+export const DURATION_PER_REPETITION = 9;
+export const ANIMATION_DURATION = REPETITIONS * DURATION_PER_REPETITION;

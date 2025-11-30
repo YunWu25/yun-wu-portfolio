@@ -38,9 +38,11 @@ npm run dev
 - `types.ts` — enums and shared shape definitions
 
 ## Small editing rules (do this / avoid doing that)
+- **Write clean, minimal code**: Remove unnecessary nesting, avoid inline styles when Tailwind classes work, use `.concat()` or clean array methods instead of nested maps.
 - When adding a scrollable region, add `overflow-y-auto` and `custom-scrollbar` to keep consistent behavior and allow `App.tsx` to detect inner scrolls.
 - Prefer updating design tokens in `styles.ts` instead of editing utility classes across many components.
 - Avoid changing `index.html` importmap unless you understand the CDN fallback; package.json also contains the same deps.
 - Keep `LAYOUT.mainCard` height behavior in mind: it intentionally uses `h-[90vh]` to allow internal scrolling. Changing it affects how Splash and pointer events behave.
+- **Don't add unnecessary comments**: Code should be self-explanatory. Only comment complex logic or non-obvious behavior.
 
 If anything is unclear or you'd like the file to include more examples (e.g., a guided edit for adding a new page or changing the splash timings), tell me which section to expand and I will iterate.

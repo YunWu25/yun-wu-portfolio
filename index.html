@@ -67,6 +67,16 @@
       .animate-blink {
         animation: blink 1s infinite;
       }
+
+      @keyframes marquee {
+        from {
+          transform: translateX(0);
+        }
+
+        to {
+          transform: translateX(var(--marquee-distance));
+        }
+      }
     </style>
     <script type="importmap">
 {

@@ -1,6 +1,17 @@
-
 import React from 'react';
-import { TYPOGRAPHY, COLORS, LAYOUT } from '../styles';
+import { TYPOGRAPHY, COLORS, REPETITIONS, ANIMATION_DURATION } from '../styles';
+
+const brandLogos = [
+  { name: 'BELLE', src: 'images/brand-logo/BELLE.svg' },
+  { name: 'Chinese Radio Seattle', src: 'images/brand-logo/chinese-radio-seattle.svg' },
+  { name: 'Joy Moving', src: 'images/brand-logo/JOY-MOVING.svg' },
+  { name: 'Luna', src: 'images/brand-logo/Luna.svg' },
+  { name: 'MICA', src: 'images/brand-logo/MICA.svg' },
+  { name: 'Murasec', src: 'images/brand-logo/Murasec.svg' },
+  { name: 'Ride the Wind Workshop', src: 'images/brand-logo/Ride-the-Wind-Workshop.svg' },
+  { name: 'Smile', src: 'images/brand-logo/smile.svg' },
+  { name: 'US China Press', src: 'images/brand-logo/uschinapress.svg' },
+];
 
 const About: React.FC = () => {
   return (
@@ -45,6 +56,25 @@ const About: React.FC = () => {
             Always looking for new brands that align with my values
             to work on long-term partnerships, so get in touch!
           </p>
+        </div>
+
+        <div className="mt-16 mb-8 relative overflow-hidden py-12">
+          <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-white via-white/80 to-transparent z-10 pointer-events-none"></div>
+          <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-white via-white/80 to-transparent z-10 pointer-events-none"></div>
+
+          <div
+            className="flex whitespace-nowrap"
+            style={{
+              animation: `marquee ${ANIMATION_DURATION}s linear infinite`,
+              ['--marquee-distance' as any]: `${-100 * REPETITIONS}%`,
+            }}
+          >
+            {Array(REPETITIONS).fill(brandLogos).flat().map((brand, index) => (
+              <div key={index} className="inline-flex items-center justify-center mx-16 opacity-100 min-w-[120px] flex-shrink-0">
+                <img src={brand.src} alt={brand.name} className="h-24 w-auto object-contain" />
+              </div>
+            ))}
+          </div>
         </div>
 
       </div>
