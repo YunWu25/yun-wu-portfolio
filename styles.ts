@@ -29,6 +29,9 @@ export const TYPOGRAPHY = {
   // Subheaders
   h3: 'font-sans text-xl md:text-2xl font-medium text-gray-800',
 
+  // Sub-subheaders
+  h4: 'font-sans text-lg md:text-xl font-medium text-gray-700',
+
   // Navigation & Main List Items
   navItem: 'font-sans text-2xl md:text-3xl font-light',
 
@@ -40,6 +43,9 @@ export const TYPOGRAPHY = {
 
   // Small Text (Footer, Metadata)
   small: 'text-sm tracking-widest uppercase',
+
+  // Extra small text
+  extraSmall: 'text-xs tracking-widest uppercase',
 
   // Links
   link: 'transition-colors duration-300 cursor-pointer',

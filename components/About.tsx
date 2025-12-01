@@ -17,8 +17,6 @@ const About: React.FC = () => {
   return (
     <div id="about-root" data-debug="about-root" className="w-full">
       <div id="about-header" data-debug="about-header" className="text-center mb-16">
-        {/* <h2 className={TYPOGRAPHY.h2}>About Yun</h2> */}
-        {/* <div className="h-1 w-16 bg-coral mx-auto rounded-full mb-8"></div> */}
         <p className={`${TYPOGRAPHY.body} ${COLORS.gray600}`}>
           "I focus on visual storytelling through photography and interactive design.
           Based in Seattle, I explore the intersection of nature, technology, and human emotion."
@@ -39,19 +37,19 @@ const About: React.FC = () => {
 
         <div className="mt-12">
           {/* <h3 className={`${TYPOGRAPHY.h3} mb-8`}>Services</h3> */}
-          <h4 className={`text-xl ${COLORS.gray900}`}>Services</h4>
+          <h4 className={`${TYPOGRAPHY.h4} ${COLORS.gray900} mb-3`}>Services</h4>
           <p className={`${TYPOGRAPHY.bodySmall} mb-6`}>
             Let me help build out a unique, story-led photo campaign for your brand.
           </p>
 
-          <h4 className={`text-xl ${COLORS.gray900}`}>Photography</h4>
+          <h4 className={`${TYPOGRAPHY.h4} ${COLORS.gray900} mb-3`}>Photography</h4>
           <p className={`${TYPOGRAPHY.bodySmall} mb-6`}>
             Social Media Activation and Brand Representation:
             With an engaged and ever-growing audience of more than 100,000 followers,
             I help brands target new audiences through strategic social channel partnerships.
           </p>
 
-          <h4 className={`text-xl ${COLORS.gray900}`}>Brand Ambassadorship</h4>
+          <h4 className={`${TYPOGRAPHY.h4} ${COLORS.gray900} mb-3`}>Brand Ambassadorship</h4>
           <p className={`${TYPOGRAPHY.bodySmall} mb-6`}>
             Always looking for new brands that align with my values
             to work on long-term partnerships, so get in touch!
