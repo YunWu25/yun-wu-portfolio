@@ -52,9 +52,9 @@ export const TYPOGRAPHY = {
 };
 
 export const LAYOUT = {
-  // Main white card container
-  mainCard: 'bg-white w-[calc(100vw-2rem)] md:w-[calc(100vw-4rem)] max-w-[95rem] h-[90vh] rounded-[2rem] shadow-[0_30px_60px_rgba(0,0,0,0.05)] border border-gray-100 flex flex-col overflow-hidden relative',
-  contentContainer: 'w-full max-w-6xl mx-auto px-6 md:px-16 py-8',
+  // Main white card container - full screen
+  mainCard: 'bg-white w-screen h-screen flex flex-col overflow-hidden relative',
+  contentContainer: 'w-full max-w-6xl mx-auto px-6 md:px-16 py-8 border border-gray-200 rounded-lg',
   flexCenter: 'flex items-center justify-center',
 };
 

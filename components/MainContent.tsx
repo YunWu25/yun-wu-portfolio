@@ -15,9 +15,10 @@ interface MainContentProps {
   activeView: ViewState;
   onNavigate: (view: ViewState) => void;
   language: Language;
+  setLanguage: (language: Language) => void;
 }
 
-const MainContent: React.FC<MainContentProps> = ({ activeView, onNavigate, language }) => {
+const MainContent: React.FC<MainContentProps> = ({ activeView, onNavigate, language, setLanguage }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [homeExpanded, setHomeExpanded] = useState(
     activeView === ViewState.PHOTOGRAPHY || activeView === ViewState.DESIGN
@@ -65,10 +66,37 @@ const MainContent: React.FC<MainContentProps> = ({ activeView, onNavigate, langu
   };
 
   return (
-    <div id="container-card" className="min-h-screen bg-offwhite flex items-center justify-center p-4 md:p-8">
+    <div id="container-card" className="w-screen h-screen bg-white">
 
-      {/* THE MAIN WHITE BOX CONTAINER */}
+      {/* MAIN CONTAINER */}
       <div id="main-card" data-debug="main-card" className={`${LAYOUT.mainCard} overflow-y-auto custom-scrollbar`}>
+
+        {/* === LANGUAGE SWITCHER === */}
+        <div className="absolute top-4 right-4 z-20">
+          <div className="bg-white px-3 py-1.5 rounded-md border border-gray-200 shadow-sm flex items-center gap-2">
+            <button
+              onClick={() => setLanguage('en')}
+              className={`px-2 py-1 rounded transition-colors text-sm ${
+                language === 'en'
+                  ? 'bg-coral text-white'
+                  : 'text-gray-500 hover:text-coral'
+              }`}
+            >
+              EN
+            </button>
+            <span className="text-gray-300">|</span>
+            <button
+              onClick={() => setLanguage('zh')}
+              className={`px-2 py-1 rounded transition-colors text-sm ${
+                language === 'zh'
+                  ? 'bg-coral text-white'
+                  : 'text-gray-500 hover:text-coral'
+              }`}
+            >
+              中文
+            </button>
+          </div>
+        </div>
 
         {/* === HEADER SECTION === */}
         <div id="main-card-header" className="grid grid-cols-1 md:grid-cols-3 p-8 md:p-16 pb-4 md:pb-8 items-start">
@@ -173,7 +201,7 @@ const MainContent: React.FC<MainContentProps> = ({ activeView, onNavigate, langu
           </div>
 
           {/* Mobile Menu Toggle */}
-          <div className="md:hidden absolute top-8 right-8">
+          <div className="md:hidden absolute top-8 left-8">
             <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="text-gray-800">
               {isMobileMenuOpen ? <X size={32} /> : <Menu size={32} />}
             </button>
@@ -213,12 +241,25 @@ const MainContent: React.FC<MainContentProps> = ({ activeView, onNavigate, langu
           {/* === FOOTER (Outside content container to align with header) === */}
           <footer id="main-card-footer" className="px-8 md:px-16 py-8 md:py-12 flex flex-col md:flex-row justify-between items-center text-gray-300 font-light mt-16">
             <div className={`${TYPOGRAPHY.body} text-lg tracking-wide text-gray-300`}>2025 Yun Wu</div>
+            {/* Mobile: Icon + text pairs, Desktop: Text only with separators */}
             <div className="flex gap-8 mt-4 md:mt-0">
-              <a href="mailto:Yunwustudio@gmail.com" className={`hover:text-coral hover:underline transition-colors ${TYPOGRAPHY.small}`}>EMAIL</a>
-              <span className="hidden md:inline text-gray-200">|</span>
-              <a href="https://instagram.com/yun___wu" className={`hover:text-coral hover:underline transition-colors ${TYPOGRAPHY.small}`}>INSTAGRAM</a>
-              <span className="hidden md:inline text-gray-200">|</span>
-              <a href="https://linkedin.com/in/yun-w-0532b5190" className={`hover:text-coral hover:underline transition-colors ${TYPOGRAPHY.small}`}>LINKEDIN</a>
+              {/* Email */}
+              <a href="mailto:Yunwustudio@gmail.com" className="flex flex-col items-center gap-2 group">
+                <Mail size={24} strokeWidth={1.5} className={`${COLORS.coral} md:hidden group-hover:scale-110 transition-transform`} />
+                <span className={`hover:text-coral hover:underline transition-colors ${TYPOGRAPHY.small}`}>EMAIL</span>
+              </a>
+              <span className="hidden md:inline text-gray-200 self-center">|</span>
+              {/* Instagram */}
+              <a href="https://instagram.com/yun___wu" target="_blank" rel="noreferrer" className="flex flex-col items-center gap-2 group">
+                <Instagram size={24} strokeWidth={1.5} className={`${COLORS.coral} md:hidden group-hover:scale-110 transition-transform`} />
+                <span className={`hover:text-coral hover:underline transition-colors ${TYPOGRAPHY.small}`}>INSTAGRAM</span>
+              </a>
+              <span className="hidden md:inline text-gray-200 self-center">|</span>
+              {/* LinkedIn */}
+              <a href="https://linkedin.com/in/yun-w-0532b5190" target="_blank" rel="noreferrer" className="flex flex-col items-center gap-2 group">
+                <Linkedin size={24} strokeWidth={1.5} className={`${COLORS.coral} md:hidden group-hover:scale-110 transition-transform`} />
+                <span className={`hover:text-coral hover:underline transition-colors ${TYPOGRAPHY.small}`}>LINKEDIN</span>
+              </a>
             </div>
           </footer>
         </div>

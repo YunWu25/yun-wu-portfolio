@@ -154,38 +154,12 @@ const AppContent: React.FC = () => {
       <div
         className={`transition-opacity duration-1000 h-screen w-full flex items-center justify-center ${showSplash ? 'opacity-0 pointer-events-none' : 'opacity-100 pointer-events-auto'}`}
       >
-        <div className="relative w-full h-full flex items-center justify-center">
-          {/* Language Switcher - Top Right */}
-          <div className="absolute top-8 right-8 z-10 flex items-center gap-3 bg-white px-4 py-2 rounded-[0.5rem] shadow-sm border border-gray-200">
-            <button
-              onClick={() => setLanguage('en')}
-              className={`px-3 py-1 rounded-[0.5rem] transition-colors ${
-                language === 'en'
-                  ? 'bg-coral text-white'
-                  : 'text-gray-500 hover:text-coral'
-              }`}
-            >
-              EN
-            </button>
-            <span className="text-gray-300">|</span>
-            <button
-              onClick={() => setLanguage('zh')}
-              className={`px-3 py-1 rounded-[0.5rem] transition-colors ${
-                language === 'zh'
-                  ? 'bg-coral text-white'
-                  : 'text-gray-500 hover:text-coral'
-              }`}
-            >
-              中文
-            </button>
-          </div>
-
-          <MainContent
-            activeView={activeView}
-            onNavigate={handleNavigate}
-            language={language}
-          />
-        </div>
+        <MainContent
+          activeView={activeView}
+          onNavigate={handleNavigate}
+          language={language}
+          setLanguage={setLanguage}
+        />
       </div>
     </div>
   );
