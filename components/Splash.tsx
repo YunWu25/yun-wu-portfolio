@@ -39,7 +39,7 @@ const Splash: React.FC<SplashProps> = ({ isVisible, onDismiss, language }) => {
         <div className={`text-lg md:text-2xl text-darkgray tracking-wide text-center min-h-[3rem]`}>
           <Typewriter
             key={typewriterKey}
-            text={language === 'en' ? "Hi, I am Yun, focusing on visual storytelling, creative imagery, and artistic expression. " : "Hi Yun 专注于视觉叙事、创意影像和艺术表达。"}
+            text="Hi Yun 专注于视觉叙事、创意影像和艺术表达"
             startDelay={800}
           />
         </div>
