@@ -8,9 +8,9 @@
 
 <div align="center">
 
-Personal portfolio website for Yun Wu, a visual designer and photographer based in Seattle, WA.
+Portfolio website for Yun Wu - Visual Designer & Photographer, Seattle, WA.
 
-[Live Demo](https://dokaniasourav.github.io/yun-wu-portfolio/) • [Report Bug](https://github.com/dokaniasourav/yun-wu-portfolio/issues) • [Request Feature](https://github.com/dokaniasourav/yun-wu-portfolio/issues)
+**Live Site**: [yunwustudio.com](https://yunwustudio.com)
 
 </div>
 
@@ -31,42 +31,25 @@ Personal portfolio website for Yun Wu, a visual designer and photographer based 
 
 ## About
 
-This is a personal portfolio website showcasing Yun Wu's work in visual design and photography. The site includes a photography gallery, an about page with brand partnerships, and project documentation sections.
+Portfolio website showcasing Yun Wu's work in visual design, video, and photography.
 
 ---
 
 ## Features
 
-### Navigation System
-```
-┌─────────────────────────────────────┐
-│   HOME                              │
-│   ├── Design                        │
-│   └── Photography                   │
-│   ABOUT                             │
-│   PROJECT FLOW                      │
-└─────────────────────────────────────┘
-```
-- Browser-based routing with clean URLs
-- Collapsible submenu system
-- Mobile hamburger menu overlay
-- Smooth page transitions
+### Navigation
+- Home (with submenu: Design, Video, Photography)
+- About
+- Project Flow
+- Bilingual support (EN/中文)
+- Mobile-responsive hamburger menu
 
-### Splash Screen
-- Typewriter effect: "Hi Yun 专注于视觉叙事、创意影像和艺术表达"
-- Scroll or swipe to enter the site
-- Shows once per browser session
-
-### Photography Gallery
-- Two columns that scroll in opposite directions
-- Pauses on hover
-- 18 portrait images with overlay details
-
-### Design
-- **Color**: Coral (#ff6b6b)
-- **Fonts**: Inter, Playfair Display, JetBrains Mono
-- **Layout**: Centered content with consistent spacing
-- Works on desktop and mobile
+### Key Features
+- Session-based splash screen with typewriter animation
+- Photography gallery with portrait images
+- Video section with two-column grid layout
+- Full-screen layout with responsive design
+- Smooth transitions and hover effects
 
 ---
 
@@ -74,24 +57,9 @@ This is a personal portfolio website showcasing Yun Wu's work in visual design a
 
 ### Prerequisites
 
-Make sure you have the following installed on your system:
-
-- **Node.js** (v18 or higher)
-  ```bash
-  node --version
-  ```
-  Download: https://nodejs.org/
-
-- **npm** (comes with Node.js)
-  ```bash
-  npm --version
-  ```
-
-- **Git**
-  ```bash
-  git --version
-  ```
-  Download: https://git-scm.com/
+- Node.js (v18+)
+- npm
+- Git
 
 ### Installation
 
@@ -124,17 +92,11 @@ Make sure you have the following installed on your system:
 
 ## Usage
 
-### Development Commands
-
 | Command | Description |
 |---------|-------------|
-| `npm run dev` | Start development server at localhost:3000 |
-| `npm run build` | Build production bundle |
-| `npm run preview` | Preview production build locally |
-
-### Environment Variables
-
-No environment variables required! The project uses CDN for Tailwind CSS and external image sources.
+| `npm run dev` | Start development server |
+| `npm run build` | Build for production |
+| `npm run preview` | Preview production build |
 
 ---
 
@@ -158,11 +120,12 @@ yun-wu-portfolio/
 │   ├── MainContent.tsx     # Main layout container
 │   ├── Home.tsx            # Landing page
 │   ├── About.tsx           # Biography & services
-│   ├── ProjectFlow.tsx     # Case studies (placeholder)
-│   ├── Photography.tsx     # Gallery with infinite scroll
-│   ├── Design.tsx          # Design portfolio (placeholder)
-│   ├── Typewriter.tsx      # Typing animation component
-│   └── WaveDecoration.tsx  # Decorative wave SVG
+│   ├── Design.tsx          # Design portfolio
+│   ├── Video.tsx           # Video projects grid
+│   ├── Photography.tsx     # Photography gallery
+│   ├── ProjectFlow.tsx     # Project flow
+│   ├── Typewriter.tsx      # Typing animation
+│   └── WaveDecoration.tsx  # Wave decoration
 │
 ├── public/
 │   └── images/
@@ -177,77 +140,24 @@ yun-wu-portfolio/
 
 ## Technology Stack
 
-### Core Technologies
-- React
-- TypeScript
+- React 19 + TypeScript
 - Vite
-- Tailwind CSS
-
-### Dependencies
-- react-router-dom - Client-side routing
-- lucide-react - Icon library
-- @playwright/test - E2E testing
-
-### Development Tools
-- @vitejs/plugin-react - React plugin for Vite
-- TypeScript - Static type checking
-- ESLint - Code linting
+- Tailwind CSS (CDN)
+- React Router
+- Lucide React (icons)
 
 ---
 
 ## Deployment
 
-### Deploy to GitHub Pages
+The site is deployed at **yunwustudio.com** via Cloudflare Pages.
 
-This project is pre-configured for GitHub Pages deployment.
-
-#### Automatic Deployment
-
-1. **Enable GitHub Pages**
-   - Go to repository **Settings** → **Pages**
-   - Under "Source", select **GitHub Actions**
-
-2. **Update base path** (if needed)
-   ```typescript
-   // vite.config.ts
-   base: process.env.GITHUB_ACTIONS ? '/your-repo-name/' : './',
-   ```
-
-3. **Push to GitHub**
-   ```bash
-   git add .
-   git commit -m "Deploy to GitHub Pages"
-   git push origin main
-   ```
-
-4. **Monitor deployment**
-   - Go to **Actions** tab
-   - Watch the "Build and Deploy" workflow
-   - Site will be live at: `https://username.github.io/repo-name/`
-
-#### Manual Deployment
-
-Trigger deployment manually from the **Actions** tab by clicking "Run workflow".
-
-### Deploy to Other Platforms
-
-<details>
-<summary>Vercel</summary>
-
-```bash
-npm install -g vercel
-vercel
-```
-</details>
-
-<details>
-<summary>Netlify</summary>
-
+To build for production:
 ```bash
 npm run build
-# Drag and drop the 'dist' folder to Netlify
 ```
-</details>
+
+The build output will be in the `dist/` directory.
 
 ---
 
@@ -260,7 +170,7 @@ npm run build
 - Instagram: [@yun___wu](https://instagram.com/yun___wu)
 - LinkedIn: [yun-w-0532b5190](https://linkedin.com/in/yun-w-0532b5190)
 
-**Project Link**: [https://github.com/dokaniasourav/yun-wu-portfolio](https://github.com/dokaniasourav/yun-wu-portfolio)
+**Website**: [yunwustudio.com](https://yunwustudio.com)
 
 ---
 
