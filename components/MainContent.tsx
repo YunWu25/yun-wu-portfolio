@@ -6,6 +6,7 @@ import { WaveDecoration } from './WaveDecoration';
 import ProjectFlow from './ProjectFlow';
 import Photography from './Photography';
 import Design from './Design';
+import Video from './Video';
 import About from './About';
 import Home from './Home';
 import { COLORS, TYPOGRAPHY, LAYOUT } from '../styles';
@@ -21,7 +22,7 @@ interface MainContentProps {
 const MainContent: React.FC<MainContentProps> = ({ activeView, onNavigate, language, setLanguage }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [homeExpanded, setHomeExpanded] = useState(
-    activeView === ViewState.PHOTOGRAPHY || activeView === ViewState.DESIGN
+    activeView === ViewState.PHOTOGRAPHY || activeView === ViewState.DESIGN || activeView === ViewState.VIDEO
   );
 
   const navItems: NavItem[] = [
@@ -32,6 +33,7 @@ const MainContent: React.FC<MainContentProps> = ({ activeView, onNavigate, langu
 
   const homeSubItems = [
     { label: language === 'en' ? 'Design' : '设计', view: ViewState.DESIGN },
+    { label: language === 'en' ? 'Video' : '影片', view: ViewState.VIDEO },
     { label: language === 'en' ? 'Photography' : '摄影', view: ViewState.PHOTOGRAPHY },
   ];
 
@@ -45,6 +47,8 @@ const MainContent: React.FC<MainContentProps> = ({ activeView, onNavigate, langu
         return <Photography language={language} />;
       case ViewState.DESIGN:
         return <Design language={language} />;
+      case ViewState.VIDEO:
+        return <Video language={language} />;
       case ViewState.HOME:
       default:
         return <Home onNavigate={onNavigate} language={language} />;
@@ -59,6 +63,8 @@ const MainContent: React.FC<MainContentProps> = ({ activeView, onNavigate, langu
         return language === 'en' ? 'Progress' : '进度';
       case ViewState.PHOTOGRAPHY:
         return language === 'en' ? 'Gallery' : '画廊';
+      case ViewState.VIDEO:
+        return language === 'en' ? 'Video' : '影片';
       case ViewState.HOME:
       default:
         return 'Yun Wu';
@@ -115,13 +121,13 @@ const MainContent: React.FC<MainContentProps> = ({ activeView, onNavigate, langu
                   className="flex items-center group w-fit text-left focus:outline-none"
                 >
                   <span
-                    className={`w-3 h-3 rounded-sm bg-coral mr-4 transition-all duration-300 ${activeView === item.view || (item.view === ViewState.HOME && (activeView === ViewState.PHOTOGRAPHY || activeView === ViewState.DESIGN))
+                    className={`w-3 h-3 rounded-sm bg-coral mr-4 transition-all duration-300 ${activeView === item.view || (item.view === ViewState.HOME && (activeView === ViewState.PHOTOGRAPHY || activeView === ViewState.DESIGN || activeView === ViewState.VIDEO))
                       ? 'opacity-100 scale-100'
                       : 'opacity-0 group-hover:opacity-40 scale-0 group-hover:scale-75'
                       }`}
                   />
                   <span
-                    className={`${TYPOGRAPHY.navItem} transition-colors duration-300 ${activeView === item.view || (item.view === ViewState.HOME && (activeView === ViewState.PHOTOGRAPHY || activeView === ViewState.DESIGN))
+                    className={`${TYPOGRAPHY.navItem} transition-colors duration-300 ${activeView === item.view || (item.view === ViewState.HOME && (activeView === ViewState.PHOTOGRAPHY || activeView === ViewState.DESIGN || activeView === ViewState.VIDEO))
                       ? 'text-gray-900 font-medium'
                       : 'text-gray-500 group-hover:text-coral'
                       }`}
@@ -132,7 +138,7 @@ const MainContent: React.FC<MainContentProps> = ({ activeView, onNavigate, langu
                     <ChevronDown
                       size={20}
                       className={`ml-2 transition-transform duration-300 ${homeExpanded ? 'rotate-180' : ''
-                        } ${activeView === ViewState.HOME || activeView === ViewState.PHOTOGRAPHY || activeView === ViewState.DESIGN
+                        } ${activeView === ViewState.HOME || activeView === ViewState.PHOTOGRAPHY || activeView === ViewState.DESIGN || activeView === ViewState.VIDEO
                           ? 'text-gray-900'
                           : 'text-gray-500 group-hover:text-coral'
                         }`}

@@ -4,6 +4,7 @@ export enum ViewState {
   PROJECT_FLOW = 'PROJECT_FLOW',
   PHOTOGRAPHY = 'PHOTOGRAPHY',
   DESIGN = 'DESIGN',
+  VIDEO = 'VIDEO',
 }
 
 export interface ProjectTask {

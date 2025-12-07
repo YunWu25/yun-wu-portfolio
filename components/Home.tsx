@@ -16,6 +16,7 @@ const Home: React.FC<HomeProps> = ({ onNavigate, language }) => {
   const text = {
     en: {
       design: 'Design',
+      video: 'Video',
       photography: 'Photography',
       sendEmail: 'Send Email',
       call: 'Call, text, WhatsApp',
@@ -24,6 +25,7 @@ const Home: React.FC<HomeProps> = ({ onNavigate, language }) => {
     },
     zh: {
       design: '设计',
+      video: '影片',
       photography: '摄影',
       sendEmail: '发送邮件',
       call: '电话、短信、WhatsApp',
@@ -81,6 +83,7 @@ const Home: React.FC<HomeProps> = ({ onNavigate, language }) => {
       {/* Navigation and Contact Rows */}
       <div className="flex flex-col space-y-4">
         <NavRow label={t.design} onClick={() => onNavigate(ViewState.DESIGN)} />
+        <NavRow label={t.video} onClick={() => onNavigate(ViewState.VIDEO)} />
         <NavRow label={t.photography} onClick={() => onNavigate(ViewState.PHOTOGRAPHY)} />
 
         <ContactRow label={t.sendEmail} value="Yunwustudio@gmail.com" href="mailto:Yunwustudio@gmail.com" />

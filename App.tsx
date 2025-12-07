@@ -13,6 +13,7 @@ const viewToPath: Record<ViewState, string> = {
   [ViewState.PROJECT_FLOW]: '/project-flow',
   [ViewState.PHOTOGRAPHY]: '/photography',
   [ViewState.DESIGN]: '/design',
+  [ViewState.VIDEO]: '/video',
 };
 
 const getViewFromPath = (path: string): ViewState => {
