@@ -87,7 +87,7 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
             />
             <div className="absolute inset-0 bg-gradient-to-b from-white/40 via-white/30 to-white/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             <div className="absolute inset-0 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-              <h3 className="text-xl font-medium text-gray-800 mb-1">{photo.title}</h3>
+              <h3 className={`${TYPOGRAPHY.h3} text-gray-800 mb-1`}>{photo.title}</h3>
               <div className="w-8 h-px bg-gray-800 my-2"></div>
               <p className="text-sm text-gray-700 tracking-wide">{photo.artist}</p>
               <p className="text-sm text-gray-700 tracking-wide">{photo.season}</p>

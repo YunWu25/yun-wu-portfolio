@@ -35,11 +35,26 @@ export const TYPOGRAPHY = {
   // Navigation & Main List Items
   navItem: 'font-sans text-2xl md:text-3xl font-light',
 
-  // Body Text (Paragraphs, Descriptions)
+  // Navigation Sub Items (Home sub-menu)
+  navSubItem: 'font-sans text-xl md:text-2xl font-light',
+
+  // Body Text (Paragraphs, Descriptions) - Used for Photography/Design intro
   body: 'font-sans text-xl md:text-2xl font-light leading-relaxed',
 
-  // Smaller Body Text for dense content (About page prose)
+  // Smaller Body Text for dense content (About page prose, Video page intro)
   bodySmall: 'font-sans text-lg text-gray-600 font-light leading-loose',
+
+  // Card overlay title (for hover states)
+  cardOverlayTitle: 'font-serif text-2xl md:text-3xl text-white',
+
+  // Card overlay metadata (year, season, etc.)
+  cardOverlayMeta: 'text-sm tracking-wider uppercase text-white/80',
+
+  // Card title (always visible, minimal overlay)
+  cardTitle: 'font-sans text-lg md:text-xl font-light text-white',
+
+  // Section headings (About page services)
+  sectionHeading: 'text-xl text-gray-900',
 
   // Small Text (Footer, Metadata)
   small: 'text-sm tracking-widest uppercase',

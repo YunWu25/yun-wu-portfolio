@@ -53,12 +53,12 @@ const About: React.FC<AboutProps> = ({ language }) => {
   return (
     <div id="about-root" data-debug="about-root" className="w-full">
       <div id="about-header" data-debug="about-header" className="text-center mb-16">
-        <p className={`${TYPOGRAPHY.body} ${COLORS.gray600}`}>
+        <p className={`${TYPOGRAPHY.body} ${COLORS.gray500}`}>
           {t.intro}
         </p>
       </div>
 
-      <div id="about-body" data-debug="about-body" className={`${COLORS.gray500} font-light leading-loose`}>
+      <div id="about-body" data-debug="about-body">
         <p className={`${TYPOGRAPHY.bodySmall} mb-6`}>
           {t.bio1}
         </p>
@@ -71,17 +71,17 @@ const About: React.FC<AboutProps> = ({ language }) => {
         </p>
 
         <div className="mt-12">
-          <h4 className={`text-xl ${COLORS.gray900} mb-3`}>{t.services}</h4>
+          <h4 className={`${TYPOGRAPHY.sectionHeading} mb-3`}>{t.services}</h4>
           <p className={`${TYPOGRAPHY.bodySmall} mb-6`}>
             {t.servicesDesc}
           </p>
 
-          <h4 className={`text-xl ${COLORS.gray900} mb-3`}>{t.photography}</h4>
+          <h4 className={`${TYPOGRAPHY.sectionHeading} mb-3`}>{t.photography}</h4>
           <p className={`${TYPOGRAPHY.bodySmall} mb-6`}>
             {t.photographyDesc}
           </p>
 
-          <h4 className={`text-xl ${COLORS.gray900} mb-3`}>{t.brandAmbassador}</h4>
+          <h4 className={`${TYPOGRAPHY.sectionHeading} mb-3`}>{t.brandAmbassador}</h4>
           <p className={`${TYPOGRAPHY.bodySmall} mb-6`}>
             {t.brandAmbassadorDesc}
           </p>

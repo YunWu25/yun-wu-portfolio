@@ -165,7 +165,7 @@ const MainContent: React.FC<MainContentProps> = ({ activeView, onNavigate, langu
                               }`}
                           />
                           <span
-                            className={`font-sans text-xl md:text-2xl font-light transition-colors duration-300 ${activeView === subItem.view
+                            className={`${TYPOGRAPHY.navSubItem} transition-colors duration-300 ${activeView === subItem.view
                               ? 'text-gray-900 font-medium'
                               : 'text-gray-500 group-hover:text-coral'
                               }`}

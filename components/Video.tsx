@@ -1,6 +1,6 @@
 import React from 'react';
 import { Language } from '../App';
-import { TYPOGRAPHY } from '../styles';
+import { TYPOGRAPHY, COLORS } from '../styles';
 
 interface VideoProps {
   language: Language;
@@ -58,11 +58,8 @@ const Video: React.FC<VideoProps> = ({ language }) => {
   return (
     <div className="w-full">
       {/* Page Header */}
-      <div className="mb-12">
-        <h2 className={`${TYPOGRAPHY.h2}`}>
-          {language === 'en' ? 'Film & Video' : '影片作品'}
-        </h2>
-        <p className={`${TYPOGRAPHY.bodySmall} mt-4`}>
+      <div className="mb-12 text-center">
+        <p className={`${TYPOGRAPHY.body} ${COLORS.gray500}`}>
           {language === 'en'
             ? 'A collection of cinematic work exploring visual storytelling through film and video.'
             : '通过影片和视频探索视觉叙事的电影作品集。'}
@@ -86,10 +83,10 @@ const Video: React.FC<VideoProps> = ({ language }) => {
             {/* Overlay */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
               <div className="absolute bottom-0 left-0 right-0 p-6">
-                <h3 className="text-white font-serif text-2xl md:text-3xl mb-2">
+                <h3 className={`${TYPOGRAPHY.cardOverlayTitle} mb-2`}>
                   {project.title}
                 </h3>
-                <p className="text-white/80 text-sm tracking-wider uppercase">
+                <p className={TYPOGRAPHY.cardOverlayMeta}>
                   {project.year}
                 </p>
               </div>
@@ -97,7 +94,7 @@ const Video: React.FC<VideoProps> = ({ language }) => {
 
             {/* Always visible title overlay (minimal) */}
             <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6 bg-gradient-to-t from-black/50 to-transparent group-hover:opacity-0 transition-opacity duration-300">
-              <h3 className="text-white font-sans text-lg md:text-xl font-light">
+              <h3 className={TYPOGRAPHY.cardTitle}>
                 {project.title}
               </h3>
             </div>

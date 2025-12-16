@@ -29,7 +29,7 @@ const Design: React.FC<DesignProps> = ({ language }) => {
 
 	return (
 		<div id="design-root" data-debug="design-root" className="w-full">
-			<div id="design-header" data-debug="design-header" className="mb-12 border-b border-gray-100 pb-8">
+			<div id="design-header" data-debug="design-header" className="mb-12 text-center">
 				<p data-debug="design-intro" className={`${TYPOGRAPHY.body} ${COLORS.gray500}`}>
 					{t.intro}
 				</p>

@@ -117,8 +117,8 @@ const ProjectFlow: React.FC<ProjectFlowProps> = ({ language }) => {
   return (
     <div id="projectflow-root" className="w-full">
       {/* Intro Text */}
-      <div id="design-flow" className="text-center mb-16 max-w-3xl mx-auto">
-        <p className={`${TYPOGRAPHY.body} ${COLORS.gray600}`}>
+      <div id="design-flow" className="text-center mb-16">
+        <p className={`${TYPOGRAPHY.body} ${COLORS.gray500} justify-center`}>
           {t.intro}
         </p>
       </div>
