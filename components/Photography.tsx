@@ -1,27 +1,82 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { TYPOGRAPHY, COLORS } from '../styles';
 
 // Portrait-oriented photos for waterfall layout with metadata
 const photoAssets = [
-  { id: 1, src: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
-  { id: 2, src: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 2', title: 'Minimal Grace', artist: 'James Chen', season: 'Winter 2024' },
-  { id: 3, src: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 3', title: 'Golden Hour', artist: 'Emma Rodriguez', season: 'Spring 2025' },
-  { id: 4, src: 'https://images.unsplash.com/photo-1488161628813-04466f872be2?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 4', title: 'Quiet Moments', artist: 'David Park', season: 'Summer 2024' },
-  { id: 5, src: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 5', title: 'Natural Light', artist: 'Lisa Anderson', season: 'Fall 2024' },
-  { id: 6, src: 'https://images.unsplash.com/photo-1531123897727-8f129e1688ce?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 6', title: 'Studio Portrait', artist: 'Michael Wong', season: 'Winter 2024' },
-  { id: 7, src: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 7', title: 'Classic Style', artist: 'Sophie Laurent', season: 'Spring 2025' },
-  { id: 8, src: 'https://images.unsplash.com/photo-1530785602389-07594beb8b73?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 8', title: 'Modern Lines', artist: 'Alex Thompson', season: 'Summer 2024' },
-  { id: 9, src: 'https://images.unsplash.com/photo-1501196354995-cbb51c65aaea?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 9', title: 'Soft Focus', artist: 'Nina Patel', season: 'Fall 2024' },
-  { id: 10, src: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 10', title: 'Editorial Look', artist: 'Ryan Lee', season: 'Winter 2024' },
-  { id: 11, src: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 11', title: 'Raw Beauty', artist: 'Maya Johnson', season: 'Spring 2025' },
-  { id: 12, src: 'https://images.unsplash.com/photo-1521119989659-a83eee488004?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 12', title: 'Timeless', artist: 'Carlos Martinez', season: 'Summer 2024' },
-  { id: 13, src: 'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 13', title: 'Urban Chic', artist: 'Anna Kim', season: 'Fall 2024' },
-  { id: 14, src: 'https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 14', title: 'Natural Beauty', artist: 'Tom Wilson', season: 'Winter 2024' },
-  { id: 15, src: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 15', title: 'Ethereal', artist: 'Grace Zhang', season: 'Spring 2025' },
-  { id: 16, src: 'https://images.unsplash.com/photo-1552374196-c4e7ffc6e126?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 16', title: 'Bold Statement', artist: 'Marcus Brown', season: 'Summer 2024' },
-  { id: 17, src: 'https://images.unsplash.com/photo-1499952127939-9bbf5af6c51c?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 17', title: 'Serene', artist: 'Olivia Davis', season: 'Fall 2024' },
-  { id: 18, src: 'https://images.unsplash.com/photo-1502767089025-6572583495f9?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 18', title: 'Contemporary', artist: 'Daniel White', season: 'Winter 2024' },
+  { src: 'https://media.yunwustudio.com/public/images/000P1070086.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
+  { src: 'https://media.yunwustudio.com/public/images/00P1010005-2.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
+  { src: 'https://media.yunwustudio.com/public/images/00P1010038.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
+  { src: 'https://media.yunwustudio.com/public/images/00P1010059.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
+  { src: 'https://media.yunwustudio.com/public/images/0P1010008.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
+  { src: 'https://media.yunwustudio.com/public/images/0P1010011.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
+  { src: 'https://media.yunwustudio.com/public/images/0P1010085.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
+  { src: 'https://media.yunwustudio.com/public/images/0P1010094.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
+  { src: 'https://media.yunwustudio.com/public/images/0P1010097.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
+  { src: 'https://media.yunwustudio.com/public/images/0P1010107.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
+  { src: 'https://media.yunwustudio.com/public/images/0P1011787.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
+  { src: 'https://media.yunwustudio.com/public/images/0P1030077.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
+  { src: 'https://media.yunwustudio.com/public/images/0P1070016.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
+  { src: 'https://media.yunwustudio.com/public/images/0P1070024-(2).jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
+  { src: 'https://media.yunwustudio.com/public/images/0P1070029.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
+  { src: 'https://media.yunwustudio.com/public/images/0P1070032.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
+  { src: 'https://media.yunwustudio.com/public/images/0P1070086.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
+  { src: 'https://media.yunwustudio.com/public/images/0PB061357.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
+  { src: 'https://media.yunwustudio.com/public/images/0PB061361.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
+  { src: 'https://media.yunwustudio.com/public/images/0PB061364.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
+  { src: 'https://media.yunwustudio.com/public/images/0PB061365.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
+  { src: 'https://media.yunwustudio.com/public/images/1303310.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
+  { src: 'https://media.yunwustudio.com/public/images/414234988_3694550534109861_5675519163735921167_n.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
+  { src: 'https://media.yunwustudio.com/public/images/P1010001.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
+  { src: 'https://media.yunwustudio.com/public/images/P1010015.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
+  { src: 'https://media.yunwustudio.com/public/images/P1010031.JPG?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
+  { src: 'https://media.yunwustudio.com/public/images/P1010041.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
+  { src: 'https://media.yunwustudio.com/public/images/P1010046.JPG?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
+  { src: 'https://media.yunwustudio.com/public/images/P1010049.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
+  { src: 'https://media.yunwustudio.com/public/images/P1010099.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
+  { src: 'https://media.yunwustudio.com/public/images/P1010126.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
+  { src: 'https://media.yunwustudio.com/public/images/P1010145_01.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
+  { src: 'https://media.yunwustudio.com/public/images/P1010187.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
+  { src: 'https://media.yunwustudio.com/public/images/P1010245.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
+  { src: 'https://media.yunwustudio.com/public/images/P1010303.JPG?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
+  { src: 'https://media.yunwustudio.com/public/images/P10104660.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
+  { src: 'https://media.yunwustudio.com/public/images/P10104670.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
+  { src: 'https://media.yunwustudio.com/public/images/P10106160.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
+  { src: 'https://media.yunwustudio.com/public/images/P1153011.JPG?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
+  { src: 'https://media.yunwustudio.com/public/images/P6215165 (2).jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
+  { src: 'https://media.yunwustudio.com/public/images/P6245210 (2).jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
+  { src: 'https://media.yunwustudio.com/public/images/P808047400.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
+  { src: 'https://media.yunwustudio.com/public/images/P80804780.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
+  { src: 'https://media.yunwustudio.com/public/images/P92806960.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
+  { src: 'https://media.yunwustudio.com/public/images/P92806990.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
+  { src: 'https://media.yunwustudio.com/public/images/P92807040.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
+  { src: 'https://media.yunwustudio.com/public/images/PA0307630.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
+  { src: 'https://media.yunwustudio.com/public/images/PA2012361.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
+  { src: 'https://media.yunwustudio.com/public/images/PA2012370.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
+  { src: 'https://media.yunwustudio.com/public/images/PB240858.JPG?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
+  { src: 'https://media.yunwustudio.com/public/images/PB260920.JPG?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
+  { src: 'https://media.yunwustudio.com/public/images/PC091321.JPG?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
+  { src: 'https://media.yunwustudio.com/public/images/PC111458.JPG?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
+  { src: 'https://media.yunwustudio.com/public/images/PC131536.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
+  { src: 'https://media.yunwustudio.com/public/images/PC251997.JPG?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
+  { src: 'https://media.yunwustudio.com/public/images/PC252000.JPG?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
+  { src: 'https://media.yunwustudio.com/public/images/PC252003.JPG?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
+  { src: 'https://media.yunwustudio.com/public/images/PC252005.JPG?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
+  { src: 'https://media.yunwustudio.com/public/images/PC302136.JPG?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
+  { src: 'https://media.yunwustudio.com/public/images/Tinasdancestudios (2).jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
+  { src: 'https://media.yunwustudio.com/public/images/Tinasdancestudios (5).jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
+  { src: 'https://media.yunwustudio.com/public/images/Tinasdancestudios (7).jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
+  { src: 'https://media.yunwustudio.com/public/images/Yun_Wu_2025 (12).jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
+  { src: 'https://media.yunwustudio.com/public/images/_10102230.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
 ];
+
+// Simple, fast string hash (djb2 variant) -> stable id string
+function hashStringToId(s: string) {
+  let h = 5381;
+  for (let i = 0; i < s.length; i++) {
+    h = (h * 33) ^ s.charCodeAt(i);
+  }
+  return 'p_' + (h >>> 0).toString(36);
+}
 
 import { Language } from '../App';
 
@@ -31,6 +86,11 @@ interface PhotographyProps {
 
 const Photography: React.FC<PhotographyProps> = ({ language }) => {
   const [columnCount, setColumnCount] = useState(2);
+
+  const assetsWithIds = useMemo(() =>
+    photoAssets.map(photo => ({ ...photo, id: hashStringToId(photo.src) })),
+    []
+  );
 
   useEffect(() => {
     const updateColumnCount = () => {
@@ -49,8 +109,8 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
   }, []);
 
   const splitPhotosIntoColumns = (count: number) => {
-    const columns: (typeof photoAssets)[] = Array.from({ length: count }, () => []);
-    photoAssets.forEach((photo, index) => {
+    const columns: any[] = Array.from({ length: count }, () => []);
+    assetsWithIds.forEach((photo, index) => {
       columns[index % count].push(photo);
     });
     return columns.map(col => [...col, ...col, ...col]);
@@ -98,7 +158,7 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
     </div>
   );
 
-  const intro = language === 'en' 
+  const intro = language === 'en'
     ? 'Capturing moments of silence, texture, and light. A collection of works exploring the relationship between natural landscapes and human perception.'
     : '捕捉沉默、质感和光的瞬间。探索自然景观与人类感知之间关系的作品集。';
 
