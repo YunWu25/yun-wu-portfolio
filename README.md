@@ -57,7 +57,7 @@ Portfolio website showcasing Yun Wu's work in visual design, video, and photogra
 
 ### Prerequisites
 
-- Node.js (v18+)
+- Node.js (v20+)
 - npm
 - Git
 
@@ -94,9 +94,10 @@ Portfolio website showcasing Yun Wu's work in visual design, video, and photogra
 
 | Command | Description |
 |---------|-------------|
-| `npm run dev` | Start development server |
+| `npm run dev` | Start Vite development server |
 | `npm run build` | Build for production |
 | `npm run preview` | Preview production build |
+| `npx wrangler pages dev dist` | Test with Cloudflare Pages Functions (run `npm run build` first) |
 
 ---
 
@@ -112,8 +113,14 @@ yun-wu-portfolio/
 ├── styles.ts               # Centralized design system
 ├── vite.config.ts          # Vite build configuration
 ├── tsconfig.json           # TypeScript compiler settings
+├── wrangler.toml           # Cloudflare Pages configuration
+├── _routes.json            # Pages Functions route config
 ├── playwright.config.ts    # E2E test configuration
 ├── package.json            # Dependencies and scripts
+│
+├── functions/
+│   └── api/
+│       └── photos.ts       # API endpoint for dynamic photo listing
 │
 ├── components/
 │   ├── Splash.tsx          # Animated splash screen

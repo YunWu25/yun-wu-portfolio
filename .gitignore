@@ -31,3 +31,5 @@ dist-ssr
 /playwright/.auth/
 .playwright-mcp
 
+# Wrangler (Cloudflare local dev)
+.wrangler/

@@ -1,75 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { TYPOGRAPHY, COLORS } from '../styles';
-
-// Portrait-oriented photos for waterfall layout with metadata
-const photoAssets = [
-  { src: 'https://media.yunwustudio.com/public/images/000P1070086.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
-  { src: 'https://media.yunwustudio.com/public/images/00P1010005-2.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
-  { src: 'https://media.yunwustudio.com/public/images/00P1010038.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
-  { src: 'https://media.yunwustudio.com/public/images/00P1010059.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
-  { src: 'https://media.yunwustudio.com/public/images/0P1010008.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
-  { src: 'https://media.yunwustudio.com/public/images/0P1010011.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
-  { src: 'https://media.yunwustudio.com/public/images/0P1010085.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
-  { src: 'https://media.yunwustudio.com/public/images/0P1010094.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
-  { src: 'https://media.yunwustudio.com/public/images/0P1010097.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
-  { src: 'https://media.yunwustudio.com/public/images/0P1010107.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
-  { src: 'https://media.yunwustudio.com/public/images/0P1011787.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
-  { src: 'https://media.yunwustudio.com/public/images/0P1030077.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
-  { src: 'https://media.yunwustudio.com/public/images/0P1070016.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
-  { src: 'https://media.yunwustudio.com/public/images/0P1070024-(2).jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
-  { src: 'https://media.yunwustudio.com/public/images/0P1070029.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
-  { src: 'https://media.yunwustudio.com/public/images/0P1070032.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
-  { src: 'https://media.yunwustudio.com/public/images/0P1070086.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
-  { src: 'https://media.yunwustudio.com/public/images/0PB061357.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
-  { src: 'https://media.yunwustudio.com/public/images/0PB061361.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
-  { src: 'https://media.yunwustudio.com/public/images/0PB061364.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
-  { src: 'https://media.yunwustudio.com/public/images/0PB061365.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
-  { src: 'https://media.yunwustudio.com/public/images/1303310.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
-  { src: 'https://media.yunwustudio.com/public/images/414234988_3694550534109861_5675519163735921167_n.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
-  { src: 'https://media.yunwustudio.com/public/images/P1010001.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
-  { src: 'https://media.yunwustudio.com/public/images/P1010015.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
-  { src: 'https://media.yunwustudio.com/public/images/P1010031.JPG?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
-  { src: 'https://media.yunwustudio.com/public/images/P1010041.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
-  { src: 'https://media.yunwustudio.com/public/images/P1010046.JPG?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
-  { src: 'https://media.yunwustudio.com/public/images/P1010049.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
-  { src: 'https://media.yunwustudio.com/public/images/P1010099.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
-  { src: 'https://media.yunwustudio.com/public/images/P1010126.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
-  { src: 'https://media.yunwustudio.com/public/images/P1010145_01.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
-  { src: 'https://media.yunwustudio.com/public/images/P1010187.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
-  { src: 'https://media.yunwustudio.com/public/images/P1010245.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
-  { src: 'https://media.yunwustudio.com/public/images/P1010303.JPG?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
-  { src: 'https://media.yunwustudio.com/public/images/P10104660.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
-  { src: 'https://media.yunwustudio.com/public/images/P10104670.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
-  { src: 'https://media.yunwustudio.com/public/images/P10106160.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
-  { src: 'https://media.yunwustudio.com/public/images/P1153011.JPG?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
-  { src: 'https://media.yunwustudio.com/public/images/P6215165 (2).jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
-  { src: 'https://media.yunwustudio.com/public/images/P6245210 (2).jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
-  { src: 'https://media.yunwustudio.com/public/images/P808047400.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
-  { src: 'https://media.yunwustudio.com/public/images/P80804780.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
-  { src: 'https://media.yunwustudio.com/public/images/P92806960.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
-  { src: 'https://media.yunwustudio.com/public/images/P92806990.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
-  { src: 'https://media.yunwustudio.com/public/images/P92807040.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
-  { src: 'https://media.yunwustudio.com/public/images/PA0307630.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
-  { src: 'https://media.yunwustudio.com/public/images/PA2012361.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
-  { src: 'https://media.yunwustudio.com/public/images/PA2012370.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
-  { src: 'https://media.yunwustudio.com/public/images/PB240858.JPG?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
-  { src: 'https://media.yunwustudio.com/public/images/PB260920.JPG?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
-  { src: 'https://media.yunwustudio.com/public/images/PC091321.JPG?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
-  { src: 'https://media.yunwustudio.com/public/images/PC111458.JPG?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
-  { src: 'https://media.yunwustudio.com/public/images/PC131536.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
-  { src: 'https://media.yunwustudio.com/public/images/PC251997.JPG?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
-  { src: 'https://media.yunwustudio.com/public/images/PC252000.JPG?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
-  { src: 'https://media.yunwustudio.com/public/images/PC252003.JPG?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
-  { src: 'https://media.yunwustudio.com/public/images/PC252005.JPG?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
-  { src: 'https://media.yunwustudio.com/public/images/PC302136.JPG?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
-  { src: 'https://media.yunwustudio.com/public/images/Tinasdancestudios (2).jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
-  { src: 'https://media.yunwustudio.com/public/images/Tinasdancestudios (5).jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
-  { src: 'https://media.yunwustudio.com/public/images/Tinasdancestudios (7).jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
-  { src: 'https://media.yunwustudio.com/public/images/Yun_Wu_2025 (12).jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
-  { src: 'https://media.yunwustudio.com/public/images/_10102230.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
-];
-
 import { Language } from '../App';
+
+interface PhotoData {
+  key: string;
+  url: string;
+  title: string;
+  alt: string;
+  artist: string;
+  season: string;
+}
 
 interface PhotographyProps {
   language: Language;
@@ -77,7 +17,37 @@ interface PhotographyProps {
 
 const Photography: React.FC<PhotographyProps> = ({ language }) => {
   const [columnCount, setColumnCount] = useState(2);
+  const [photos, setPhotos] = useState<PhotoData[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
+  // Fetch photos from API
+  useEffect(() => {
+    const fetchPhotos = async () => {
+      try {
+        const response = await fetch('/api/photos');
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data: PhotoData[] = await response.json();
+        if (data.length === 0) {
+          setError('No photos available');
+        } else {
+          setPhotos(data);
+          setError(null);
+        }
+      } catch (err) {
+        console.error('Failed to fetch photos:', err);
+        setError('Failed to load photos. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPhotos();
+  }, []);
+
+  // Handle responsive column count
   useEffect(() => {
     const updateColumnCount = () => {
       if (window.matchMedia('(min-width: 1024px)').matches) {
@@ -95,16 +65,17 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
   }, []);
 
   const splitPhotosIntoColumns = (count: number) => {
-    const columns: typeof photoAssets[] = Array.from({ length: count }, () => []);
-    photoAssets.forEach((photo, index) => {
+    const columns: PhotoData[][] = Array.from({ length: count }, () => []);
+    photos.forEach((photo, index) => {
       columns[index % count].push(photo);
     });
+    // Triple the photos for infinite scroll effect
     return columns.map(col => [...col, ...col, ...col]);
   };
 
   const photoColumns = splitPhotosIntoColumns(columnCount);
 
-  const renderColumn = (photos: typeof photoAssets, columnIndex: number) => (
+  const renderColumn = (columnPhotos: PhotoData[], columnIndex: number) => (
     <div key={columnIndex} className="overflow-hidden">
       <div
         className="flex flex-col gap-4"
@@ -112,9 +83,9 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
           animation: `scroll-${columnIndex % 2 === 0 ? 'up' : 'down'} 60s linear infinite`,
         }}
       >
-        {photos.map((photo, index) => (
+        {columnPhotos.map((photo, index) => (
           <div
-            key={`col${columnIndex}-${index}`}
+            key={`col${columnIndex}-${photo.key}-${index}`}
             className="rounded-lg overflow-hidden shadow-sm transition-all duration-300 group relative cursor-pointer border border-transparent hover:border-gray-300"
             onMouseEnter={(e) => {
               const parent = e.currentTarget.parentElement;
@@ -126,7 +97,7 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
             }}
           >
             <img
-              src={photo.src}
+              src={photo.url}
               alt={photo.alt}
               className="w-full h-auto object-cover transition-opacity duration-300 group-hover:opacity-60"
               loading="lazy"
@@ -148,6 +119,43 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
     ? 'Capturing moments of silence, texture, and light. A collection of works exploring the relationship between natural landscapes and human perception.'
     : '捕捉沉默、质感和光的瞬间。探索自然景观与人类感知之间关系的作品集。';
 
+  if (loading) {
+    return (
+      <div id="photography-root" className="w-full">
+        <div className="mb-12 text-center">
+          <p className={`${TYPOGRAPHY.body} ${COLORS.gray500}`}>{intro}</p>
+        </div>
+        <div className="flex justify-center items-center h-[70vh]">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state - show message without fake fallback photos
+  if (error || photos.length === 0) {
+    return (
+      <div id="photography-root" className="w-full">
+        <div className="mb-12 text-center">
+          <p className={`${TYPOGRAPHY.body} ${COLORS.gray500}`}>{intro}</p>
+        </div>
+        <div className="flex flex-col justify-center items-center h-[50vh] text-center">
+          <p className="text-gray-500 mb-4">
+            {language === 'en' 
+              ? error || 'No photos available at the moment.' 
+              : error || '暂时没有可用的照片。'}
+          </p>
+          <button 
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm transition-colors"
+          >
+            {language === 'en' ? 'Try Again' : '重试'}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div id="photography-root" data-debug="photography-root" className="w-full">
       <div id="photography-header" data-debug="photography-header" className="mb-12 text-center">
@@ -157,7 +165,7 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 h-[70vh]">
-        {photoColumns.map((photos, index) => renderColumn(photos, index))}
+        {photoColumns.map((columnPhotos, index) => renderColumn(columnPhotos, index))}
       </div>
     </div>
   );

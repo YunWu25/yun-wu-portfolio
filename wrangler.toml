@@ -1,0 +1,22 @@
+# Cloudflare Pages configuration for yun-wu-portfolio
+name = "yun-wu-portfolio"
+compatibility_date = "2024-12-01"
+pages_build_output_dir = "dist"
+
+# R2 bucket binding for photography images
+[[r2_buckets]]
+binding = "PHOTOGRAPHY"
+bucket_name = "photography"
+remote = true
+
+# KV namespace for caching photo lists (5-min TTL)
+[[kv_namespaces]]
+binding = "PHOTO_CACHE"
+id = "6e118aadba374285a91da13b74dc867b"
+remote = true
+
+# KV namespace for photo metadata (titles, descriptions, future admin)
+[[kv_namespaces]]
+binding = "PHOTO_METADATA"
+id = "44034fac780a477598c58690411fcb76"
+remote = true
