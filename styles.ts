@@ -45,7 +45,7 @@ export const TYPOGRAPHY = {
   bodySmall: 'font-sans text-lg text-gray-600 font-light leading-loose',
 
   // Card overlay title (for hover states)
-  cardOverlayTitle: 'font-serif text-2xl md:text-3xl text-white',
+  cardOverlayTitle: 'font-sans text-xl md:text-2xl font-light text-white',
 
   // Card overlay metadata (year, season, etc.)
   cardOverlayMeta: 'text-sm tracking-wider uppercase text-white/80',

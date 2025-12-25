@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState } from 'react';
 import { TYPOGRAPHY, COLORS } from '../styles';
 
 // Portrait-oriented photos for waterfall layout with metadata
@@ -69,15 +69,6 @@ const photoAssets = [
   { src: 'https://media.yunwustudio.com/public/images/_10102230.jpg?auto=format&fit=crop&w=600&h=900&q=80', alt: 'Portrait 1', title: 'Urban Essence', artist: 'Sarah Mitchell', season: 'Fall 2024' },
 ];
 
-// Simple, fast string hash (djb2 variant) -> stable id string
-function hashStringToId(s: string) {
-  let h = 5381;
-  for (let i = 0; i < s.length; i++) {
-    h = (h * 33) ^ s.charCodeAt(i);
-  }
-  return 'p_' + (h >>> 0).toString(36);
-}
-
 import { Language } from '../App';
 
 interface PhotographyProps {
@@ -86,11 +77,6 @@ interface PhotographyProps {
 
 const Photography: React.FC<PhotographyProps> = ({ language }) => {
   const [columnCount, setColumnCount] = useState(2);
-
-  const assetsWithIds = useMemo(() =>
-    photoAssets.map(photo => ({ ...photo, id: hashStringToId(photo.src) })),
-    []
-  );
 
   useEffect(() => {
     const updateColumnCount = () => {
@@ -109,8 +95,8 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
   }, []);
 
   const splitPhotosIntoColumns = (count: number) => {
-    const columns: any[] = Array.from({ length: count }, () => []);
-    assetsWithIds.forEach((photo, index) => {
+    const columns: typeof photoAssets[] = Array.from({ length: count }, () => []);
+    photoAssets.forEach((photo, index) => {
       columns[index % count].push(photo);
     });
     return columns.map(col => [...col, ...col, ...col]);
@@ -118,7 +104,7 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
 
   const photoColumns = splitPhotosIntoColumns(columnCount);
 
-  const renderColumn = (photos: (typeof photoAssets), columnIndex: number) => (
+  const renderColumn = (photos: typeof photoAssets, columnIndex: number) => (
     <div key={columnIndex} className="overflow-hidden">
       <div
         className="flex flex-col gap-4"
@@ -128,8 +114,8 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
       >
         {photos.map((photo, index) => (
           <div
-            key={`col${columnIndex}-${photo.id}-${index}`}
-            className="rounded-lg overflow-hidden shadow-sm transition-all duration-300 group relative cursor-pointer border-2 border-transparent hover:border-gray-400"
+            key={`col${columnIndex}-${index}`}
+            className="rounded-lg overflow-hidden shadow-sm transition-all duration-300 group relative cursor-pointer border border-transparent hover:border-gray-300"
             onMouseEnter={(e) => {
               const parent = e.currentTarget.parentElement;
               if (parent) parent.style.animationPlayState = 'paused';
@@ -145,12 +131,12 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
               className="w-full h-auto object-cover transition-opacity duration-300 group-hover:opacity-60"
               loading="lazy"
             />
-            <div className="absolute inset-0 bg-gradient-to-b from-white/40 via-white/30 to-white/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            <div className="absolute inset-0 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-              <h3 className={`${TYPOGRAPHY.h3} text-gray-800 mb-1`}>{photo.title}</h3>
-              <div className="w-8 h-px bg-gray-800 my-2"></div>
-              <p className="text-sm text-gray-700 tracking-wide">{photo.artist}</p>
-              <p className="text-sm text-gray-700 tracking-wide">{photo.season}</p>
+            {/* Hover overlay - gradient only at bottom */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            {/* Info positioned bottom-left like Video page */}
+            <div className="absolute bottom-0 left-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              <h3 className={TYPOGRAPHY.cardOverlayTitle}>{photo.title}</h3>
+              <p className={TYPOGRAPHY.cardOverlayMeta}>{photo.season}</p>
             </div>
           </div>
         ))}

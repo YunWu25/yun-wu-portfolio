@@ -65,7 +65,7 @@ Portfolio website showcasing Yun Wu's work in visual design, video, and photogra
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/dokaniasourav/yun-wu-portfolio.git
+   git clone https://github.com/YunWu25/yun-wu-portfolio.git
    ```
 
 2. **Navigate to the project directory**
