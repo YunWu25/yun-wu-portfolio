@@ -28,14 +28,14 @@ const Design: React.FC<DesignProps> = ({ language }) => {
 	const t = content[language];
 
 	return (
-		<div id="design-root" data-debug="design-root" className="w-full">
-			<div id="design-header" data-debug="design-header" className="mb-12 text-center">
-				<p data-debug="design-intro" className={`${TYPOGRAPHY.body} ${COLORS.gray500}`}>
+		<div id="design-root" className="w-full">
+			<div id="design-header" className="mb-12 text-center">
+				<p className={`${TYPOGRAPHY.body} ${COLORS.gray500}`}>
 					{t.intro}
 				</p>
 			</div>
 
-			<div id="design-grid" data-debug="design-grid" className="grid grid-cols-1 md:grid-cols-2 gap-8">
+			<div id="design-grid" className="grid grid-cols-1 md:grid-cols-2 gap-8">
 				<div className={`border border-dashed border-gray-200 rounded-xl p-12 flex flex-col items-center justify-center text-center ${COLORS.gray400} hover:border-coral hover:text-coral transition-colors cursor-pointer group`}>
 					<Palette size={48} className="mb-4 opacity-50 group-hover:scale-110 transition-transform" />
 					<h3 className={TYPOGRAPHY.h3 + " mb-2"}>{t.branding}</h3>

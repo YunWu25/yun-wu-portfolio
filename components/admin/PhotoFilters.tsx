@@ -35,7 +35,7 @@ export const PhotoFilters: React.FC<PhotoFiltersProps> = ({
         {/* Left side: Search and filters */}
         <div className="flex flex-col sm:flex-row gap-3 flex-1 w-full md:w-auto">
           {/* Search */}
-          <div className="relative flex-1 min-w-[200px]">
+          <div className="relative flex-1 min-w-50">
             <input
               type="text"
               placeholder="Search photos..."

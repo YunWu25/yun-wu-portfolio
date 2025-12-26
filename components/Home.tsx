@@ -94,7 +94,7 @@ const Home: React.FC<HomeProps> = ({ onNavigate, language }) => {
   const viewText = language === 'en' ? 'View' : '查看';
 
   return (
-    <div id="home-root" data-debug="home-root" className="flex flex-col justify-end space-y-8 md:space-y-10 w-full min-h-[40vh]">
+    <div id="home-root" className="flex flex-col justify-end space-y-8 md:space-y-10 w-full min-h-[40vh]">
       {/* Navigation and Contact Rows */}
       <div className="flex flex-col space-y-4">
         <NavRow label={t.design} onClick={() => { onNavigate(ViewState.DESIGN); }} viewText={viewText} />

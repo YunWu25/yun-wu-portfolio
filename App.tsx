@@ -5,6 +5,7 @@ import Splash from './components/Splash';
 import MainContent from './components/MainContent';
 import { PhotoManager } from './components/admin/PhotoManager';
 import { ViewState } from './types';
+import { SCROLL_THRESHOLDS } from './constants';
 
 export type Language = 'en' | 'zh';
 
@@ -76,13 +77,13 @@ const AppContent: React.FC = () => {
   const handleWheel = useCallback((e: WheelEvent) => {
     const now = Date.now();
     // Debounce scroll events to prevent jittery state flipping
-    if (now - lastScrollTime < 1200) return;
+    if (now - lastScrollTime < SCROLL_THRESHOLDS.WHEEL_DEBOUNCE_MS) return;
 
-    if (e.deltaY > 50 && showSplash) {
+    if (e.deltaY > SCROLL_THRESHOLDS.SCROLL_DOWN_THRESHOLD && showSplash) {
       // Scrolling Down: Hide Splash
       setShowSplash(false);
       setLastScrollTime(now);
-    } else if (e.deltaY < -80 && !showSplash) {
+    } else if (e.deltaY < SCROLL_THRESHOLDS.SCROLL_UP_THRESHOLD && !showSplash) {
       // Scrolling Up
 
       // Check if we are inside scrollable content that is NOT at the top
@@ -113,13 +114,13 @@ const AppContent: React.FC = () => {
     const diff = touchStart - currentY;
     const now = Date.now();
 
-    if (now - lastScrollTime < 1000) return;
+    if (now - lastScrollTime < SCROLL_THRESHOLDS.TOUCH_DEBOUNCE_MS) return;
 
-    if (diff > 50 && showSplash) {
+    if (diff > SCROLL_THRESHOLDS.SWIPE_UP_THRESHOLD && showSplash) {
       // Swipe Up (Scroll Down equivalent): Hide Splash
       setShowSplash(false);
       setLastScrollTime(now);
-    } else if (diff < -80 && !showSplash) {
+    } else if (diff < SCROLL_THRESHOLDS.SWIPE_DOWN_THRESHOLD && !showSplash) {
       // Swipe Down (Scroll Up equivalent): Show Splash
 
       // Check if internal content is scrolled down

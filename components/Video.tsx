@@ -81,7 +81,7 @@ const Video: React.FC<VideoProps> = ({ language }) => {
             />
             
             {/* Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
               <div className="absolute bottom-0 left-0 right-0 p-6">
                 <h3 className={`${TYPOGRAPHY.cardOverlayTitle} mb-2`}>
                   {project.title}
@@ -93,7 +93,7 @@ const Video: React.FC<VideoProps> = ({ language }) => {
             </div>
 
             {/* Always visible title overlay (minimal) */}
-            <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6 bg-gradient-to-t from-black/50 to-transparent group-hover:opacity-0 transition-opacity duration-300">
+            <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6 bg-linear-to-t from-black/50 to-transparent group-hover:opacity-0 transition-opacity duration-300">
               <h3 className={TYPOGRAPHY.cardTitle}>
                 {project.title}
               </h3>

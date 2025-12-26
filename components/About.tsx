@@ -1,5 +1,6 @@
 import React from 'react';
-import { TYPOGRAPHY, COLORS, MARQUEE } from '../styles';
+import { TYPOGRAPHY, COLORS } from '../styles';
+import { MARQUEE } from '../constants';
 import { Language } from '../App';
 
 interface AboutProps {
@@ -56,14 +57,14 @@ const About: React.FC<AboutProps> = ({ language }) => {
   const t = content[language];
 
   return (
-    <div id="about-root" data-debug="about-root" className="w-full">
-      <div id="about-header" data-debug="about-header" className="text-center mb-16">
+    <div id="about-root" className="w-full">
+      <div id="about-header" className="text-center mb-16">
         <p className={`${TYPOGRAPHY.body} ${COLORS.gray500}`}>
           {t.intro}
         </p>
       </div>
 
-      <div id="about-body" data-debug="about-body">
+      <div id="about-body">
         <p className={`${TYPOGRAPHY.bodySmall} mb-6`}>
           {t.bio1}
         </p>
@@ -93,8 +94,8 @@ const About: React.FC<AboutProps> = ({ language }) => {
         </div>
 
         <div className="mt-16 mb-8 relative overflow-hidden py-12">
-          <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-white via-white/80 to-transparent z-10 pointer-events-none"></div>
-          <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-white via-white/80 to-transparent z-10 pointer-events-none"></div>
+          <div className="absolute left-0 top-0 bottom-0 w-32 bg-linear-to-r from-white via-white/80 to-transparent z-10 pointer-events-none"></div>
+          <div className="absolute right-0 top-0 bottom-0 w-32 bg-linear-to-l from-white via-white/80 to-transparent z-10 pointer-events-none"></div>
 
           <div
             className="flex whitespace-nowrap"
@@ -104,7 +105,7 @@ const About: React.FC<AboutProps> = ({ language }) => {
             } as React.CSSProperties}
           >
             {(Array(MARQUEE.REPETITIONS).fill(brandLogos) as BrandLogo[][]).flat().map((brand, index) => (
-              <div key={index} className="inline-flex items-center justify-center mx-16 opacity-100 min-w-[120px] flex-shrink-0">
+              <div key={index} className="inline-flex items-center justify-center mx-16 opacity-100 min-w-30 shrink-0">
                 <img src={brand.src} alt={brand.name} className="h-24 w-auto object-contain" />
               </div>
             ))}

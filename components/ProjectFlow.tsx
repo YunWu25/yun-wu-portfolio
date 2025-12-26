@@ -131,7 +131,7 @@ const ProjectFlow: React.FC<ProjectFlowProps> = ({ language }) => {
       </div>
 
       {/* 3D Three.js Orbital Container */}
-      <div className="relative w-full h-[600px] md:h-[700px] mb-24">
+      <div className="relative w-full h-150 md:h-175 mb-24">
         <Canvas
           camera={{ position: [0, 0, 12], fov: 50 }}
           style={{ background: 'transparent' }}

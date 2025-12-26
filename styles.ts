@@ -72,8 +72,3 @@ export const LAYOUT = {
   contentContainer: 'w-full max-w-6xl mx-auto px-6 md:px-16 py-8 border border-gray-200 rounded-lg',
   flexCenter: 'flex items-center justify-center',
 };
-
-export const MARQUEE = {
-  REPETITIONS: 50,
-  ANIMATION_DURATION: 450,
-} as const;
