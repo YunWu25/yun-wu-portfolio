@@ -38,11 +38,11 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({ photo, onSave }) => {
         ...formData,
       });
       setSaveStatus('success');
-      setTimeout(() => setSaveStatus('idle'), 2000);
+      setTimeout(() => { setSaveStatus('idle'); }, 2000);
     } catch (err) {
       setSaveStatus('error');
       setErrorMessage(err instanceof Error ? err.message : 'Failed to save');
-      setTimeout(() => setSaveStatus('idle'), 3000);
+      setTimeout(() => { setSaveStatus('idle'); }, 3000);
     }
   }, [onSave, photo.key, formData]);
 
@@ -54,7 +54,7 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({ photo, onSave }) => {
       bytes /= 1024;
       i++;
     }
-    return bytes.toFixed(i > 0 ? 1 : 0) + ' ' + units[i];
+    return bytes.toFixed(i > 0 ? 1 : 0) + ' ' + (units[i] ?? 'B');
   };
 
   const formatDate = (isoString: string): string => {
@@ -93,7 +93,7 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({ photo, onSave }) => {
             value={formData.title}
             placeholder="Photo title"
             modified={isModified('title')}
-            onChange={(v) => handleChange('title', v)}
+            onChange={(v) => { handleChange('title', v); }}
           />
           <Field
             label="Alt Text"
@@ -101,7 +101,7 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({ photo, onSave }) => {
             value={formData.alt}
             placeholder="Alt description"
             modified={isModified('alt')}
-            onChange={(v) => handleChange('alt', v)}
+            onChange={(v) => { handleChange('alt', v); }}
           />
           <Field
             label="Artist"
@@ -109,7 +109,7 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({ photo, onSave }) => {
             value={formData.artist}
             placeholder="Artist name"
             modified={isModified('artist')}
-            onChange={(v) => handleChange('artist', v)}
+            onChange={(v) => { handleChange('artist', v); }}
           />
           <Field
             label="Season"
@@ -117,14 +117,14 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({ photo, onSave }) => {
             value={formData.season}
             placeholder="e.g., Fall 2024"
             modified={isModified('season')}
-            onChange={(v) => handleChange('season', v)}
+            onChange={(v) => { handleChange('season', v); }}
           />
         </div>
 
         {/* Actions */}
         <div className="flex items-center gap-3 mt-auto pt-2">
           <button
-            onClick={handleSave}
+            onClick={() => { void handleSave(); }}
             disabled={saveStatus === 'saving' || !hasChanges}
             className={`
               px-4 py-2 rounded-lg text-sm font-medium transition-all
@@ -177,7 +177,7 @@ const Field: React.FC<FieldProps> = ({ label, name, value, placeholder, modified
       type="text"
       value={value}
       placeholder={placeholder}
-      onChange={(e) => onChange(e.target.value)}
+      onChange={(e) => { onChange(e.target.value); }}
       className={`
         px-3 py-2 border rounded-lg text-sm transition-colors
         focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent

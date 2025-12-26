@@ -1,9 +1,45 @@
-import React, { useRef, useState, useMemo } from 'react';
+import React, { useRef, useState, useMemo, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Html } from '@react-three/drei';
 import * as THREE from 'three';
 import { TYPOGRAPHY, COLORS } from '../styles';
 import { Language } from '../App';
+
+// Factory function to create tapered tube geometry
+function createTaperedTubeGeometry(
+  start: [number, number, number],
+  end: [number, number, number]
+): THREE.TubeGeometry {
+  const startVec = new THREE.Vector3(...start);
+  const endVec = new THREE.Vector3(...end);
+  const curve = new THREE.LineCurve3(startVec, endVec);
+  
+  const tubularSegments = 20;
+  const radiusSegments = 6;
+  
+  const geometry = new THREE.TubeGeometry(curve, tubularSegments, 0.02, radiusSegments, false);
+  
+  // Modify radius to taper from thick to thin
+  const positions = geometry.attributes.position as THREE.BufferAttribute | undefined;
+  if (positions) {
+    for (let i = 0; i < positions.count; i++) {
+      const t = Math.floor(i / radiusSegments) / tubularSegments;
+      const scale = 1 - t * 0.7; // 100% at start, 30% at end
+      const pos = new THREE.Vector3(
+        positions.getX(i),
+        positions.getY(i),
+        positions.getZ(i)
+      );
+      const center = curve.getPoint(t);
+      const direction = pos.clone().sub(center);
+      direction.multiplyScalar(scale);
+      positions.setXYZ(i, center.x + direction.x, center.y + direction.y, center.z + direction.z);
+    }
+    positions.needsUpdate = true;
+  }
+  
+  return geometry;
+}
 
 interface Phase {
   title: string;
@@ -23,8 +59,9 @@ const OrbitalSystem: React.FC<OrbitalSystemProps> = ({ phases, expandedPhase, on
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [cardOpacities, setCardOpacities] = useState<number[]>(phases.map(() => 1));
   const cardPositionsRef = useRef<THREE.Vector3[]>(phases.map(() => new THREE.Vector3()));
+  const baseRadius = 5;
 
-  // Rotate the entire system and animate the orb - ALWAYS rotate
+  // Rotate the entire system and animate orb
   useFrame((state, delta) => {
     if (groupRef.current) {
       groupRef.current.rotation.y += delta * 0.1; // Slow continuous rotation
@@ -41,7 +78,8 @@ const OrbitalSystem: React.FC<OrbitalSystemProps> = ({ phases, expandedPhase, on
       
       // Update card opacities based on distance from camera
       const newOpacities = cardPositionsRef.current.map((pos) => {
-        const worldPos = pos.clone().applyMatrix4(groupRef.current!.matrixWorld);
+        if (!groupRef.current) return 1;
+        const worldPos = pos.clone().applyMatrix4(groupRef.current.matrixWorld);
         
         // Distance from camera to card
         const cameraToCardDist = cameraPosition.distanceTo(worldPos);
@@ -66,8 +104,6 @@ const OrbitalSystem: React.FC<OrbitalSystemProps> = ({ phases, expandedPhase, on
       orbRef.current.scale.setScalar(scale);
     }
   });
-
-  const baseRadius = 5;
   
   // Distribute boxes evenly in 3D spherical space
   const positionVariations = useMemo(() => 
@@ -76,14 +112,39 @@ const OrbitalSystem: React.FC<OrbitalSystemProps> = ({ phases, expandedPhase, on
       const phi = Math.acos(-1 + (2 * index) / phases.length); // Polar angle
       const theta = Math.sqrt(phases.length * Math.PI) * phi; // Azimuthal angle
       
+      // Radius variation based on index
+      const radiusVar = 0.9 + ((index * 7) % 10) / 50; // ±10% variation, deterministic
+      
       return {
         phi,
         theta,
-        radiusVar: 0.9 + Math.random() * 0.2, // ±10% radius variation
+        radiusVar,
       };
     }), 
-    [phases.length]
+    [phases]
   );
+
+  // Calculate card positions from variations
+  const cardPositions = useMemo(() => 
+    positionVariations.map((variations) => {
+      const radius = baseRadius * variations.radiusVar;
+      const x = radius * Math.sin(variations.phi) * Math.cos(variations.theta);
+      const y = radius * Math.sin(variations.phi) * Math.sin(variations.theta);
+      const z = radius * Math.cos(variations.phi);
+      return { x, y, z };
+    }),
+    [positionVariations, baseRadius]
+  );
+
+  // Update ref positions in useEffect (not during render)
+  useEffect(() => {
+    cardPositions.forEach((pos, index) => {
+      const posRef = cardPositionsRef.current[index];
+      if (posRef) {
+        posRef.set(pos.x, pos.y, pos.z);
+      }
+    });
+  }, [cardPositions]);
 
   return (
     <group ref={groupRef}>
@@ -111,16 +172,10 @@ const OrbitalSystem: React.FC<OrbitalSystemProps> = ({ phases, expandedPhase, on
 
       {/* Connecting Lines and Phase Cards */}
       {phases.map((phase, index) => {
-        const variations = positionVariations[index];
-        const radius = baseRadius * variations.radiusVar;
+        const pos = cardPositions[index];
+        if (!pos) return null;
         
-        // Convert spherical coordinates to Cartesian for even 3D distribution
-        const x = radius * Math.sin(variations.phi) * Math.cos(variations.theta);
-        const y = radius * Math.sin(variations.phi) * Math.sin(variations.theta);
-        const z = radius * Math.cos(variations.phi);
-        
-        // Store local position for opacity calculations
-        cardPositionsRef.current[index] = new THREE.Vector3(x, y, z);
+        const { x, y, z } = pos;
 
         return (
           <group key={index}>
@@ -138,16 +193,16 @@ const OrbitalSystem: React.FC<OrbitalSystemProps> = ({ phases, expandedPhase, on
               position={[x, y, z]}
               center
               distanceFactor={8}
-              zIndexRange={[cardOpacities[index] < 0.5 ? 0 : 100, cardOpacities[index] < 0.5 ? 0 : 100]}
+              zIndexRange={[(cardOpacities[index] ?? 1) < 0.5 ? 0 : 100, (cardOpacities[index] ?? 1) < 0.5 ? 0 : 100]}
               style={{
                 transition: 'all 0.3s',
                 pointerEvents: 'auto',
               }}
             >
               <div
-                onClick={() => onPhaseClick(index)}
-                onMouseEnter={() => setHoveredIndex(index)}
-                onMouseLeave={() => setHoveredIndex(null)}
+                onClick={() => { onPhaseClick(index); }}
+                onMouseEnter={() => { setHoveredIndex(index); }}
+                onMouseLeave={() => { setHoveredIndex(null); }}
                 className={`
                   cursor-pointer rounded-md border shadow-md hover:shadow-xl
                   ${expandedPhase === index ? 'border-coral shadow-2xl' : 'border-gray-200 hover:border-coral'}
@@ -159,7 +214,7 @@ const OrbitalSystem: React.FC<OrbitalSystemProps> = ({ phases, expandedPhase, on
                   backgroundColor: expandedPhase === index 
                     ? '#ffffff' 
                     : `hsl(${350 + (index % 5) * 5}, 100%, ${98 - (index % 5)}%)`, // Subtle phase-based tints
-                  opacity: cardOpacities[index],
+                  opacity: cardOpacities[index] ?? 1,
                   transition: 'opacity 0.3s ease-out',
                 }}
               >
@@ -207,43 +262,8 @@ const AnimatedLine: React.FC<{
 }> = ({ start, end, color, index }) => {
   const tubeRef = useRef<THREE.Mesh>(null);
   
-  // Create tapered tube geometry (thicker at orb, thinner at card)
-  const tubeGeometry = useMemo(() => {
-    const startVec = new THREE.Vector3(...start);
-    const endVec = new THREE.Vector3(...end);
-    const curve = new THREE.LineCurve3(startVec, endVec);
-    
-    // Create custom tube with varying radius
-    const path = curve;
-    const tubularSegments = 20;
-    const radiusSegments = 6;
-    
-    // Create tapered radius function
-    class TaperedTube extends THREE.TubeGeometry {
-      constructor() {
-        super(path, tubularSegments, 0.02, radiusSegments, false);
-        
-        // Modify radius to taper from thick to thin
-        const positions = this.attributes.position;
-        for (let i = 0; i < positions.count; i++) {
-          const t = Math.floor(i / radiusSegments) / tubularSegments;
-          const scale = 1 - t * 0.7; // 100% at start, 30% at end
-          const pos = new THREE.Vector3(
-            positions.getX(i),
-            positions.getY(i),
-            positions.getZ(i)
-          );
-          const center = path.getPoint(t);
-          const direction = pos.clone().sub(center);
-          direction.multiplyScalar(scale);
-          positions.setXYZ(i, center.x + direction.x, center.y + direction.y, center.z + direction.z);
-        }
-        positions.needsUpdate = true;
-      }
-    }
-    
-    return new TaperedTube();
-  }, [start, end]);
+  // Create tapered tube geometry using factory function
+  const tubeGeometry = useMemo(() => createTaperedTubeGeometry(start, end), [start, end]);
 
   // Animate opacity with a wave effect
   useFrame((state) => {

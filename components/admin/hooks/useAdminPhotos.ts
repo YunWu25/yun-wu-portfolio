@@ -44,7 +44,7 @@ export function useAdminPhotos(): UseAdminPhotosReturn {
       const res = await fetch('/api/admin/photos');
       if (!res.ok) throw new Error('Failed to fetch photos');
       const data: AdminPhotosResponse = await res.json();
-      setPhotos(data.photos || []);
+      setPhotos(data.photos);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');
     } finally {
@@ -53,7 +53,7 @@ export function useAdminPhotos(): UseAdminPhotosReturn {
   }, []);
 
   useEffect(() => {
-    fetchPhotos();
+    void fetchPhotos();
   }, [fetchPhotos]);
 
   // Extract unique seasons for filter dropdown

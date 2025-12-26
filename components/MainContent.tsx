@@ -1,6 +1,51 @@
 
 import React, { useState } from 'react';
-import { Instagram, Linkedin, Mail, Menu, X, ChevronDown } from 'lucide-react';
+import { Mail, Menu, X, ChevronDown } from 'lucide-react';
+
+// Custom SVG icons for Insta and Linkedin
+const InstagramIcon: React.FC<{ size?: number; strokeWidth?: number; className?: string }> = ({ 
+  size = 24, 
+  strokeWidth = 1.5,
+  className = '' 
+}) => (
+  <svg 
+    width={size} 
+    height={size} 
+    viewBox="0 0 24 24" 
+    fill="none" 
+    stroke="currentColor" 
+    strokeWidth={strokeWidth}
+    strokeLinecap="round" 
+    strokeLinejoin="round"
+    className={className}
+  >
+    <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+  </svg>
+);
+
+const LinkedinIcon: React.FC<{ size?: number; strokeWidth?: number; className?: string }> = ({ 
+  size = 24, 
+  strokeWidth = 1.5,
+  className = '' 
+}) => (
+  <svg 
+    width={size} 
+    height={size} 
+    viewBox="0 0 24 24" 
+    fill="none" 
+    stroke="currentColor" 
+    strokeWidth={strokeWidth}
+    strokeLinecap="round" 
+    strokeLinejoin="round"
+    className={className}
+  >
+    <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+    <rect x="2" y="9" width="4" height="12" />
+    <circle cx="4" cy="4" r="2" />
+  </svg>
+);
 import { ViewState, NavItem } from '../types';
 import { WaveDecoration } from './WaveDecoration';
 import ProjectFlow from './ProjectFlow';
@@ -81,7 +126,7 @@ const MainContent: React.FC<MainContentProps> = ({ activeView, onNavigate, langu
         <div className="absolute top-4 right-4 z-20">
           <div className="bg-white px-3 py-1.5 rounded-md border border-gray-200 shadow-sm flex items-center gap-2">
             <button
-              onClick={() => setLanguage('en')}
+              onClick={() => { setLanguage('en'); }}
               className={`px-2 py-1 rounded transition-colors text-sm ${
                 language === 'en'
                   ? 'bg-coral text-white'
@@ -92,7 +137,7 @@ const MainContent: React.FC<MainContentProps> = ({ activeView, onNavigate, langu
             </button>
             <span className="text-gray-300">|</span>
             <button
-              onClick={() => setLanguage('zh')}
+              onClick={() => { setLanguage('zh'); }}
               className={`px-2 py-1 rounded transition-colors text-sm ${
                 language === 'zh'
                   ? 'bg-coral text-white'
@@ -155,7 +200,7 @@ const MainContent: React.FC<MainContentProps> = ({ activeView, onNavigate, langu
                       {homeSubItems.map((subItem) => (
                         <button
                           key={subItem.label}
-                          onClick={() => onNavigate(subItem.view)}
+                          onClick={() => { onNavigate(subItem.view); }}
                           className="flex items-center group w-fit text-left focus:outline-none"
                         >
                           <span
@@ -183,7 +228,7 @@ const MainContent: React.FC<MainContentProps> = ({ activeView, onNavigate, langu
 
           {/* Center Column: Title */}
           <div className="flex flex-col items-center justify-center h-full">
-            <button onClick={() => onNavigate(ViewState.HOME)} className="text-center group">
+            <button onClick={() => { onNavigate(ViewState.HOME); }} className="text-center group">
               <h1 className={`${TYPOGRAPHY.h1} group-hover:opacity-90 transition-opacity whitespace-nowrap`}>
                 {getCenterTitle()}
               </h1>
@@ -199,16 +244,16 @@ const MainContent: React.FC<MainContentProps> = ({ activeView, onNavigate, langu
               <Mail size={32} strokeWidth={1.5} />
             </a>
             <a href="https://instagram.com/yun___wu" target="_blank" rel="noreferrer" className={`${COLORS.coral} hover:scale-110 transition-transform p-1`}>
-              <Instagram size={32} strokeWidth={1.5} />
+              <InstagramIcon size={32} strokeWidth={1.5} />
             </a>
             <a href="https://linkedin.com/in/yun-w-0532b5190" target="_blank" rel="noreferrer" className={`${COLORS.coral} hover:scale-110 transition-transform p-1`}>
-              <Linkedin size={32} strokeWidth={1.5} />
+              <LinkedinIcon size={32} strokeWidth={1.5} />
             </a>
           </div>
 
           {/* Mobile Menu Toggle */}
           <div className="md:hidden absolute top-8 left-8">
-            <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="text-gray-800">
+            <button onClick={() => { setIsMobileMenuOpen(!isMobileMenuOpen); }} className="text-gray-800">
               {isMobileMenuOpen ? <X size={32} /> : <Menu size={32} />}
             </button>
           </div>
@@ -217,7 +262,7 @@ const MainContent: React.FC<MainContentProps> = ({ activeView, onNavigate, langu
         {/* === MOBILE NAV OVERLAY === */}
         {isMobileMenuOpen && (
           <div className="absolute inset-0 bg-white z-50 flex flex-col items-center justify-center space-y-8 md:hidden">
-            <button onClick={() => setIsMobileMenuOpen(false)} className="absolute top-8 right-8">
+            <button onClick={() => { setIsMobileMenuOpen(false); }} className="absolute top-8 right-8">
               <X size={32} />
             </button>
             {navItems.map((item) => (
@@ -257,13 +302,13 @@ const MainContent: React.FC<MainContentProps> = ({ activeView, onNavigate, langu
               <span className="hidden md:inline text-gray-200 self-center">|</span>
               {/* Instagram */}
               <a href="https://instagram.com/yun___wu" target="_blank" rel="noreferrer" className="flex flex-col items-center gap-2 group">
-                <Instagram size={24} strokeWidth={1.5} className={`${COLORS.coral} md:hidden group-hover:scale-110 transition-transform`} />
+                <InstagramIcon size={24} strokeWidth={1.5} className={`${COLORS.coral} md:hidden group-hover:scale-110 transition-transform`} />
                 <span className={`hover:text-coral hover:underline transition-colors ${TYPOGRAPHY.small}`}>INSTAGRAM</span>
               </a>
               <span className="hidden md:inline text-gray-200 self-center">|</span>
               {/* LinkedIn */}
               <a href="https://linkedin.com/in/yun-w-0532b5190" target="_blank" rel="noreferrer" className="flex flex-col items-center gap-2 group">
-                <Linkedin size={24} strokeWidth={1.5} className={`${COLORS.coral} md:hidden group-hover:scale-110 transition-transform`} />
+                <LinkedinIcon size={24} strokeWidth={1.5} className={`${COLORS.coral} md:hidden group-hover:scale-110 transition-transform`} />
                 <span className={`hover:text-coral hover:underline transition-colors ${TYPOGRAPHY.small}`}>LINKEDIN</span>
               </a>
             </div>

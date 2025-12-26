@@ -6,7 +6,12 @@ interface AboutProps {
   language: Language;
 }
 
-const brandLogos = [
+interface BrandLogo {
+  name: string;
+  src: string;
+}
+
+const brandLogos: BrandLogo[] = [
   { name: 'BELLE', src: 'images/brand-logo/BELLE.svg' },
   { name: 'Chinese Radio Seattle', src: 'images/brand-logo/chinese-radio-seattle.svg' },
   { name: 'Joy Moving', src: 'images/brand-logo/JOY-MOVING.svg' },
@@ -95,10 +100,10 @@ const About: React.FC<AboutProps> = ({ language }) => {
             className="flex whitespace-nowrap"
             style={{
               animation: `marquee ${MARQUEE.ANIMATION_DURATION}s linear infinite`,
-              ['--marquee-distance' as any]: `${-100 * MARQUEE.REPETITIONS}%`,
-            }}
+              '--marquee-distance': `${-100 * MARQUEE.REPETITIONS}%`,
+            } as React.CSSProperties}
           >
-            {Array(MARQUEE.REPETITIONS).fill(brandLogos).flat().map((brand, index) => (
+            {(Array(MARQUEE.REPETITIONS).fill(brandLogos) as BrandLogo[][]).flat().map((brand, index) => (
               <div key={index} className="inline-flex items-center justify-center mx-16 opacity-100 min-w-[120px] flex-shrink-0">
                 <img src={brand.src} alt={brand.name} className="h-24 w-auto object-contain" />
               </div>

@@ -44,7 +44,7 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
       }
     };
 
-    fetchPhotos();
+    void fetchPhotos();
   }, []);
 
   // Handle responsive column count
@@ -61,13 +61,14 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
 
     updateColumnCount();
     window.addEventListener('resize', updateColumnCount);
-    return () => window.removeEventListener('resize', updateColumnCount);
+    return () => { window.removeEventListener('resize', updateColumnCount); };
   }, []);
 
   const splitPhotosIntoColumns = (count: number) => {
     const columns: PhotoData[][] = Array.from({ length: count }, () => []);
     photos.forEach((photo, index) => {
-      columns[index % count].push(photo);
+      const columnIndex = index % count;
+      columns[columnIndex]?.push(photo);
     });
     // Triple the photos for infinite scroll effect
     return columns.map(col => [...col, ...col, ...col]);
@@ -142,11 +143,11 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
         <div className="flex flex-col justify-center items-center h-[50vh] text-center">
           <p className="text-gray-500 mb-4">
             {language === 'en' 
-              ? error || 'No photos available at the moment.' 
-              : error || '暂时没有可用的照片。'}
+              ? error ?? 'No photos available at the moment.' 
+              : error ?? '暂时没有可用的照片。'}
           </p>
           <button 
-            onClick={() => window.location.reload()}
+            onClick={() => { window.location.reload(); }}
             className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm transition-colors"
           >
             {language === 'en' ? 'Try Again' : '重试'}

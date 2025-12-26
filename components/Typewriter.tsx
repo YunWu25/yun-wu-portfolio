@@ -15,15 +15,20 @@ const Typewriter: React.FC<TypewriterProps> = ({ text, className = '', startDela
 
   // Reset state when text or startDelay changes (or component remounts)
   useEffect(() => {
-    setDisplayedText('');
+    const resetId = requestAnimationFrame(() => {
+      setDisplayedText('');
+      setStarted(false);
+    });
     indexRef.current = 0;
-    setStarted(false);
 
     const startTimeout = setTimeout(() => {
       setStarted(true);
     }, startDelay);
 
-    return () => clearTimeout(startTimeout);
+    return () => { 
+      cancelAnimationFrame(resetId);
+      clearTimeout(startTimeout); 
+    };
   }, [startDelay, text]);
 
   // Typing Logic
@@ -50,7 +55,7 @@ const Typewriter: React.FC<TypewriterProps> = ({ text, className = '', startDela
     // Start typing the first character immediately
     typeCharacter();
 
-    return () => clearTimeout(timeoutId);
+    return () => { clearTimeout(timeoutId); };
   }, [text, started]);
 
   return (

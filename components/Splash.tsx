@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Typewriter from './Typewriter';
 import { ChevronDown } from 'lucide-react';
 import { TYPOGRAPHY, COLORS } from '../styles';
@@ -14,12 +14,22 @@ interface SplashProps {
 const Splash: React.FC<SplashProps> = ({ isVisible, onDismiss, language }) => {
   // Key to force re-render (and thus reset) of Typewriter component
   const [typewriterKey, setTypewriterKey] = useState(0);
+  const wasVisibleRef = useRef(false);
 
   useEffect(() => {
-    // When splash becomes visible, increment key to restart typing animation
-    if (isVisible) {
-      setTypewriterKey(prev => prev + 1);
+    // When splash becomes visible (transition from false to true), increment key
+    if (isVisible && !wasVisibleRef.current) {
+      // Use requestAnimationFrame to defer setState (not synchronous in effect body)
+      const id = requestAnimationFrame(() => {
+        setTypewriterKey(prev => prev + 1);
+      });
+      wasVisibleRef.current = true;
+      return () => { cancelAnimationFrame(id); };
     }
+    if (!isVisible) {
+      wasVisibleRef.current = false;
+    }
+    return undefined;
   }, [isVisible]);
 
   return (

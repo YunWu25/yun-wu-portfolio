@@ -66,7 +66,7 @@ const AppContent: React.FC = () => {
   // Handle Navigation Logic
   const handleNavigate = (view: ViewState) => {
     const path = viewToPath[view];
-    navigate(path);
+    void navigate(path);
     if (showSplash) {
       setShowSplash(false);
     }
@@ -99,14 +99,17 @@ const AppContent: React.FC = () => {
   // Touch Handler for Mobile
   const [touchStart, setTouchStart] = useState<number | null>(null);
 
-  const handleTouchStart = (e: TouchEvent) => {
-    setTouchStart(e.touches[0].clientY);
-  };
+  const handleTouchStart = useCallback((e: TouchEvent) => {
+    setTouchStart(e.touches[0]?.clientY ?? null);
+  }, []);
 
   const handleTouchMove = useCallback((e: TouchEvent) => {
     if (touchStart === null) return;
 
-    const currentY = e.touches[0].clientY;
+    const touch = e.touches[0];
+    if (!touch) return;
+    
+    const currentY = touch.clientY;
     const diff = touchStart - currentY;
     const now = Date.now();
 
@@ -148,7 +151,7 @@ const AppContent: React.FC = () => {
       {/* Overlay Splash Screen */}
       <Splash
         isVisible={showSplash}
-        onDismiss={() => setShowSplash(false)}
+        onDismiss={() => { setShowSplash(false); }}
         language={language}
       />
 
