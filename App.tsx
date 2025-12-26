@@ -1,8 +1,9 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { BrowserRouter, useLocation, useNavigate } from 'react-router-dom';
+import { BrowserRouter, useLocation, useNavigate, Routes, Route } from 'react-router-dom';
 import Splash from './components/Splash';
 import MainContent from './components/MainContent';
+import { PhotoManager } from './components/admin/PhotoManager';
 import { ViewState } from './types';
 
 export type Language = 'en' | 'zh';
@@ -169,7 +170,10 @@ const AppContent: React.FC = () => {
 const App: React.FC = () => {
   return (
     <BrowserRouter>
-      <AppContent />
+      <Routes>
+        <Route path="/admin/*" element={<PhotoManager />} />
+        <Route path="*" element={<AppContent />} />
+      </Routes>
     </BrowserRouter>
   );
 };

@@ -33,21 +33,24 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       include: ["customMetadata", "httpMetadata"]
     } as R2ListOptions & { include: string[] });
 
-    const photos: PhotoData[] = listed.objects.map((obj) => {
-      const filename = obj.key.split("/").pop() || obj.key;
-      const customMeta = obj.customMetadata || {};
+    const photos: PhotoData[] = listed.objects
+      // Filter out directory prefixes (they have size 0 and end with /)
+      .filter((obj) => obj.size > 0 && !obj.key.endsWith('/'))
+      .map((obj) => {
+        const filename = obj.key.split("/").pop() || obj.key;
+        const customMeta = obj.customMetadata || {};
 
-      return {
-        key: obj.key,
-        url: `https://media.yunwustudio.com/${obj.key}`,
-        title: customMeta.title || "",
-        alt: customMeta.alt || filename,
-        artist: customMeta.artist || "",
-        season: customMeta.season || "",
-        size: obj.size,
-        uploaded: obj.uploaded.toISOString()
-      };
-    });
+        return {
+          key: obj.key,
+          url: `https://media.yunwustudio.com/${obj.key}`,
+          title: customMeta.title || "",
+          alt: customMeta.alt || filename,
+          artist: customMeta.artist || "",
+          season: customMeta.season || "",
+          size: obj.size,
+          uploaded: obj.uploaded.toISOString()
+        };
+      });
 
     return new Response(JSON.stringify({ photos }), {
       headers: {
