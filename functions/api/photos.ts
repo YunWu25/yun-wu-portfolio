@@ -16,7 +16,10 @@ interface PhotoData {
 
 export const onRequestGet: PagesFunction<Env> = async (context) => {
   try {
-    const listed = await context.env.PHOTOGRAPHY.list({ prefix: "public/images/" });
+    const listed = await context.env.PHOTOGRAPHY.list({ 
+      prefix: "public/images/",
+      include: ["customMetadata", "httpMetadata"]
+    } as R2ListOptions & { include: string[] });
 
     const photos: PhotoData[] = listed.objects.map((obj) => {
       const filename = obj.key.split("/").pop() || obj.key;

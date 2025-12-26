@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Photo Admin - Yun Wu Studio</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f5f5f5;
+      color: #333;
+      line-height: 1.5;
+    }
+    
+    .header {
+      background: #fff;
+      border-bottom: 1px solid #e0e0e0;
+      padding: 1rem 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .header h1 {
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+    
+    .header a {
+      color: #666;
+      text-decoration: none;
+      font-size: 0.875rem;
+    }
+    
+    .header a:hover { color: #000; }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+    
+    .status-bar {
+      background: #fff;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    .photo-count { color: #666; font-size: 0.875rem; }
+    
+    .refresh-btn {
+      background: #f0f0f0;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.875rem;
+    }
+    
+    .refresh-btn:hover { background: #e0e0e0; }
+    
+    .photo-grid {
+      display: grid;
+      gap: 1.5rem;
+    }
+    
+    .photo-card {
+      background: #fff;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      display: grid;
+      grid-template-columns: 200px 1fr;
+    }
+    
+    @media (max-width: 768px) {
+      .photo-card { grid-template-columns: 1fr; }
+    }
+    
+    .photo-thumbnail {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      background: #f0f0f0;
+    }
+    
+    .photo-details {
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    
+    .photo-key {
+      font-size: 0.75rem;
+      color: #999;
+      word-break: break-all;
+      font-family: monospace;
+    }
+    
+    .field-group {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+    
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+    
+    .field label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .field input {
+      padding: 0.5rem 0.75rem;
+      border: 1px solid #e0e0e0;
+      border-radius: 6px;
+      font-size: 0.875rem;
+      transition: border-color 0.2s;
+    }
+    
+    .field input:focus {
+      outline: none;
+      border-color: #333;
+    }
+    
+    .field input.modified {
+      border-color: #f59e0b;
+      background: #fffbeb;
+    }
+    
+    .actions {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      margin-top: auto;
+    }
+    
+    .save-btn {
+      background: #333;
+      color: #fff;
+      border: none;
+      padding: 0.5rem 1.25rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.875rem;
+      transition: background 0.2s;
+    }
+    
+    .save-btn:hover { background: #000; }
+    .save-btn:disabled { background: #ccc; cursor: not-allowed; }
+    
+    .save-btn.saving { background: #666; }
+    .save-btn.success { background: #22c55e; }
+    .save-btn.error { background: #ef4444; }
+    
+    .status-text {
+      font-size: 0.75rem;
+      color: #666;
+    }
+    
+    .loading {
+      text-align: center;
+      padding: 4rem;
+      color: #666;
+    }
+    
+    .error-message {
+      background: #fef2f2;
+      color: #dc2626;
+      padding: 1rem;
+      border-radius: 8px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <h1>📷 Photo Metadata Admin</h1>
+    <a href="/" target="_blank">← Back to Site</a>
+  </header>
+  
+  <main class="container">
+    <div class="status-bar">
+      <span class="photo-count" id="photoCount">Loading...</span>
+      <button class="refresh-btn" onclick="loadPhotos()">↻ Refresh</button>
+    </div>
+    
+    <div id="photoGrid" class="photo-grid">
+      <div class="loading">Loading photos...</div>
+    </div>
+  </main>
+
+  <script>
+    let originalData = {};
+    
+    async function loadPhotos() {
+      const grid = document.getElementById('photoGrid');
+      const countEl = document.getElementById('photoCount');
+      
+      grid.innerHTML = '<div class="loading">Loading photos...</div>';
+      
+      try {
+        const res = await fetch('/api/admin/photos');
+        if (!res.ok) throw new Error('Failed to fetch');
+        
+        const data = await res.json();
+        const photos = data.photos || [];
+        
+        countEl.textContent = `${photos.length} photo${photos.length !== 1 ? 's' : ''}`;
+        
+        if (photos.length === 0) {
+          grid.innerHTML = '<div class="loading">No photos found in R2 bucket.</div>';
+          return;
+        }
+        
+        grid.innerHTML = photos.map(photo => {
+          // Store original data for change detection
+          originalData[photo.key] = {
+            title: photo.title,
+            alt: photo.alt,
+            artist: photo.artist,
+            season: photo.season
+          };
+          
+          return `
+            <div class="photo-card" data-key="${escapeHtml(photo.key)}">
+              <img 
+                class="photo-thumbnail" 
+                src="${escapeHtml(photo.url)}" 
+                alt="${escapeHtml(photo.alt)}"
+                loading="lazy"
+              />
+              <div class="photo-details">
+                <div class="photo-key">${escapeHtml(photo.key)}</div>
+                <div class="field-group">
+                  <div class="field">
+                    <label>Title</label>
+                    <input type="text" name="title" value="${escapeHtml(photo.title)}" 
+                           placeholder="Photo title" oninput="markModified(this)">
+                  </div>
+                  <div class="field">
+                    <label>Alt Text</label>
+                    <input type="text" name="alt" value="${escapeHtml(photo.alt)}" 
+                           placeholder="Alt description" oninput="markModified(this)">
+                  </div>
+                  <div class="field">
+                    <label>Artist</label>
+                    <input type="text" name="artist" value="${escapeHtml(photo.artist)}" 
+                           placeholder="Artist name" oninput="markModified(this)">
+                  </div>
+                  <div class="field">
+                    <label>Season</label>
+                    <input type="text" name="season" value="${escapeHtml(photo.season)}" 
+                           placeholder="e.g., Fall 2024" oninput="markModified(this)">
+                  </div>
+                </div>
+                <div class="actions">
+                  <button class="save-btn" onclick="savePhoto(this)">Save</button>
+                  <span class="status-text"></span>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+        
+      } catch (err) {
+        console.error('Error loading photos:', err);
+        grid.innerHTML = `<div class="error-message">Failed to load photos. Please try again.</div>`;
+      }
+    }
+    
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+    }
+    
+    function markModified(input) {
+      const card = input.closest('.photo-card');
+      const key = card.dataset.key;
+      const original = originalData[key];
+      const currentValue = input.value;
+      const fieldName = input.name;
+      
+      if (original && original[fieldName] !== currentValue) {
+        input.classList.add('modified');
+      } else {
+        input.classList.remove('modified');
+      }
+    }
+    
+    async function savePhoto(btn) {
+      const card = btn.closest('.photo-card');
+      const key = card.dataset.key;
+      const statusText = card.querySelector('.status-text');
+      
+      const data = {
+        key: key,
+        title: card.querySelector('input[name="title"]').value,
+        alt: card.querySelector('input[name="alt"]').value,
+        artist: card.querySelector('input[name="artist"]').value,
+        season: card.querySelector('input[name="season"]').value
+      };
+      
+      btn.disabled = true;
+      btn.classList.add('saving');
+      btn.textContent = 'Saving...';
+      statusText.textContent = '';
+      
+      try {
+        const res = await fetch('/api/admin/photos', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        
+        if (!res.ok) {
+          const err = await res.json();
+          throw new Error(err.error || 'Failed to save');
+        }
+        
+        // Update original data after successful save
+        originalData[key] = {
+          title: data.title,
+          alt: data.alt,
+          artist: data.artist,
+          season: data.season
+        };
+        
+        // Clear modified state from all inputs
+        card.querySelectorAll('input.modified').forEach(input => {
+          input.classList.remove('modified');
+        });
+        
+        btn.classList.remove('saving');
+        btn.classList.add('success');
+        btn.textContent = '✓ Saved';
+        statusText.textContent = 'Metadata updated';
+        
+        setTimeout(() => {
+          btn.classList.remove('success');
+          btn.textContent = 'Save';
+          btn.disabled = false;
+        }, 2000);
+        
+      } catch (err) {
+        console.error('Error saving:', err);
+        btn.classList.remove('saving');
+        btn.classList.add('error');
+        btn.textContent = '✗ Error';
+        statusText.textContent = err.message;
+        
+        setTimeout(() => {
+          btn.classList.remove('error');
+          btn.textContent = 'Save';
+          btn.disabled = false;
+        }, 3000);
+      }
+    }
+    
+    // Load photos on page load
+    loadPhotos();
+  </script>
+</body>
+</html>

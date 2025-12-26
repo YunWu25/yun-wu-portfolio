@@ -120,7 +120,9 @@ yun-wu-portfolio/
 │
 ├── functions/
 │   └── api/
-│       └── photos.ts       # API endpoint for dynamic photo listing
+│       ├── photos.ts       # Public API for photo listing
+│       └── admin/
+│           └── photos.ts   # Admin API for metadata management
 │
 ├── components/
 │   ├── Splash.tsx          # Animated splash screen
@@ -135,6 +137,8 @@ yun-wu-portfolio/
 │   └── WaveDecoration.tsx  # Wave decoration
 │
 ├── public/
+│   ├── admin/
+│   │   └── index.html      # Admin portal UI
 │   └── images/
 │       ├── about-page-yun.jpg
 │       └── brand-logo/     # 9 brand partner logos
@@ -165,6 +169,12 @@ npm run build
 ```
 
 The build output will be in the `dist/` directory.
+
+---
+
+## Admin Portal
+
+Photo metadata editor at `/admin/`. Protect with Cloudflare Access (Zero Trust → Access → Applications → add path `admin` with email allowlist).
 
 ---
 
