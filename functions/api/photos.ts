@@ -21,7 +21,16 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       include: ["customMetadata", "httpMetadata"]
     } as R2ListOptions & { include: string[] });
 
-    const photos: PhotoData[] = listed.objects.map((obj) => {
+    // Filter out directory entries and non-image files
+    const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.avif'];
+    const imageObjects = listed.objects.filter((obj) => {
+      const key = obj.key.toLowerCase();
+      // Exclude directory markers (keys ending with /) and non-image files
+      if (key.endsWith('/')) return false;
+      return imageExtensions.some(ext => key.endsWith(ext));
+    });
+
+    const photos: PhotoData[] = imageObjects.map((obj) => {
       const filename = obj.key.split("/").pop() || obj.key;
       
       // R2 custom metadata (will use defaults until metadata is set per-photo)
