@@ -100,7 +100,7 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
             <img
               src={photo.url}
               alt={photo.alt}
-              className="w-full h-auto object-cover transition-opacity duration-300 group-hover:opacity-60"
+              className="w-full h-auto object-cover transition-opacity duration-300 group-hover:opacity-90"
               loading="lazy"
             />
             {/* Hover overlay - gradient only at bottom */}
