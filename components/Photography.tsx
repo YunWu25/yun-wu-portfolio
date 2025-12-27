@@ -158,9 +158,9 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
   }
 
   return (
-    <div id="photography-root" data-debug="photography-root" className="w-full">
-      <div id="photography-header" data-debug="photography-header" className="mb-12 text-center">
-        <p data-debug="photography-intro" className={`${TYPOGRAPHY.body} ${COLORS.gray500}`}>
+    <div id="photography-root" className="w-full">
+      <div id="photography-header" className="mb-12 text-center">
+        <p className={`${TYPOGRAPHY.body} ${COLORS.gray500}`}>
           {intro}
         </p>
       </div>
