@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Language } from '../App';
 import { TYPOGRAPHY, COLORS } from '../styles';
 
@@ -6,109 +6,147 @@ interface VideoProps {
   language: Language;
 }
 
-interface VideoProject {
+interface VideoData {
   id: string;
   title: string;
+  description: string;
+  publishedAt: string;
   year: string;
-  imageUrl: string;
-  link?: string;
+  thumbnailUrl: string;
+  videoUrl: string;
+}
+
+interface VideosApiResponse {
+  videos: VideoData[];
+  totalResults: number;
 }
 
 const Video: React.FC<VideoProps> = ({ language }) => {
-  // Sample video projects - replace with actual data
-  const videoProjects: VideoProject[] = [
-    {
-      id: '1',
-      title: language === 'en' ? 'Brand Video' : '品牌影片',
-      year: '2025',
-      imageUrl: 'https://images.unsplash.com/photo-1485846234645-a62644f84728?w=800&h=600',
-    },
-    {
-      id: '2',
-      title: language === 'en' ? 'Documentary' : '纪录片',
-      year: '2024',
-      imageUrl: 'https://images.unsplash.com/photo-1478720568477-152d9b164e26?w=800&h=600',
-    },
-    {
-      id: '3',
-      title: language === 'en' ? 'Commercial' : '商业广告',
-      year: '2024',
-      imageUrl: 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=800&h=600',
-    },
-    {
-      id: '4',
-      title: language === 'en' ? 'Short Video' : '短片',
-      year: '2024',
-      imageUrl: 'https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=800&h=600',
-    },
-    {
-      id: '5',
-      title: language === 'en' ? 'Music Video' : '音乐录影',
-      year: '2023',
-      imageUrl: 'https://images.unsplash.com/photo-1598899134739-24c46f58b8c0?w=800&h=600',
-    },
-    {
-      id: '6',
-      title: language === 'en' ? 'Event Coverage' : '活动纪录',
-      year: '2023',
-      imageUrl: 'https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=800&h=600',
-    },
-  ];
+  const [videos, setVideos] = useState<VideoData[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchVideos = async () => {
+      try {
+        const response = await fetch('/api/videos');
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data: VideosApiResponse = await response.json();
+        if (data.videos.length > 0) {
+          setVideos(data.videos);
+          setError(null);
+        } else {
+          setError('No videos available');
+        }
+      } catch (err) {
+        console.error('Failed to fetch videos:', err);
+        setError('Failed to load videos. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    void fetchVideos();
+  }, []);
+
+  const intro = language === 'en'
+    ? 'A collection of cinematic work exploring visual storytelling through film and video.'
+    : '通过影片和视频探索视觉叙事的电影作品集。';
+
+  if (loading) {
+    return (
+      <div className="w-full">
+        <div className="mb-12 text-center">
+          <p className={`${TYPOGRAPHY.body} ${COLORS.gray500}`}>{intro}</p>
+        </div>
+        <div className="flex justify-center items-center h-[50vh]">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || videos.length === 0) {
+    return (
+      <div className="w-full">
+        <div className="mb-12 text-center">
+          <p className={`${TYPOGRAPHY.body} ${COLORS.gray500}`}>{intro}</p>
+        </div>
+        <div className="flex flex-col justify-center items-center h-[50vh] text-center">
+          <p className="text-gray-500 mb-4">
+            {language === 'en' 
+              ? error ?? 'No videos available at the moment.' 
+              : error ?? '暂时没有可用的视频。'}
+          </p>
+          <button 
+            onClick={() => { window.location.reload(); }}
+            className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm transition-colors"
+          >
+            {language === 'en' ? 'Try Again' : '重试'}
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full">
       {/* Page Header */}
       <div className="mb-12 text-center">
         <p className={`${TYPOGRAPHY.body} ${COLORS.gray500}`}>
-          {language === 'en'
-            ? 'A collection of cinematic work exploring visual storytelling through film and video.'
-            : '通过影片和视频探索视觉叙事的电影作品集。'}
+          {intro}
         </p>
       </div>
 
       {/* Two Column Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-        {videoProjects.map((project) => (
-          <div
-            key={project.id}
-            className="group relative overflow-hidden rounded-lg cursor-pointer bg-gray-100 aspect-[4/3]"
+        {videos.map((video) => (
+          <a
+            key={video.id}
+            href={video.videoUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group relative overflow-hidden rounded-lg cursor-pointer bg-gray-100 aspect-video"
           >
-            {/* Image */}
+            {/* Thumbnail */}
             <img
-              src={project.imageUrl}
-              alt={project.title}
+              src={video.thumbnailUrl}
+              alt={video.title}
               className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+              loading="lazy"
             />
             
-            {/* Overlay */}
+            {/* Play button overlay */}
+            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              <div className="w-16 h-16 bg-white/90 rounded-full flex items-center justify-center shadow-lg">
+                <svg className="w-8 h-8 text-gray-900 ml-1" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M8 5v14l11-7z"/>
+                </svg>
+              </div>
+            </div>
+            
+            {/* Hover overlay with info */}
             <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
               <div className="absolute bottom-0 left-0 right-0 p-6">
-                <h3 className={`${TYPOGRAPHY.cardOverlayTitle} mb-2`}>
-                  {project.title}
+                <h3 className={`${TYPOGRAPHY.cardOverlayTitle} mb-2 line-clamp-2`}>
+                  {video.title}
                 </h3>
                 <p className={TYPOGRAPHY.cardOverlayMeta}>
-                  {project.year}
+                  {video.year}
                 </p>
               </div>
             </div>
 
             {/* Always visible title overlay (minimal) */}
             <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6 bg-linear-to-t from-black/50 to-transparent group-hover:opacity-0 transition-opacity duration-300">
-              <h3 className={TYPOGRAPHY.cardTitle}>
-                {project.title}
+              <h3 className={`${TYPOGRAPHY.cardTitle} line-clamp-2`}>
+                {video.title}
               </h3>
             </div>
-          </div>
+          </a>
         ))}
-      </div>
-
-      {/* Optional: Add more content message */}
-      <div className="mt-16 text-center">
-        <p className={`${TYPOGRAPHY.bodySmall} text-gray-400`}>
-          {language === 'en'
-            ? 'More projects coming soon...'
-            : '更多项目即将推出...'}
-        </p>
       </div>
     </div>
   );

@@ -33,3 +33,4 @@ dist-ssr
 
 # Wrangler (Cloudflare local dev)
 .wrangler/
+.dev.vars
