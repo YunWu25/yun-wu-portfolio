@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Mail, Menu, X, ChevronDown } from 'lucide-react';
-import { FaInstagram, FaLinkedin } from 'react-icons/fa';
+import { FaInstagram } from 'react-icons/fa';
 import { ViewState, NavItem } from '../types';
 import { WaveDecoration } from './WaveDecoration';
 import ProjectFlow from './ProjectFlow';
@@ -12,6 +12,30 @@ import About from './About';
 import Home from './Home';
 import { COLORS, TYPOGRAPHY, LAYOUT } from '../styles';
 import { Language } from '../App';
+
+// Custom outline LinkedIn icon to match Mail icon style
+const LinkedInOutline: React.FC<{ size?: number; strokeWidth?: number; className?: string }> = ({ 
+  size = 24, 
+  strokeWidth = 1.5, 
+  className = '' 
+}) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={strokeWidth}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+  >
+    <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+    <rect width="4" height="12" x="2" y="9" />
+    <circle cx="4" cy="4" r="2" />
+  </svg>
+);
 
 interface MainContentProps {
   activeView: ViewState;
@@ -203,7 +227,7 @@ const MainContent: React.FC<MainContentProps> = ({ activeView, onNavigate, langu
               <FaInstagram size={30} />
             </a>
             <a href="https://linkedin.com/in/yun-w-0532b5190" target="_blank" rel="noreferrer" className={`${COLORS.coral} hover:scale-110 transition-transform p-1`}>
-              <FaLinkedin size={30} />
+              <LinkedInOutline size={30} strokeWidth={1.5} />
             </a>
           </div>
 
@@ -264,7 +288,7 @@ const MainContent: React.FC<MainContentProps> = ({ activeView, onNavigate, langu
               <span className="hidden md:inline text-gray-200 self-center">|</span>
               {/* LinkedIn */}
               <a href="https://linkedin.com/in/yun-w-0532b5190" target="_blank" rel="noreferrer" className="flex flex-col items-center gap-2 group">
-                <FaLinkedin size={22} className={`${COLORS.coral} md:hidden group-hover:scale-110 transition-transform`} />
+                <LinkedInOutline size={22} strokeWidth={1.5} className={`${COLORS.coral} md:hidden group-hover:scale-110 transition-transform`} />
                 <span className={`hover:text-coral hover:underline transition-colors ${TYPOGRAPHY.small}`}>LINKEDIN</span>
               </a>
             </div>
