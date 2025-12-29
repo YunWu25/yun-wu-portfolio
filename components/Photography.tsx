@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { TYPOGRAPHY, COLORS } from '../styles';
 import { Language } from '../App';
+import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface PhotoData {
   key: string;
@@ -20,6 +21,7 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
   const [photos, setPhotos] = useState<PhotoData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedPhotoIndex, setSelectedPhotoIndex] = useState<number | null>(null);
 
   // Fetch photos from API
   useEffect(() => {
@@ -64,6 +66,57 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
     return () => { window.removeEventListener('resize', updateColumnCount); };
   }, []);
 
+  // Keyboard navigation for lightbox
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    if (selectedPhotoIndex === null) return;
+    
+    if (e.key === 'Escape') {
+      setSelectedPhotoIndex(null);
+    } else if (e.key === 'ArrowRight') {
+      setSelectedPhotoIndex((prev) => 
+        prev !== null ? (prev + 1) % photos.length : null
+      );
+    } else if (e.key === 'ArrowLeft') {
+      setSelectedPhotoIndex((prev) => 
+        prev !== null ? (prev - 1 + photos.length) % photos.length : null
+      );
+    }
+  }, [selectedPhotoIndex, photos.length]);
+
+  useEffect(() => {
+    if (selectedPhotoIndex !== null) {
+      document.addEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = 'hidden';
+    }
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = '';
+    };
+  }, [selectedPhotoIndex, handleKeyDown]);
+
+  const openLightbox = (photoKey: string) => {
+    const index = photos.findIndex(p => p.key === photoKey);
+    if (index !== -1) {
+      setSelectedPhotoIndex(index);
+    }
+  };
+
+  const closeLightbox = () => {
+    setSelectedPhotoIndex(null);
+  };
+
+  const goToNext = () => {
+    setSelectedPhotoIndex((prev) => 
+      prev !== null ? (prev + 1) % photos.length : null
+    );
+  };
+
+  const goToPrev = () => {
+    setSelectedPhotoIndex((prev) => 
+      prev !== null ? (prev - 1 + photos.length) % photos.length : null
+    );
+  };
+
   const splitPhotosIntoColumns = (count: number) => {
     const columns: PhotoData[][] = Array.from({ length: count }, () => []);
     photos.forEach((photo, index) => {
@@ -88,6 +141,7 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
           <div
             key={`col${columnIndex}-${photo.key}-${index}`}
             className="rounded-lg overflow-hidden shadow-sm transition-all duration-300 group relative cursor-pointer border border-transparent hover:border-gray-300"
+            onClick={() => { openLightbox(photo.key); }}
             onMouseEnter={(e) => {
               const parent = e.currentTarget.parentElement;
               if (parent) parent.style.animationPlayState = 'paused';
@@ -157,6 +211,8 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
     );
   }
 
+  const selectedPhoto = selectedPhotoIndex !== null ? photos[selectedPhotoIndex] : null;
+
   return (
     <div id="photography-root" className="w-full">
       <div id="photography-header" className="mb-12 text-center">
@@ -168,6 +224,65 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 h-[70vh]">
         {photoColumns.map((columnPhotos, index) => renderColumn(columnPhotos, index))}
       </div>
+
+      {/* Lightbox Modal */}
+      {selectedPhoto && (
+        <div 
+          className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center"
+          onClick={closeLightbox}
+        >
+          {/* Close button */}
+          <button
+            onClick={closeLightbox}
+            className="absolute top-4 right-4 z-50 p-2 text-white/80 hover:text-white transition-colors"
+            aria-label="Close"
+          >
+            <X size={32} />
+          </button>
+
+          {/* Previous button */}
+          <button
+            onClick={(e) => { e.stopPropagation(); goToPrev(); }}
+            className="absolute left-4 z-50 p-2 text-white/80 hover:text-white transition-colors"
+            aria-label="Previous photo"
+          >
+            <ChevronLeft size={40} />
+          </button>
+
+          {/* Next button */}
+          <button
+            onClick={(e) => { e.stopPropagation(); goToNext(); }}
+            className="absolute right-4 z-50 p-2 text-white/80 hover:text-white transition-colors"
+            aria-label="Next photo"
+          >
+            <ChevronRight size={40} />
+          </button>
+
+          {/* Image container */}
+          <div 
+            className="max-w-[90vw] max-h-[90vh] flex flex-col items-center"
+            onClick={(e) => { e.stopPropagation(); }}
+          >
+            <img
+              src={selectedPhoto.url}
+              alt={selectedPhoto.alt}
+              className="max-w-full max-h-[80vh] object-contain rounded-lg"
+            />
+            {/* Photo info */}
+            <div className="mt-4 text-center">
+              <h3 className="text-white text-xl font-medium">{selectedPhoto.title}</h3>
+              <p className="text-white/70 text-sm mt-1">
+                {selectedPhoto.artist} · {selectedPhoto.season}
+              </p>
+            </div>
+          </div>
+
+          {/* Photo counter */}
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/60 text-sm">
+            {selectedPhotoIndex !== null ? selectedPhotoIndex + 1 : 0} / {photos.length}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

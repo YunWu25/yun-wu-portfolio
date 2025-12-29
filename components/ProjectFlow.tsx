@@ -157,8 +157,8 @@ const ProjectFlow: React.FC<ProjectFlowProps> = ({ language }) => {
         </Canvas>
       </div>
 
-      {/* FAQ Section - Hidden for now, can be shown later */}
-      <div id="faq-section" className="hidden mb-16">
+      {/* FAQ Section */}
+      <div id="faq-section" className="mb-16">
         <h2 className="text-3xl md:text-4xl font-serif text-coral mb-8 text-center">
           FAQ
         </h2>
