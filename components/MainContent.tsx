@@ -103,8 +103,17 @@ const MainContent: React.FC<MainContentProps> = ({ activeView, onNavigate, langu
       <div id="main-card" className={`${LAYOUT.mainCard} overflow-y-auto custom-scrollbar`}>
 
         {/* === LANGUAGE SWITCHER === */}
-        <div className="absolute top-4 right-4 z-20">
-          <div className="bg-white px-3 py-1.5 rounded-md border border-gray-200 shadow-sm flex items-center gap-2">
+        <div className="absolute md:top-4 top-8 md:right-4 right-8 z-20">
+          {/* Mobile: Single toggle button */}
+          <button
+            onClick={() => { setLanguage(language === 'en' ? 'zh' : 'en'); }}
+            className="md:hidden bg-white px-3 py-1.5 rounded-md border border-gray-200 shadow-sm text-sm font-medium text-coral hover:bg-coral hover:text-white transition-colors"
+          >
+            {language === 'en' ? '中文' : 'EN'}
+          </button>
+          
+          {/* Desktop: Full switcher */}
+          <div className="hidden md:flex bg-white px-3 py-1.5 rounded-md border border-gray-200 shadow-sm items-center gap-2">
             <button
               onClick={() => { setLanguage('en'); }}
               className={`px-2 py-1 rounded transition-colors text-sm ${
