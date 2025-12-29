@@ -3,6 +3,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { BrowserRouter, useLocation, useNavigate, Routes, Route } from 'react-router-dom';
 import Splash from './components/Splash';
 import MainContent from './components/MainContent';
+import FloatingBubble from './components/FloatingBubble';
 import { PhotoManager } from './components/admin/PhotoManager';
 import { ViewState } from './types';
 import { SCROLL_THRESHOLDS } from './constants';
@@ -167,6 +168,9 @@ const AppContent: React.FC = () => {
           setLanguage={setLanguage}
         />
       </div>
+
+      {/* Floating eBay Store Bubble */}
+      <FloatingBubble />
     </div>
   );
 };
