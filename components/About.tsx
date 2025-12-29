@@ -2,6 +2,7 @@ import React from 'react';
 import { TYPOGRAPHY, COLORS } from '../styles';
 import { MARQUEE } from '../constants';
 import { Language } from '../App';
+import { WobbleOnHit } from './BubbleCollisionContext';
 
 interface AboutProps {
   language: Language;
@@ -59,35 +60,47 @@ const About: React.FC<AboutProps> = ({ language }) => {
   return (
     <div id="about-root" className="w-full">
       <div id="about-header" className="text-center mb-16">
-        <p className={`${TYPOGRAPHY.body} ${COLORS.gray500}`}>
-          {t.intro}
-        </p>
+        <WobbleOnHit>
+          <p className={`${TYPOGRAPHY.body} ${COLORS.gray500}`}>
+            {t.intro}
+          </p>
+        </WobbleOnHit>
       </div>
 
       <div id="about-body">
         <p className={`${TYPOGRAPHY.bodySmall} mb-6`}>
           {t.bio1}
         </p>
-        <blockquote className="border-l-4 border-coral pl-4 italic text-gray-700 my-8 bg-gray-50 py-4 pr-4 rounded-r-lg">
-          {t.quote} <cite className="text-sm not-italic text-gray-500 ml-3">{t.quoteAuthor}</cite>
-        </blockquote>
-        <img src="images/about-page-yun.jpg" alt="Yun Wu" className="w-full rounded-lg my-4" />
+        <WobbleOnHit>
+          <blockquote className="border-l-4 border-coral pl-4 italic text-gray-700 my-8 bg-gray-50 py-4 pr-4 rounded-r-lg">
+            {t.quote} <cite className="text-sm not-italic text-gray-500 ml-3">{t.quoteAuthor}</cite>
+          </blockquote>
+        </WobbleOnHit>
+        <WobbleOnHit>
+          <img src="images/about-page-yun.jpg" alt="Yun Wu" className="w-full rounded-lg my-4" />
+        </WobbleOnHit>
         <p className={`${TYPOGRAPHY.bodySmall} mb-6`}>
           {t.bio2}
         </p>
 
         <div className="mt-12">
-          <h4 className={`${TYPOGRAPHY.sectionHeading} mb-3`}>{t.services}</h4>
+          <WobbleOnHit>
+            <h4 className={`${TYPOGRAPHY.sectionHeading} mb-3`}>{t.services}</h4>
+          </WobbleOnHit>
           <p className={`${TYPOGRAPHY.bodySmall} mb-6`}>
             {t.servicesDesc}
           </p>
 
-          <h4 className={`${TYPOGRAPHY.sectionHeading} mb-3`}>{t.photography}</h4>
+          <WobbleOnHit>
+            <h4 className={`${TYPOGRAPHY.sectionHeading} mb-3`}>{t.photography}</h4>
+          </WobbleOnHit>
           <p className={`${TYPOGRAPHY.bodySmall} mb-6`}>
             {t.photographyDesc}
           </p>
 
-          <h4 className={`${TYPOGRAPHY.sectionHeading} mb-3`}>{t.brandAmbassador}</h4>
+          <WobbleOnHit>
+            <h4 className={`${TYPOGRAPHY.sectionHeading} mb-3`}>{t.brandAmbassador}</h4>
+          </WobbleOnHit>
           <p className={`${TYPOGRAPHY.bodySmall} mb-6`}>
             {t.brandAmbassadorDesc}
           </p>
@@ -105,9 +118,11 @@ const About: React.FC<AboutProps> = ({ language }) => {
             } as React.CSSProperties}
           >
             {(Array(MARQUEE.REPETITIONS).fill(brandLogos) as BrandLogo[][]).flat().map((brand, index) => (
-              <div key={index} className="inline-flex items-center justify-center mx-16 opacity-100 min-w-30 shrink-0">
-                <img src={brand.src} alt={brand.name} className="h-24 w-auto object-contain" />
-              </div>
+              <WobbleOnHit key={index}>
+                <div className="inline-flex items-center justify-center mx-16 opacity-100 min-w-30 shrink-0">
+                  <img src={brand.src} alt={brand.name} className="h-24 w-auto object-contain" />
+                </div>
+              </WobbleOnHit>
             ))}
           </div>
         </div>

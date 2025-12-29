@@ -4,6 +4,7 @@ import { BrowserRouter, useLocation, useNavigate, Routes, Route } from 'react-ro
 import Splash from './components/Splash';
 import MainContent from './components/MainContent';
 import FloatingBubble from './components/FloatingBubble';
+import { BubbleCollisionProvider } from './components/BubbleCollisionContext';
 import { PhotoManager } from './components/admin/PhotoManager';
 import { ViewState } from './types';
 import { SCROLL_THRESHOLDS } from './constants';
@@ -148,30 +149,32 @@ const AppContent: React.FC = () => {
   }, [handleWheel, handleTouchMove, handleTouchStart]);
 
   return (
-    <div className="relative w-full min-h-screen bg-offwhite text-darkgray font-sans selection:bg-coral selection:text-white overflow-hidden">
+    <BubbleCollisionProvider>
+      <div className="relative w-full min-h-screen bg-offwhite text-darkgray font-sans selection:bg-coral selection:text-white overflow-hidden">
 
-      {/* Overlay Splash Screen */}
-      <Splash
-        isVisible={showSplash}
-        onDismiss={() => { setShowSplash(false); }}
-        language={language}
-      />
-
-      {/* Main Site Content */}
-      <div
-        className={`transition-opacity duration-1000 h-screen w-full flex items-center justify-center ${showSplash ? 'opacity-0 pointer-events-none' : 'opacity-100 pointer-events-auto'}`}
-      >
-        <MainContent
-          activeView={activeView}
-          onNavigate={handleNavigate}
+        {/* Overlay Splash Screen */}
+        <Splash
+          isVisible={showSplash}
+          onDismiss={() => { setShowSplash(false); }}
           language={language}
-          setLanguage={setLanguage}
         />
-      </div>
 
-      {/* Floating eBay Store Bubble */}
-      <FloatingBubble />
-    </div>
+        {/* Main Site Content */}
+        <div
+          className={`transition-opacity duration-1000 h-screen w-full flex items-center justify-center ${showSplash ? 'opacity-0 pointer-events-none' : 'opacity-100 pointer-events-auto'}`}
+        >
+          <MainContent
+            activeView={activeView}
+            onNavigate={handleNavigate}
+            language={language}
+            setLanguage={setLanguage}
+          />
+        </div>
+
+        {/* Floating eBay Store Bubble */}
+        <FloatingBubble />
+      </div>
+    </BubbleCollisionProvider>
   );
 };
 

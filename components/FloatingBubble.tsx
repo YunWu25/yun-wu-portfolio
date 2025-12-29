@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { useBubbleCollision } from './BubbleCollisionContext';
 
 // Layout constants
 const BUBBLE_SIZE = 56;           // w-14 = 14 * 4 = 56px
@@ -15,9 +16,12 @@ const DRAG_THRESHOLD = 5;         // Pixels moved before drag is recognized
 
 const FloatingBubble: React.FC = () => {
   const [isHovered, setIsHovered] = useState(false);
-  const [isDragging, setIsDragging] = useState(false);
+  const [localIsDragging, setLocalIsDragging] = useState(false);
   const [hasMoved, setHasMoved] = useState(false);
-  const [position, setPosition] = useState({ x: INITIAL_OFFSET, y: INITIAL_OFFSET });
+  const [position, setPosition] = useState({ x: INITIAL_OFFSET, y: INITIAL_OFFSET * 3 + 16 });
+  
+  // Get context for broadcasting position
+  const { setBubblePos, setIsDragging } = useBubbleCollision();
   const bubbleRef = useRef<HTMLDivElement>(null);
   const dragOffset = useRef({ x: 0, y: 0 });
   const startPos = useRef({ x: 0, y: 0 });
@@ -70,6 +74,18 @@ const FloatingBubble: React.FC = () => {
     };
   }, [constrainPosition]);
 
+  // Broadcast position to context whenever it changes during drag or momentum
+  useEffect(() => {
+    if (localIsDragging || animationRef.current) {
+      setBubblePos({
+        x: position.x,
+        y: position.y,
+        width: BUBBLE_SIZE,
+        height: BUBBLE_SIZE
+      });
+    }
+  }, [position, localIsDragging, setBubblePos]);
+
   const handleMouseDown = (e: React.MouseEvent) => {
     if (!bubbleRef.current) return;
     
@@ -79,6 +95,7 @@ const FloatingBubble: React.FC = () => {
       animationRef.current = null;
     }
     
+    setLocalIsDragging(true);
     setIsDragging(true);
     setHasMoved(false);
     const rect = bubbleRef.current.getBoundingClientRect();
@@ -102,6 +119,7 @@ const FloatingBubble: React.FC = () => {
       animationRef.current = null;
     }
     
+    setLocalIsDragging(true);
     setIsDragging(true);
     setHasMoved(false);
     const rect = bubbleRef.current.getBoundingClientRect();
@@ -117,7 +135,7 @@ const FloatingBubble: React.FC = () => {
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      if (!isDragging) return;
+      if (!localIsDragging) return;
       
       // Check if moved more than threshold
       const dx = Math.abs(e.clientX - startPos.current.x);
@@ -146,7 +164,7 @@ const FloatingBubble: React.FC = () => {
     };
 
     const handleTouchMove = (e: TouchEvent) => {
-      if (!isDragging || !e.touches[0]) return;
+      if (!localIsDragging || !e.touches[0]) return;
       
       // Check if moved more than threshold
       const dx = Math.abs(e.touches[0].clientX - startPos.current.x);
@@ -174,15 +192,18 @@ const FloatingBubble: React.FC = () => {
     };
 
     const handleMouseUp = () => {
-      setIsDragging(false);
+      setLocalIsDragging(false);
       
       // Start momentum animation if there's velocity
       if (Math.abs(velocity.current.x) > MIN_VELOCITY || Math.abs(velocity.current.y) > MIN_VELOCITY) {
         animationRef.current = requestAnimationFrame(animateMomentumRef.current);
+      } else {
+        // No momentum, stop broadcasting
+        setIsDragging(false);
       }
     };
 
-    if (isDragging) {
+    if (localIsDragging) {
       window.addEventListener('mousemove', handleMouseMove);
       window.addEventListener('mouseup', handleMouseUp);
       window.addEventListener('touchmove', handleTouchMove);
@@ -195,7 +216,7 @@ const FloatingBubble: React.FC = () => {
       window.removeEventListener('touchmove', handleTouchMove);
       window.removeEventListener('touchend', handleMouseUp);
     };
-  }, [isDragging, constrainPosition]);
+  }, [localIsDragging, constrainPosition, setIsDragging]);
 
   // Cleanup animation on unmount
   useEffect(() => {
@@ -205,6 +226,19 @@ const FloatingBubble: React.FC = () => {
       }
     };
   }, []);
+
+  // Stop dragging state when momentum ends
+  useEffect(() => {
+    const checkMomentumEnd = () => {
+      if (!animationRef.current && !localIsDragging) {
+        setIsDragging(false);
+      }
+    };
+    
+    // Check periodically
+    const interval = setInterval(checkMomentumEnd, 100);
+    return () => { clearInterval(interval); };
+  }, [localIsDragging, setIsDragging]);
 
   const handleClick = (e: React.MouseEvent) => {
     // Prevent navigation if we actually moved (not just clicked)
@@ -221,7 +255,7 @@ const FloatingBubble: React.FC = () => {
       style={{
         right: position.x,
         bottom: position.y,
-        cursor: isDragging ? 'grabbing' : 'grab'
+        cursor: localIsDragging ? 'grabbing' : 'grab'
       }}
       onMouseDown={handleMouseDown}
       onTouchStart={handleTouchStart}
@@ -241,8 +275,8 @@ const FloatingBubble: React.FC = () => {
           flex items-center justify-center
           shadow-md hover:shadow-lg
           transition-all duration-300
-          ${isHovered && !isDragging ? 'scale-110' : 'scale-100'}
-          ${isDragging ? 'cursor-grabbing' : ''}
+          ${isHovered && !localIsDragging ? 'scale-110' : 'scale-100'}
+          ${localIsDragging ? 'cursor-grabbing' : ''}
         `}
         onMouseEnter={() => { setIsHovered(true); }}
         onMouseLeave={() => { setIsHovered(false); }}
@@ -265,7 +299,7 @@ const FloatingBubble: React.FC = () => {
         </svg>
         
         {/* Tooltip - only show when not dragging */}
-        {!isDragging && (
+        {!localIsDragging && (
           <span
             className={`
               absolute right-16 top-1/2 -translate-y-1/2
