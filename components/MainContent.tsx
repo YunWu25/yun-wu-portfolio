@@ -1,10 +1,8 @@
-
 import React, { useState } from 'react';
 import { Mail, Menu, X, ChevronDown } from 'lucide-react';
 import { FaInstagram } from 'react-icons/fa';
 import { ViewState, NavItem } from '../types';
 import { WaveDecoration } from './WaveDecoration';
-import { WobbleOnHit } from './BubbleCollisionContext';
 import ProjectFlow from './ProjectFlow';
 import Photography from './Photography';
 import Design from './Design';
@@ -161,16 +159,15 @@ const MainContent: React.FC<MainContentProps> = ({ activeView, onNavigate, langu
                       : 'opacity-0 group-hover:opacity-40 scale-0 group-hover:scale-75'
                       }`}
                   />
-                  <WobbleOnHit>
-                    <span
-                      className={`${TYPOGRAPHY.navItem} transition-colors duration-300 ${activeView === item.view || (item.view === ViewState.HOME && (activeView === ViewState.PHOTOGRAPHY || activeView === ViewState.DESIGN || activeView === ViewState.VIDEO))
-                        ? 'text-gray-900 font-medium'
-                        : 'text-gray-500 group-hover:text-coral'
-                        }`}
-                    >
-                      {item.label}
-                    </span>
-                  </WobbleOnHit>
+                  <span
+                    data-wobble-target
+                    className={`inline-block ${TYPOGRAPHY.navItem} transition-colors duration-300 ${activeView === item.view || (item.view === ViewState.HOME && (activeView === ViewState.PHOTOGRAPHY || activeView === ViewState.DESIGN || activeView === ViewState.VIDEO))
+                      ? 'text-gray-900 font-medium'
+                      : 'text-gray-500 group-hover:text-coral'
+                      }`}
+                  >
+                    {item.label}
+                  </span>
                   {item.view === ViewState.HOME && (
                     <ChevronDown
                       size={20}
@@ -201,16 +198,15 @@ const MainContent: React.FC<MainContentProps> = ({ activeView, onNavigate, langu
                               : 'opacity-0 group-hover:opacity-40 scale-0 group-hover:scale-75'
                               }`}
                           />
-                          <WobbleOnHit>
-                            <span
-                              className={`${TYPOGRAPHY.navSubItem} transition-colors duration-300 ${activeView === subItem.view
-                                ? 'text-gray-900 font-medium'
-                                : 'text-gray-500 group-hover:text-coral'
-                                }`}
-                            >
-                              {subItem.label}
-                            </span>
-                          </WobbleOnHit>
+                          <span
+                            data-wobble-target
+                            className={`inline-block ${TYPOGRAPHY.navSubItem} transition-colors duration-300 ${activeView === subItem.view
+                              ? 'text-gray-900 font-medium'
+                              : 'text-gray-500 group-hover:text-coral'
+                              }`}
+                          >
+                            {subItem.label}
+                          </span>
                         </button>
                       ))}
                     </div>
@@ -223,32 +219,28 @@ const MainContent: React.FC<MainContentProps> = ({ activeView, onNavigate, langu
           {/* Center Column: Title */}
           <div className="flex flex-col items-center justify-center h-full">
             <button onClick={() => { onNavigate(ViewState.HOME); }} className="text-center group">
-              <WobbleOnHit>
-                <h1 className={`${TYPOGRAPHY.h1} group-hover:opacity-90 transition-opacity whitespace-nowrap`}>
-                  {getCenterTitle()}
-                </h1>
-              </WobbleOnHit>
+              <h1 data-wobble-target className={`${TYPOGRAPHY.h1} group-hover:opacity-90 transition-opacity whitespace-nowrap`}>
+                {getCenterTitle()}
+              </h1>
               <div className="w-32 md:w-64 mt-4 mx-auto opacity-90">
-                <WobbleOnHit>
+                <span data-wobble-target className="inline-block">
                   <WaveDecoration />
-                </WobbleOnHit>
+                </span>
               </div>
             </button>
           </div>
 
           {/* Right Column: Social Icons */}
           <div className="hidden md:flex flex-col space-y-6 items-end h-full justify-center">
-            <WobbleOnHit>
-              <a href="mailto:Yunwustudio@gmail.com" className={`${COLORS.coral} hover:scale-110 transition-transform p-1`}>
-                <Mail size={32} strokeWidth={1.5} />
-              </a>
-              <a href="https://instagram.com/yun___wu" target="_blank" rel="noreferrer" className={`${COLORS.coral} hover:scale-110 transition-transform p-1`}>
-                <FaInstagram size={30} />
-              </a>
-              <a href="https://linkedin.com/in/yun-w-0532b5190" target="_blank" rel="noreferrer" className={`${COLORS.coral} hover:scale-110 transition-transform p-1`}>
-                <LinkedInOutline size={30} strokeWidth={1.5} />
-              </a>
-            </WobbleOnHit>
+            <a data-wobble-target href="mailto:Yunwustudio@gmail.com" className={`inline-block ${COLORS.coral} hover:scale-110 transition-transform p-1`}>
+              <Mail size={32} strokeWidth={1.5} />
+            </a>
+            <a data-wobble-target href="https://instagram.com/yun___wu" target="_blank" rel="noreferrer" className={`inline-block ${COLORS.coral} hover:scale-110 transition-transform p-1`}>
+              <FaInstagram size={30} />
+            </a>
+            <a data-wobble-target href="https://linkedin.com/in/yun-w-0532b5190" target="_blank" rel="noreferrer" className={`inline-block ${COLORS.coral} hover:scale-110 transition-transform p-1`}>
+              <LinkedInOutline size={30} strokeWidth={1.5} />
+            </a>
           </div>
 
           {/* Mobile Menu Toggle */}
@@ -291,34 +283,26 @@ const MainContent: React.FC<MainContentProps> = ({ activeView, onNavigate, langu
 
           {/* === FOOTER (Outside content container to align with header) === */}
           <footer id="main-card-footer" className="px-8 md:px-16 md:py-12 mb-24 flex flex-col md:flex-row justify-between items-center text-gray-300 font-light mt-16">
-            <WobbleOnHit>
-              <div className={`${TYPOGRAPHY.body} text-lg tracking-wide text-gray-300`}>2025 Yun Wu</div>
-            </WobbleOnHit>
+            <div data-wobble-target className={`${TYPOGRAPHY.body} text-lg tracking-wide text-gray-300`}>2025 Yun Wu</div>
             {/* Mobile: Icon + text pairs, Desktop: Text only with separators */}
             <div className="flex gap-8 mt-4 md:mt-0">
               {/* Email */}
-              <WobbleOnHit>
-                <a href="mailto:Yunwustudio@gmail.com" className="flex flex-col items-center gap-2 group">
-                  <Mail size={24} strokeWidth={1.5} className={`${COLORS.coral} md:hidden group-hover:scale-110 transition-transform`} />
-                  <span className={`hover:text-coral hover:underline transition-colors ${TYPOGRAPHY.small}`}>EMAIL</span>
-                </a>
-              </WobbleOnHit>
+              <a data-wobble-target href="mailto:Yunwustudio@gmail.com" className="flex flex-col items-center gap-2 group">
+                <Mail size={24} strokeWidth={1.5} className={`${COLORS.coral} md:hidden group-hover:scale-110 transition-transform`} />
+                <span className={`hover:text-coral hover:underline transition-colors ${TYPOGRAPHY.small}`}>EMAIL</span>
+              </a>
               <span className="hidden md:inline text-gray-200 self-center">|</span>
               {/* Instagram */}
-              <WobbleOnHit>
-                <a href="https://instagram.com/yun___wu" target="_blank" rel="noreferrer" className="flex flex-col items-center gap-2 group">
-                  <FaInstagram size={22} className={`${COLORS.coral} md:hidden group-hover:scale-110 transition-transform`} />
-                  <span className={`hover:text-coral hover:underline transition-colors ${TYPOGRAPHY.small}`}>INSTAGRAM</span>
-                </a>
-              </WobbleOnHit>
+              <a data-wobble-target href="https://instagram.com/yun___wu" target="_blank" rel="noreferrer" className="flex flex-col items-center gap-2 group">
+                <FaInstagram size={22} className={`${COLORS.coral} md:hidden group-hover:scale-110 transition-transform`} />
+                <span className={`hover:text-coral hover:underline transition-colors ${TYPOGRAPHY.small}`}>INSTAGRAM</span>
+              </a>
               <span className="hidden md:inline text-gray-200 self-center">|</span>
               {/* LinkedIn */}
-              <WobbleOnHit>
-                <a href="https://linkedin.com/in/yun-w-0532b5190" target="_blank" rel="noreferrer" className="flex flex-col items-center gap-2 group">
-                  <LinkedInOutline size={22} strokeWidth={1.5} className={`${COLORS.coral} md:hidden group-hover:scale-110 transition-transform`} />
-                  <span className={`hover:text-coral hover:underline transition-colors ${TYPOGRAPHY.small}`}>LINKEDIN</span>
-                </a>
-              </WobbleOnHit>
+              <a data-wobble-target href="https://linkedin.com/in/yun-w-0532b5190" target="_blank" rel="noreferrer" className="flex flex-col items-center gap-2 group">
+                <LinkedInOutline size={22} strokeWidth={1.5} className={`${COLORS.coral} md:hidden group-hover:scale-110 transition-transform`} />
+                <span className={`hover:text-coral hover:underline transition-colors ${TYPOGRAPHY.small}`}>LINKEDIN</span>
+              </a>
             </div>
           </footer>
         </div>

@@ -4,7 +4,7 @@ import { BrowserRouter, useLocation, useNavigate, Routes, Route } from 'react-ro
 import Splash from './components/Splash';
 import MainContent from './components/MainContent';
 import FloatingBubble from './components/FloatingBubble';
-import { BubbleCollisionProvider } from './components/BubbleCollisionContext';
+import { BubbleCollisionProvider, useGlobalWobbleCollision } from './components/BubbleCollisionContext';
 import { PhotoManager } from './components/admin/PhotoManager';
 import { ViewState } from './types';
 import { SCROLL_THRESHOLDS } from './constants';
@@ -150,6 +150,7 @@ const AppContent: React.FC = () => {
 
   return (
     <BubbleCollisionProvider>
+      <WobbleCollisionDetector />
       <div className="relative w-full min-h-screen bg-offwhite text-darkgray font-sans selection:bg-coral selection:text-white overflow-hidden">
 
         {/* Overlay Splash Screen */}
@@ -176,6 +177,12 @@ const AppContent: React.FC = () => {
       </div>
     </BubbleCollisionProvider>
   );
+};
+
+// Component that activates global wobble collision detection
+const WobbleCollisionDetector: React.FC = () => {
+  useGlobalWobbleCollision();
+  return null;
 };
 
 const App: React.FC = () => {

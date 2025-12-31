@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useRef, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 
 interface BubblePosition {
   x: number;  // from right edge
@@ -35,20 +35,16 @@ export const useBubbleCollision = () => {
   return context;
 };
 
-// Hook for elements that can be "hit" by the bubble
-export const useWobbleOnCollision = (ref: React.RefObject<HTMLElement | null>) => {
+// Global collision detection hook - queries all [data-wobble-target] elements
+export const useGlobalWobbleCollision = () => {
   const { bubblePos, isDragging } = useBubbleCollision();
-  const [isWobbling, setIsWobbling] = useState(false);
-  const lastCollision = useRef(0);
-  const COLLISION_COOLDOWN = 500; // ms between wobbles
+  const lastCollisionMap = useRef<Map<Element, number>>(new Map());
+  const COLLISION_COOLDOWN = 500; // ms between wobbles per element
 
   useEffect(() => {
-    if (!ref.current || !bubblePos || !isDragging || isWobbling) return;
+    if (!bubblePos || !isDragging) return;
 
     const now = Date.now();
-    if (now - lastCollision.current < COLLISION_COOLDOWN) return;
-
-    const rect = ref.current.getBoundingClientRect();
     
     // Convert bubble position (from right/bottom) to absolute coordinates
     const bubbleLeft = window.innerWidth - bubblePos.x - bubblePos.width;
@@ -56,53 +52,36 @@ export const useWobbleOnCollision = (ref: React.RefObject<HTMLElement | null>) =
     const bubbleRight = bubbleLeft + bubblePos.width;
     const bubbleBottom = bubbleTop + bubblePos.height;
 
-    // Check collision
-    const isColliding = !(
-      bubbleRight < rect.left ||
-      bubbleLeft > rect.right ||
-      bubbleBottom < rect.top ||
-      bubbleTop > rect.bottom
-    );
-
-    if (isColliding) {
-      lastCollision.current = now;
-      // Use requestAnimationFrame to avoid synchronous setState in effect
-      requestAnimationFrame(() => {
-        setIsWobbling(true);
-      });
-    }
-  }, [bubblePos, isDragging, isWobbling, ref]);
-
-  // Reset wobble after animation completes
-  useEffect(() => {
-    if (!isWobbling) return;
+    // Query all wobble targets
+    const targets = document.querySelectorAll('[data-wobble-target]');
     
-    const timer = setTimeout(() => {
-      setIsWobbling(false);
-    }, 600);
-    
-    return () => { clearTimeout(timer); };
-  }, [isWobbling]);
+    targets.forEach(el => {
+      // Check cooldown for this element
+      const lastHit = lastCollisionMap.current.get(el) ?? 0;
+      if (now - lastHit < COLLISION_COOLDOWN) return;
+      
+      // Skip if already wobbling
+      if (el.classList.contains('animate-wobble')) return;
 
-  return isWobbling;
-};
+      const rect = el.getBoundingClientRect();
 
-// Wrapper component for elements that wobble on collision
-export const WobbleOnHit: React.FC<{ 
-  children: React.ReactNode;
-  className?: string;
-}> = ({ children, className = '' }) => {
-  const ref = useRef<HTMLSpanElement>(null);
-  const isWobbling = useWobbleOnCollision(ref);
+      // Check collision
+      const isColliding = !(
+        bubbleRight < rect.left ||
+        bubbleLeft > rect.right ||
+        bubbleBottom < rect.top ||
+        bubbleTop > rect.bottom
+      );
 
-  return (
-    <span
-      ref={ref}
-      className={`inline-block transition-transform ${className} ${
-        isWobbling ? 'animate-wobble' : ''
-      }`}
-    >
-      {children}
-    </span>
-  );
+      if (isColliding) {
+        lastCollisionMap.current.set(el, now);
+        el.classList.add('animate-wobble');
+        
+        // Remove class after animation completes
+        setTimeout(() => {
+          el.classList.remove('animate-wobble');
+        }, 600);
+      }
+    });
+  }, [bubblePos, isDragging]);
 };

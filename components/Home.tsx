@@ -1,10 +1,8 @@
-
 import React, { useState, useEffect } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { ViewState } from '../types';
 import { TYPOGRAPHY, COLORS } from '../styles';
 import { Language } from '../App';
-import { WobbleOnHit } from './BubbleCollisionContext';
 
 interface NavRowProps {
   label: string;
@@ -17,15 +15,11 @@ const NavRow: React.FC<NavRowProps> = ({ label, onClick, viewText }) => (
     className={`group flex flex-col md:flex-row md:items-center justify-between border-b border-transparent hover:border-gray-100 pb-2 ${TYPOGRAPHY.link}`}
     onClick={onClick}
   >
-    <WobbleOnHit>
-      <span className={`${TYPOGRAPHY.navSubItem} ${COLORS.gray500} group-hover:text-coral transition-colors`}>
-        {label}
-      </span>
-    </WobbleOnHit>
+    <span data-wobble-target className={`inline-block ${TYPOGRAPHY.navSubItem} ${COLORS.gray500} group-hover:text-coral transition-colors`}>
+      {label}
+    </span>
     <div className={`flex items-center ${TYPOGRAPHY.navSubItem} ${COLORS.gray400} group-hover:text-coral transition-colors mt-2 md:mt-0`}>
-      <WobbleOnHit>
-        <span>{viewText}</span>
-      </WobbleOnHit>
+      <span data-wobble-target className="inline-block">{viewText}</span>
       <ArrowRight size={20} className="ml-2 transform group-hover:translate-x-1 transition-transform" />
     </div>
   </div>
@@ -40,17 +34,14 @@ interface ContactRowProps {
 
 const ContactRow: React.FC<ContactRowProps> = ({ label, value, href, className = '' }) => (
   <div className={`flex flex-col md:flex-row md:items-center justify-between border-transparent hover:border-gray-100 pb-2 ${className}`}>
-    <WobbleOnHit>
-      <span className={`${TYPOGRAPHY.navSubItem} ${COLORS.gray500}`}>{label}</span>
-    </WobbleOnHit>
-    <WobbleOnHit>
-      <a
-        href={href}
-        className={`${TYPOGRAPHY.navSubItem} ${COLORS.gray400} hover:text-gray-800 hover:underline decoration-coral decoration-1 underline-offset-8 transition-all mt-2 md:mt-0`}
-      >
-        {value}
-      </a>
-    </WobbleOnHit>
+    <span data-wobble-target className={`inline-block ${TYPOGRAPHY.navSubItem} ${COLORS.gray500}`}>{label}</span>
+    <a
+      data-wobble-target
+      href={href}
+      className={`inline-block ${TYPOGRAPHY.navSubItem} ${COLORS.gray400} hover:text-gray-800 hover:underline decoration-coral decoration-1 underline-offset-8 transition-all mt-2 md:mt-0`}
+    >
+      {value}
+    </a>
   </div>
 );
 
@@ -113,21 +104,14 @@ const Home: React.FC<HomeProps> = ({ onNavigate, language }) => {
         <ContactRow label={t.sendEmail} value="Yunwustudio@gmail.com" href="mailto:Yunwustudio@gmail.com" />
         <ContactRow label={t.call} value="+1 4258372524" href="tel:+14258372524" />
         <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-transparent pb-2">
-          <WobbleOnHit>
-            <span className={`${TYPOGRAPHY.navSubItem} ${COLORS.gray500}`}>
-              {t.location}
-            </span>
-          </WobbleOnHit>
-          <WobbleOnHit>
-            <span className={`${TYPOGRAPHY.navSubItem} text-coral font-mono mt-2 md:mt-0`}>
-              {currentTime}
-            </span>
-          </WobbleOnHit>
+          <span data-wobble-target className={`inline-block ${TYPOGRAPHY.navSubItem} ${COLORS.gray500}`}>
+            {t.location}
+          </span>
+          <span data-wobble-target className={`inline-block ${TYPOGRAPHY.navSubItem} text-coral font-mono mt-2 md:mt-0`}>
+            {currentTime}
+          </span>
         </div>
       </div>
-
-      {/* Location / Time Row */}
-
     </div>
   );
 };
