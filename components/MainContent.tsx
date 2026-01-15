@@ -90,8 +90,11 @@ const MainContent: React.FC<MainContentProps> = ({ activeView, onNavigate, langu
       case ViewState.VIDEO:
         return language === 'en' ? 'Video' : '影片';
       case ViewState.HOME:
+        return language === 'en' ? 'Yun Wu' : '伍芸';
+      case ViewState.DESIGN:
+        return language === 'en' ? 'Design' : '设计';
       default:
-        return 'Yun Wu';
+        return language === 'en' ? 'Yun Wu' : '伍芸';
     }
   };
 

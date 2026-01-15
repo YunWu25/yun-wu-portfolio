@@ -68,3 +68,14 @@ body {
 .animate-wobble {
   animation: wobble 0.6s ease-in-out;
 }
+
+/* Laptop screen scrolling animation */
+@keyframes laptop-scroll {
+  0%, 10% { transform: translateY(0); }
+  45%, 55% { transform: translateY(calc(-100% + 100px)); }
+  90%, 100% { transform: translateY(0); }
+}
+
+.animate-scroll-up {
+  animation: laptop-scroll 12s ease-in-out infinite;
+}
