@@ -161,8 +161,8 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
             <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             {/* Info positioned bottom-left like Video page */}
             <div className="absolute bottom-0 left-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-              <h3 className={TYPOGRAPHY.cardOverlayTitle}>{photo.title}</h3>
-              <p className={TYPOGRAPHY.cardOverlayMeta}>{photo.season}</p>
+              <h3 className={`${TYPOGRAPHY.cardOverlayTitle} ${COLORS.white}`}>{photo.title}</h3>
+              <p className={`${TYPOGRAPHY.cardOverlayMeta} text-white/80`}>{photo.season}</p>
             </div>
           </div>
         ))}

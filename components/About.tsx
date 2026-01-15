@@ -1,5 +1,5 @@
 import React from 'react';
-import { TYPOGRAPHY, COLORS } from '../styles';
+import { TYPOGRAPHY, COLORS, BORDERS } from '../styles';
 import { MARQUEE } from '../constants';
 import { Language } from '../App';
 
@@ -65,30 +65,30 @@ const About: React.FC<AboutProps> = ({ language }) => {
       </div>
 
       <div id="about-body">
-        <p className={`${TYPOGRAPHY.bodySmall} mb-6`}>
+        <p className={`${TYPOGRAPHY.bodySmall} ${COLORS.gray600} mb-6`}>
           {t.bio1}
         </p>
-        <blockquote data-wobble-target className="border-l-4 border-coral pl-4 italic text-gray-700 my-8 bg-gray-50 py-4 pr-4 rounded-r-lg">
-          {t.quote} <cite className="text-sm not-italic text-gray-500 ml-3">{t.quoteAuthor}</cite>
+        <blockquote data-wobble-target className={`border-l-4 ${COLORS.borderCoral} pl-4 italic ${COLORS.gray700} my-8 ${COLORS.bgGray50} py-4 pr-4 rounded-r-lg`}>
+          {t.quote} <cite className={`text-sm not-italic ${COLORS.gray500} ml-3`}>{t.quoteAuthor}</cite>
         </blockquote>
-        <img data-wobble-target src="images/about-page-yun.jpg" alt="Yun Wu" className="w-full rounded-lg my-4" />
-        <p className={`${TYPOGRAPHY.bodySmall} mb-6`}>
+        <img data-wobble-target src="images/about-page-yun.jpg" alt="Yun Wu" className={`w-full ${BORDERS.radius.md} my-4`} />
+        <p className={`${TYPOGRAPHY.bodySmall} ${COLORS.gray600} mb-6`}>
           {t.bio2}
         </p>
 
         <div className="mt-12">
-          <h4 data-wobble-target className={`${TYPOGRAPHY.sectionHeading} mb-3`}>{t.services}</h4>
-          <p className={`${TYPOGRAPHY.bodySmall} mb-6`}>
+          <h4 data-wobble-target className={`${TYPOGRAPHY.sectionHeading} ${COLORS.gray900} mb-3`}>{t.services}</h4>
+          <p className={`${TYPOGRAPHY.bodySmall} ${COLORS.gray600} mb-6`}>
             {t.servicesDesc}
           </p>
 
-          <h4 data-wobble-target className={`${TYPOGRAPHY.sectionHeading} mb-3`}>{t.photography}</h4>
-          <p className={`${TYPOGRAPHY.bodySmall} mb-6`}>
+          <h4 data-wobble-target className={`${TYPOGRAPHY.sectionHeading} ${COLORS.gray900} mb-3`}>{t.photography}</h4>
+          <p className={`${TYPOGRAPHY.bodySmall} ${COLORS.gray600} mb-6`}>
             {t.photographyDesc}
           </p>
 
-          <h4 data-wobble-target className={`${TYPOGRAPHY.sectionHeading} mb-3`}>{t.brandAmbassador}</h4>
-          <p className={`${TYPOGRAPHY.bodySmall} mb-6`}>
+          <h4 data-wobble-target className={`${TYPOGRAPHY.sectionHeading} ${COLORS.gray900} mb-3`}>{t.brandAmbassador}</h4>
+          <p className={`${TYPOGRAPHY.bodySmall} ${COLORS.gray600} mb-6`}>
             {t.brandAmbassadorDesc}
           </p>
         </div>

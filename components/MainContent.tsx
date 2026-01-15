@@ -9,7 +9,7 @@ import Design from './Design';
 import Video from './Video';
 import About from './About';
 import Home from './Home';
-import { COLORS, TYPOGRAPHY, LAYOUT } from '../styles';
+import { COLORS, TYPOGRAPHY, BORDERS, SHADOWS } from '../styles';
 import { Language } from '../App';
 
 // Custom outline LinkedIn icon to match Mail icon style
@@ -102,31 +102,31 @@ const MainContent: React.FC<MainContentProps> = ({ activeView, onNavigate, langu
     <div id="container-card" className="w-screen h-screen bg-white">
 
       {/* MAIN CONTAINER */}
-      <div id="main-card" className={`${LAYOUT.mainCard} overflow-y-auto custom-scrollbar`}>
+      <div id="main-card" className="bg-white w-screen h-screen flex flex-col overflow-hidden relative overflow-y-auto custom-scrollbar">
 
         {/* === LANGUAGE SWITCHER === */}
         <div className="absolute md:top-4 top-8 md:right-4 right-8 z-20">
           {/* Mobile: Single toggle button */}
           <button
             onClick={() => { setLanguage(language === 'en' ? 'zh' : 'en'); }}
-            className="md:hidden bg-white px-3 py-1.5 rounded-md border border-gray-200 shadow-sm text-sm font-medium text-coral hover:bg-coral hover:text-white transition-colors"
+            className={`md:hidden bg-white px-3 py-1.5 ${BORDERS.radius.sm} border ${COLORS.borderGray200} ${SHADOWS.sm} text-sm font-medium text-coral hover:bg-coral hover:text-white transition-colors`}
           >
             {language === 'en' ? '中文' : 'EN'}
           </button>
           
           {/* Desktop: Full switcher */}
-          <div className="hidden md:flex bg-white px-3 py-1.5 rounded-md border border-gray-200 shadow-sm items-center gap-2">
+          <div className={`hidden md:flex bg-white px-3 py-1.5 ${BORDERS.radius.sm} border ${COLORS.borderGray200} ${SHADOWS.sm} items-center gap-2`}>
             <button
               onClick={() => { setLanguage('en'); }}
               className={`px-2 py-1 rounded transition-colors text-sm ${
                 language === 'en'
                   ? 'bg-coral text-white'
-                  : 'text-gray-500 hover:text-coral'
+                  : `${COLORS.gray500} hover:text-coral`
               }`}
             >
               EN
             </button>
-            <span className="text-gray-300">|</span>
+            <span className={COLORS.gray300}>|</span>
             <button
               onClick={() => { setLanguage('zh'); }}
               className={`px-2 py-1 rounded transition-colors text-sm ${
@@ -165,8 +165,8 @@ const MainContent: React.FC<MainContentProps> = ({ activeView, onNavigate, langu
                   <span
                     data-wobble-target
                     className={`inline-block ${TYPOGRAPHY.navItem} transition-colors duration-300 ${activeView === item.view || (item.view === ViewState.HOME && (activeView === ViewState.PHOTOGRAPHY || activeView === ViewState.DESIGN || activeView === ViewState.VIDEO))
-                      ? 'text-gray-900 font-medium'
-                      : 'text-gray-500 group-hover:text-coral'
+                      ? `${COLORS.gray900} font-medium`
+                      : `${COLORS.gray500} group-hover:text-coral`
                       }`}
                   >
                     {item.label}
@@ -176,8 +176,8 @@ const MainContent: React.FC<MainContentProps> = ({ activeView, onNavigate, langu
                       size={20}
                       className={`ml-2 transition-transform duration-300 ${homeExpanded ? 'rotate-180' : ''
                         } ${activeView === ViewState.HOME || activeView === ViewState.PHOTOGRAPHY || activeView === ViewState.DESIGN || activeView === ViewState.VIDEO
-                          ? 'text-gray-900'
-                          : 'text-gray-500 group-hover:text-coral'
+                          ? COLORS.gray900
+                          : `${COLORS.gray500} group-hover:text-coral`
                         }`}
                     />
                   )}
@@ -204,8 +204,8 @@ const MainContent: React.FC<MainContentProps> = ({ activeView, onNavigate, langu
                           <span
                             data-wobble-target
                             className={`inline-block ${TYPOGRAPHY.navSubItem} transition-colors duration-300 ${activeView === subItem.view
-                              ? 'text-gray-900 font-medium'
-                              : 'text-gray-500 group-hover:text-coral'
+                              ? `${COLORS.gray900} font-medium`
+                              : `${COLORS.gray500} group-hover:text-coral`
                               }`}
                           >
                             {subItem.label}
@@ -222,7 +222,7 @@ const MainContent: React.FC<MainContentProps> = ({ activeView, onNavigate, langu
           {/* Center Column: Title */}
           <div className="flex flex-col items-center justify-center h-full">
             <button onClick={() => { onNavigate(ViewState.HOME); }} className="text-center group">
-              <h1 data-wobble-target className={`${TYPOGRAPHY.h1} group-hover:opacity-90 transition-opacity whitespace-nowrap`}>
+              <h1 data-wobble-target className={`font-serif text-6xl md:text-8xl ${COLORS.coral} tracking-tight leading-none group-hover:opacity-90 transition-opacity whitespace-nowrap`}>
                 {getCenterTitle()}
               </h1>
               <div className="w-32 md:w-64 mt-4 mx-auto opacity-90">
@@ -248,7 +248,7 @@ const MainContent: React.FC<MainContentProps> = ({ activeView, onNavigate, langu
 
           {/* Mobile Menu Toggle */}
           <div className="md:hidden absolute top-8 left-8">
-            <button onClick={() => { setIsMobileMenuOpen(!isMobileMenuOpen); }} className="text-gray-800">
+            <button onClick={() => { setIsMobileMenuOpen(!isMobileMenuOpen); }} className={COLORS.gray800}>
               {isMobileMenuOpen ? <X size={32} /> : <Menu size={32} />}
             </button>
           </div>
@@ -267,7 +267,7 @@ const MainContent: React.FC<MainContentProps> = ({ activeView, onNavigate, langu
                   onNavigate(item.view);
                   setIsMobileMenuOpen(false);
                 }}
-                className={`${TYPOGRAPHY.h1} text-4xl ${activeView === item.view ? 'text-coral' : 'text-gray-600'}`}
+                className={`font-serif text-4xl ${activeView === item.view ? 'text-coral' : COLORS.gray600}`}
               >
                 {item.label}
               </button>
@@ -278,7 +278,7 @@ const MainContent: React.FC<MainContentProps> = ({ activeView, onNavigate, langu
         {/* === MAIN CONTENT BODY === */}
         <div id="main-content-body" className="w-full">
           {/* Centralized content wrapper: keep page widths consistent here */}
-          <div id="content-container" className={LAYOUT.contentContainer}>
+          <div id="content-container" className={`w-full max-w-6xl mx-auto px-6 md:px-16 py-8 border ${COLORS.borderGray200} ${BORDERS.radius.md}`}>
             <div className="animate-slide-up">
               {renderBodyContent()}
             </div>

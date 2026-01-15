@@ -38,7 +38,7 @@ const Splash: React.FC<SplashProps> = ({ isVisible, onDismiss, language }) => {
     >
       {/* Top Section: Main Title */}
       <div className="grow flex flex-col justify-center items-center w-full max-w-[95%] px-4">
-        <h1 data-wobble-target className={TYPOGRAPHY.splashTitle}>
+        <h1 data-wobble-target className="font-bold text-coral tracking-widest whitespace-nowrap text-[5vw] md:text-[5vw] lg:text-[5vw] xl:text-7xl leading-tight select-none px-6 md:px-12">
           YUN DESIGN PORTFOLIO
         </h1>
       </div>
@@ -57,7 +57,7 @@ const Splash: React.FC<SplashProps> = ({ isVisible, onDismiss, language }) => {
       {/* Scroll Indicator */}
       <div className="absolute bottom-8 animate-bounce cursor-pointer" onClick={onDismiss}>
         <div data-wobble-target className="flex flex-col items-center gap-2 opacity-50 hover:opacity-100 transition-opacity">
-          <span className={TYPOGRAPHY.small + " text-gray-400"}>
+          <span className={`${TYPOGRAPHY.small} ${COLORS.gray400}`}>
             {language === 'en' ? 'Scroll to Enter' : '滚动进入'}
           </span>
           <ChevronDown className={COLORS.coral} size={24} />
