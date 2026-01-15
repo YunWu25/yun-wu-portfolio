@@ -40,7 +40,9 @@ export const PhotoFilters: React.FC<PhotoFiltersProps> = ({
               type="text"
               placeholder="Search photos..."
               value={filters.search}
-              onChange={(e) => { onSearchChange(e.target.value); }}
+              onChange={(e) => {
+                onSearchChange(e.target.value);
+              }}
               className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
             />
             <svg
@@ -61,7 +63,9 @@ export const PhotoFilters: React.FC<PhotoFiltersProps> = ({
           {/* Season filter */}
           <select
             value={filters.season}
-            onChange={(e) => { onSeasonChange(e.target.value); }}
+            onChange={(e) => {
+              onSeasonChange(e.target.value);
+            }}
             className="px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
           >
             <option value="">All Seasons</option>
@@ -76,7 +80,9 @@ export const PhotoFilters: React.FC<PhotoFiltersProps> = ({
           <div className="flex items-center gap-2">
             <select
               value={filters.sortField}
-              onChange={(e) => { onSortChange(e.target.value as SortField); }}
+              onChange={(e) => {
+                onSortChange(e.target.value as SortField);
+              }}
               className="px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
             >
               {sortOptions.map((opt) => (
@@ -86,7 +92,9 @@ export const PhotoFilters: React.FC<PhotoFiltersProps> = ({
               ))}
             </select>
             <button
-              onClick={() => { onSortChange(filters.sortField); }}
+              onClick={() => {
+                onSortChange(filters.sortField);
+              }}
               className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
               title={`Sort ${filters.sortDirection === 'asc' ? 'descending' : 'ascending'}`}
             >

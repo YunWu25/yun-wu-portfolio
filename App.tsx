@@ -1,10 +1,12 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { BrowserRouter, useLocation, useNavigate, Routes, Route } from 'react-router-dom';
 import Splash from './components/Splash';
 import MainContent from './components/MainContent';
 import FloatingBubble from './components/FloatingBubble';
-import { BubbleCollisionProvider, useGlobalWobbleCollision } from './components/BubbleCollisionContext';
+import {
+  BubbleCollisionProvider,
+  useGlobalWobbleCollision,
+} from './components/BubbleCollisionContext';
 import { PhotoManager } from './components/admin/PhotoManager';
 import { ViewState } from './types';
 import { SCROLL_THRESHOLDS } from './constants';
@@ -36,7 +38,7 @@ const AppContent: React.FC = () => {
   const [lastScrollTime, setLastScrollTime] = useState(0);
   const [language, setLanguage] = useState<Language>(() => {
     const savedLanguage = localStorage.getItem('language');
-    return (savedLanguage === 'en' || savedLanguage === 'zh') ? savedLanguage : 'en';
+    return savedLanguage === 'en' || savedLanguage === 'zh' ? savedLanguage : 'en';
   });
 
   const activeView = getViewFromPath(location.pathname);
@@ -76,28 +78,31 @@ const AppContent: React.FC = () => {
   };
 
   // Scroll Handler
-  const handleWheel = useCallback((e: WheelEvent) => {
-    const now = Date.now();
-    // Debounce scroll events to prevent jittery state flipping
-    if (now - lastScrollTime < SCROLL_THRESHOLDS.WHEEL_DEBOUNCE_MS) return;
+  const handleWheel = useCallback(
+    (e: WheelEvent) => {
+      const now = Date.now();
+      // Debounce scroll events to prevent jittery state flipping
+      if (now - lastScrollTime < SCROLL_THRESHOLDS.WHEEL_DEBOUNCE_MS) return;
 
-    if (e.deltaY > SCROLL_THRESHOLDS.SCROLL_DOWN_THRESHOLD && showSplash) {
-      // Scrolling Down: Hide Splash
-      setShowSplash(false);
-      setLastScrollTime(now);
-    } else if (e.deltaY < SCROLL_THRESHOLDS.SCROLL_UP_THRESHOLD && !showSplash) {
-      // Scrolling Up
+      if (e.deltaY > SCROLL_THRESHOLDS.SCROLL_DOWN_THRESHOLD && showSplash) {
+        // Scrolling Down: Hide Splash
+        setShowSplash(false);
+        setLastScrollTime(now);
+      } else if (e.deltaY < SCROLL_THRESHOLDS.SCROLL_UP_THRESHOLD && !showSplash) {
+        // Scrolling Up
 
-      // Check if we are inside scrollable content that is NOT at the top
-      if (isScrollableAndNotAtTop(e.target)) {
-        return; // Allow default scrolling behavior inside the div
+        // Check if we are inside scrollable content that is NOT at the top
+        if (isScrollableAndNotAtTop(e.target)) {
+          return; // Allow default scrolling behavior inside the div
+        }
+
+        // Only show splash if we are at the top of the content
+        setShowSplash(true);
+        setLastScrollTime(now);
       }
-
-      // Only show splash if we are at the top of the content
-      setShowSplash(true);
-      setLastScrollTime(now);
-    }
-  }, [showSplash, lastScrollTime]);
+    },
+    [showSplash, lastScrollTime]
+  );
 
   // Touch Handler for Mobile
   const [touchStart, setTouchStart] = useState<number | null>(null);
@@ -106,34 +111,37 @@ const AppContent: React.FC = () => {
     setTouchStart(e.touches[0]?.clientY ?? null);
   }, []);
 
-  const handleTouchMove = useCallback((e: TouchEvent) => {
-    if (touchStart === null) return;
+  const handleTouchMove = useCallback(
+    (e: TouchEvent) => {
+      if (touchStart === null) return;
 
-    const touch = e.touches[0];
-    if (!touch) return;
-    
-    const currentY = touch.clientY;
-    const diff = touchStart - currentY;
-    const now = Date.now();
+      const touch = e.touches[0];
+      if (!touch) return;
 
-    if (now - lastScrollTime < SCROLL_THRESHOLDS.TOUCH_DEBOUNCE_MS) return;
+      const currentY = touch.clientY;
+      const diff = touchStart - currentY;
+      const now = Date.now();
 
-    if (diff > SCROLL_THRESHOLDS.SWIPE_UP_THRESHOLD && showSplash) {
-      // Swipe Up (Scroll Down equivalent): Hide Splash
-      setShowSplash(false);
-      setLastScrollTime(now);
-    } else if (diff < SCROLL_THRESHOLDS.SWIPE_DOWN_THRESHOLD && !showSplash) {
-      // Swipe Down (Scroll Up equivalent): Show Splash
+      if (now - lastScrollTime < SCROLL_THRESHOLDS.TOUCH_DEBOUNCE_MS) return;
 
-      // Check if internal content is scrolled down
-      if (isScrollableAndNotAtTop(e.target)) {
-        return;
+      if (diff > SCROLL_THRESHOLDS.SWIPE_UP_THRESHOLD && showSplash) {
+        // Swipe Up (Scroll Down equivalent): Hide Splash
+        setShowSplash(false);
+        setLastScrollTime(now);
+      } else if (diff < SCROLL_THRESHOLDS.SWIPE_DOWN_THRESHOLD && !showSplash) {
+        // Swipe Down (Scroll Up equivalent): Show Splash
+
+        // Check if internal content is scrolled down
+        if (isScrollableAndNotAtTop(e.target)) {
+          return;
+        }
+
+        setShowSplash(true);
+        setLastScrollTime(now);
       }
-
-      setShowSplash(true);
-      setLastScrollTime(now);
-    }
-  }, [showSplash, touchStart, lastScrollTime]);
+    },
+    [showSplash, touchStart, lastScrollTime]
+  );
 
   useEffect(() => {
     // Use passive: false allows preventing default if needed, though we rely on logic branching here
@@ -152,11 +160,12 @@ const AppContent: React.FC = () => {
     <BubbleCollisionProvider>
       <WobbleCollisionDetector />
       <div className="relative w-full min-h-screen bg-offwhite text-darkgray font-sans selection:bg-coral selection:text-white overflow-hidden">
-
         {/* Overlay Splash Screen */}
         <Splash
           isVisible={showSplash}
-          onDismiss={() => { setShowSplash(false); }}
+          onDismiss={() => {
+            setShowSplash(false);
+          }}
           language={language}
         />
 

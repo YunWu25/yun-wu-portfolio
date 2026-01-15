@@ -1,5 +1,11 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { AdminPhoto, PhotoMetadataUpdate, PhotoFilters, SortField, SortDirection } from '../../../types';
+import {
+  AdminPhoto,
+  PhotoMetadataUpdate,
+  PhotoFilters,
+  SortField,
+  SortDirection,
+} from '../../../types';
 
 interface AdminPhotosResponse {
   photos: AdminPhoto[];
@@ -58,7 +64,7 @@ export function useAdminPhotos(): UseAdminPhotosReturn {
 
   // Extract unique seasons for filter dropdown
   const seasons = useMemo(() => {
-    const uniqueSeasons = new Set(photos.map(p => p.season).filter(Boolean));
+    const uniqueSeasons = new Set(photos.map((p) => p.season).filter(Boolean));
     return Array.from(uniqueSeasons).sort();
   }, [photos]);
 
@@ -69,17 +75,18 @@ export function useAdminPhotos(): UseAdminPhotosReturn {
     // Search filter (searches in title, alt, artist, key)
     if (filters.search) {
       const searchLower = filters.search.toLowerCase();
-      result = result.filter(p =>
-        p.title.toLowerCase().includes(searchLower) ||
-        p.alt.toLowerCase().includes(searchLower) ||
-        p.artist.toLowerCase().includes(searchLower) ||
-        p.key.toLowerCase().includes(searchLower)
+      result = result.filter(
+        (p) =>
+          p.title.toLowerCase().includes(searchLower) ||
+          p.alt.toLowerCase().includes(searchLower) ||
+          p.artist.toLowerCase().includes(searchLower) ||
+          p.key.toLowerCase().includes(searchLower)
       );
     }
 
     // Season filter
     if (filters.season) {
-      result = result.filter(p => p.season === filters.season);
+      result = result.filter((p) => p.season === filters.season);
     }
 
     // Sort
@@ -106,18 +113,19 @@ export function useAdminPhotos(): UseAdminPhotosReturn {
   }, [photos, filters]);
 
   const updateSearch = useCallback((search: string) => {
-    setFilters(f => ({ ...f, search }));
+    setFilters((f) => ({ ...f, search }));
   }, []);
 
   const updateSeason = useCallback((season: string) => {
-    setFilters(f => ({ ...f, season }));
+    setFilters((f) => ({ ...f, season }));
   }, []);
 
   const updateSort = useCallback((field: SortField, direction?: SortDirection) => {
-    setFilters(f => ({
+    setFilters((f) => ({
       ...f,
       sortField: field,
-      sortDirection: direction ?? (f.sortField === field && f.sortDirection === 'asc' ? 'desc' : 'asc'),
+      sortDirection:
+        direction ?? (f.sortField === field && f.sortDirection === 'asc' ? 'desc' : 'asc'),
     }));
   }, []);
 
@@ -134,8 +142,8 @@ export function useAdminPhotos(): UseAdminPhotosReturn {
     }
 
     // Update local state optimistically
-    setPhotos(prev =>
-      prev.map(p =>
+    setPhotos((prev) =>
+      prev.map((p) =>
         p.key === data.key
           ? { ...p, title: data.title, alt: data.alt, artist: data.artist, season: data.season }
           : p

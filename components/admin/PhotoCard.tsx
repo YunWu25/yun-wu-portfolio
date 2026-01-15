@@ -19,7 +19,7 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({ photo, onSave }) => {
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
   const [errorMessage, setErrorMessage] = useState('');
 
-  const hasChanges = 
+  const hasChanges =
     formData.title !== originalData.title ||
     formData.alt !== originalData.alt ||
     formData.artist !== originalData.artist ||
@@ -38,11 +38,15 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({ photo, onSave }) => {
         ...formData,
       });
       setSaveStatus('success');
-      setTimeout(() => { setSaveStatus('idle'); }, 2000);
+      setTimeout(() => {
+        setSaveStatus('idle');
+      }, 2000);
     } catch (err) {
       setSaveStatus('error');
       setErrorMessage(err instanceof Error ? err.message : 'Failed to save');
-      setTimeout(() => { setSaveStatus('idle'); }, 3000);
+      setTimeout(() => {
+        setSaveStatus('idle');
+      }, 3000);
     }
   }, [onSave, photo.key, formData]);
 
@@ -93,7 +97,9 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({ photo, onSave }) => {
             value={formData.title}
             placeholder="Photo title"
             modified={isModified('title')}
-            onChange={(v) => { handleChange('title', v); }}
+            onChange={(v) => {
+              handleChange('title', v);
+            }}
           />
           <Field
             label="Alt Text"
@@ -101,7 +107,9 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({ photo, onSave }) => {
             value={formData.alt}
             placeholder="Alt description"
             modified={isModified('alt')}
-            onChange={(v) => { handleChange('alt', v); }}
+            onChange={(v) => {
+              handleChange('alt', v);
+            }}
           />
           <Field
             label="Artist"
@@ -109,7 +117,9 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({ photo, onSave }) => {
             value={formData.artist}
             placeholder="Artist name"
             modified={isModified('artist')}
-            onChange={(v) => { handleChange('artist', v); }}
+            onChange={(v) => {
+              handleChange('artist', v);
+            }}
           />
           <Field
             label="Season"
@@ -117,26 +127,31 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({ photo, onSave }) => {
             value={formData.season}
             placeholder="e.g., Fall 2024"
             modified={isModified('season')}
-            onChange={(v) => { handleChange('season', v); }}
+            onChange={(v) => {
+              handleChange('season', v);
+            }}
           />
         </div>
 
         {/* Actions */}
         <div className="flex items-center gap-3 mt-auto pt-2">
           <button
-            onClick={() => { void handleSave(); }}
+            onClick={() => {
+              void handleSave();
+            }}
             disabled={saveStatus === 'saving' || !hasChanges}
             className={`
               px-4 py-2 rounded-lg text-sm font-medium transition-all
-              ${saveStatus === 'idle' && hasChanges
-                ? 'bg-gray-900 text-white hover:bg-black'
-                : saveStatus === 'saving'
-                ? 'bg-gray-400 text-white cursor-wait'
-                : saveStatus === 'success'
-                ? 'bg-green-500 text-white'
-                : saveStatus === 'error'
-                ? 'bg-red-500 text-white'
-                : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+              ${
+                saveStatus === 'idle' && hasChanges
+                  ? 'bg-gray-900 text-white hover:bg-black'
+                  : saveStatus === 'saving'
+                    ? 'bg-gray-400 text-white cursor-wait'
+                    : saveStatus === 'success'
+                      ? 'bg-green-500 text-white'
+                      : saveStatus === 'error'
+                        ? 'bg-red-500 text-white'
+                        : 'bg-gray-200 text-gray-400 cursor-not-allowed'
               }
             `}
           >
@@ -145,9 +160,7 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({ photo, onSave }) => {
             {saveStatus === 'success' && '✓ Saved'}
             {saveStatus === 'error' && '✗ Error'}
           </button>
-          {errorMessage && (
-            <span className="text-xs text-red-500">{errorMessage}</span>
-          )}
+          {errorMessage && <span className="text-xs text-red-500">{errorMessage}</span>}
           {hasChanges && saveStatus === 'idle' && (
             <span className="text-xs text-amber-600">Unsaved changes</span>
           )}
@@ -177,7 +190,9 @@ const Field: React.FC<FieldProps> = ({ label, name, value, placeholder, modified
       type="text"
       value={value}
       placeholder={placeholder}
-      onChange={(e) => { onChange(e.target.value); }}
+      onChange={(e) => {
+        onChange(e.target.value);
+      }}
       className={`
         px-3 py-2 border rounded-lg text-sm transition-colors
         focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent

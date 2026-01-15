@@ -13,23 +13,19 @@ function createTaperedTubeGeometry(
   const startVec = new THREE.Vector3(...start);
   const endVec = new THREE.Vector3(...end);
   const curve = new THREE.LineCurve3(startVec, endVec);
-  
+
   const tubularSegments = 20;
   const radiusSegments = 6;
-  
+
   const geometry = new THREE.TubeGeometry(curve, tubularSegments, 0.02, radiusSegments, false);
-  
+
   // Modify radius to taper from thick to thin
   const positions = geometry.attributes.position as THREE.BufferAttribute | undefined;
   if (positions) {
     for (let i = 0; i < positions.count; i++) {
       const t = Math.floor(i / radiusSegments) / tubularSegments;
       const scale = 1 - t * 0.7; // 100% at start, 30% at end
-      const pos = new THREE.Vector3(
-        positions.getX(i),
-        positions.getY(i),
-        positions.getZ(i)
-      );
+      const pos = new THREE.Vector3(positions.getX(i), positions.getY(i), positions.getZ(i));
       const center = curve.getPoint(t);
       const direction = pos.clone().sub(center);
       direction.multiplyScalar(scale);
@@ -37,7 +33,7 @@ function createTaperedTubeGeometry(
     }
     positions.needsUpdate = true;
   }
-  
+
   return geometry;
 }
 
@@ -65,25 +61,25 @@ const OrbitalSystem: React.FC<OrbitalSystemProps> = ({ phases, expandedPhase, on
   useFrame((state, delta) => {
     if (groupRef.current) {
       groupRef.current.rotation.y += delta * 0.1; // Slow continuous rotation
-      
+
       // Update matrix world before using it
       groupRef.current.updateMatrixWorld();
-      
+
       // Get actual camera position
       const cameraPosition = state.camera.position;
       const originPosition = new THREE.Vector3(0, 0, 0); // Orb is at origin
-      
+
       // Distance from camera to orb center
       const cameraToOriginDist = cameraPosition.distanceTo(originPosition);
-      
+
       // Update card opacities based on distance from camera
       const newOpacities = cardPositionsRef.current.map((pos) => {
         if (!groupRef.current) return 1;
         const worldPos = pos.clone().applyMatrix4(groupRef.current.matrixWorld);
-        
+
         // Distance from camera to card
         const cameraToCardDist = cameraPosition.distanceTo(worldPos);
-        
+
         // If card is further from camera than orb, it's behind the orb
         if (cameraToCardDist > cameraToOriginDist) {
           // Calculate how far behind (as ratio)
@@ -94,45 +90,47 @@ const OrbitalSystem: React.FC<OrbitalSystemProps> = ({ phases, expandedPhase, on
         }
         return 1; // Full opacity when in front of orb
       });
-      
+
       setCardOpacities(newOpacities);
     }
-    
+
     // Pulse the orb
     if (orbRef.current) {
       const scale = 1 + Math.sin(state.clock.elapsedTime * 2) * 0.05;
       orbRef.current.scale.setScalar(scale);
     }
   });
-  
+
   // Distribute boxes evenly in 3D spherical space
-  const positionVariations = useMemo(() => 
-    phases.map((_, index) => {
-      // Use spherical coordinates for even distribution
-      const phi = Math.acos(-1 + (2 * index) / phases.length); // Polar angle
-      const theta = Math.sqrt(phases.length * Math.PI) * phi; // Azimuthal angle
-      
-      // Radius variation based on index
-      const radiusVar = 0.9 + ((index * 7) % 10) / 50; // ±10% variation, deterministic
-      
-      return {
-        phi,
-        theta,
-        radiusVar,
-      };
-    }), 
+  const positionVariations = useMemo(
+    () =>
+      phases.map((_, index) => {
+        // Use spherical coordinates for even distribution
+        const phi = Math.acos(-1 + (2 * index) / phases.length); // Polar angle
+        const theta = Math.sqrt(phases.length * Math.PI) * phi; // Azimuthal angle
+
+        // Radius variation based on index
+        const radiusVar = 0.9 + ((index * 7) % 10) / 50; // ±10% variation, deterministic
+
+        return {
+          phi,
+          theta,
+          radiusVar,
+        };
+      }),
     [phases]
   );
 
   // Calculate card positions from variations
-  const cardPositions = useMemo(() => 
-    positionVariations.map((variations) => {
-      const radius = baseRadius * variations.radiusVar;
-      const x = radius * Math.sin(variations.phi) * Math.cos(variations.theta);
-      const y = radius * Math.sin(variations.phi) * Math.sin(variations.theta);
-      const z = radius * Math.cos(variations.phi);
-      return { x, y, z };
-    }),
+  const cardPositions = useMemo(
+    () =>
+      positionVariations.map((variations) => {
+        const radius = baseRadius * variations.radiusVar;
+        const x = radius * Math.sin(variations.phi) * Math.cos(variations.theta);
+        const y = radius * Math.sin(variations.phi) * Math.sin(variations.theta);
+        const z = radius * Math.cos(variations.phi);
+        return { x, y, z };
+      }),
     [positionVariations, baseRadius]
   );
 
@@ -159,22 +157,18 @@ const OrbitalSystem: React.FC<OrbitalSystemProps> = ({ phases, expandedPhase, on
           roughness={0.8}
         />
       </mesh>
-      
+
       {/* Outer glow sphere */}
       <mesh position={[0, 0, 0]}>
         <sphereGeometry args={[0.225, 32, 32]} />
-        <meshBasicMaterial
-          color="#ffb3d9"
-          transparent
-          opacity={0.15}
-        />
+        <meshBasicMaterial color="#ffb3d9" transparent opacity={0.15} />
       </mesh>
 
       {/* Connecting Lines and Phase Cards */}
       {phases.map((phase, index) => {
         const pos = cardPositions[index];
         if (!pos) return null;
-        
+
         const { x, y, z } = pos;
 
         return (
@@ -193,16 +187,25 @@ const OrbitalSystem: React.FC<OrbitalSystemProps> = ({ phases, expandedPhase, on
               position={[x, y, z]}
               center
               distanceFactor={8}
-              zIndexRange={[(cardOpacities[index] ?? 1) < 0.5 ? 0 : 100, (cardOpacities[index] ?? 1) < 0.5 ? 0 : 100]}
+              zIndexRange={[
+                (cardOpacities[index] ?? 1) < 0.5 ? 0 : 100,
+                (cardOpacities[index] ?? 1) < 0.5 ? 0 : 100,
+              ]}
               style={{
                 transition: 'all 0.3s',
                 pointerEvents: 'auto',
               }}
             >
               <div
-                onClick={() => { onPhaseClick(index); }}
-                onMouseEnter={() => { setHoveredIndex(index); }}
-                onMouseLeave={() => { setHoveredIndex(null); }}
+                onClick={() => {
+                  onPhaseClick(index);
+                }}
+                onMouseEnter={() => {
+                  setHoveredIndex(index);
+                }}
+                onMouseLeave={() => {
+                  setHoveredIndex(null);
+                }}
                 className={`
                   cursor-pointer rounded-md border shadow-md hover:shadow-xl
                   ${expandedPhase === index ? 'border-coral shadow-2xl' : 'border-gray-200 hover:border-coral'}
@@ -210,10 +213,16 @@ const OrbitalSystem: React.FC<OrbitalSystemProps> = ({ phases, expandedPhase, on
                   ${expandedPhase === index ? 'w-80 p-4' : 'px-2 py-1'}
                 `}
                 style={{
-                  transform: expandedPhase === index ? 'scale(1.1)' : hoveredIndex === index ? 'scale(1.03)' : 'scale(1)',
-                  backgroundColor: expandedPhase === index 
-                    ? '#ffffff' 
-                    : `hsl(${350 + (index % 5) * 5}, 100%, ${98 - (index % 5)}%)`, // Subtle phase-based tints
+                  transform:
+                    expandedPhase === index
+                      ? 'scale(1.1)'
+                      : hoveredIndex === index
+                        ? 'scale(1.03)'
+                        : 'scale(1)',
+                  backgroundColor:
+                    expandedPhase === index
+                      ? '#ffffff'
+                      : `hsl(${350 + (index % 5) * 5}, 100%, ${98 - (index % 5)}%)`, // Subtle phase-based tints
                   opacity: cardOpacities[index] ?? 1,
                   transition: 'opacity 0.3s ease-out',
                 }}
@@ -226,20 +235,26 @@ const OrbitalSystem: React.FC<OrbitalSystemProps> = ({ phases, expandedPhase, on
                 )}
 
                 {/* Phase Title */}
-                <h3 className={`
+                <h3
+                  className={`
                   font-sans font-medium ${COLORS.coral} whitespace-nowrap
                   ${expandedPhase === index ? 'text-lg mb-2' : 'text-xs leading-tight'}
                   transition-all duration-300
-                `}>
+                `}
+                >
                   {phase.title}
                 </h3>
 
                 {/* Phase Description - Only show when expanded */}
-                <div className={`
+                <div
+                  className={`
                   overflow-hidden transition-all duration-300
                   ${expandedPhase === index ? 'max-h-96 opacity-100 mt-3' : 'max-h-0 opacity-0'}
-                `}>
-                  <p className={`${TYPOGRAPHY.bodySmall} ${COLORS.gray600} leading-relaxed text-sm`}>
+                `}
+                >
+                  <p
+                    className={`${TYPOGRAPHY.bodySmall} ${COLORS.gray600} leading-relaxed text-sm`}
+                  >
                     {phase.description}
                   </p>
                 </div>
@@ -253,15 +268,15 @@ const OrbitalSystem: React.FC<OrbitalSystemProps> = ({ phases, expandedPhase, on
 };
 
 // Animated line with gradient - thicker near orb
-const AnimatedLine: React.FC<{ 
-  start: [number, number, number]; 
-  end: [number, number, number]; 
+const AnimatedLine: React.FC<{
+  start: [number, number, number];
+  end: [number, number, number];
   color: string;
   glowColor: string;
   index: number;
 }> = ({ start, end, color, index }) => {
   const tubeRef = useRef<THREE.Mesh>(null);
-  
+
   // Create tapered tube geometry using factory function
   const tubeGeometry = useMemo(() => createTaperedTubeGeometry(start, end), [start, end]);
 
@@ -276,11 +291,7 @@ const AnimatedLine: React.FC<{
 
   return (
     <mesh ref={tubeRef} geometry={tubeGeometry}>
-      <meshBasicMaterial
-        color={color}
-        transparent
-        opacity={0.5}
-      />
+      <meshBasicMaterial color={color} transparent opacity={0.5} />
     </mesh>
   );
 };

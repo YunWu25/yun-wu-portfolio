@@ -26,9 +26,9 @@ const Typewriter: React.FC<TypewriterProps> = ({ text, className = '', startDela
       setStarted(true);
     }, startDelay);
 
-    return () => { 
+    return () => {
       cancelAnimationFrame(resetId);
-      clearTimeout(startTimeout); 
+      clearTimeout(startTimeout);
     };
   }, [startDelay, text]);
 
@@ -56,7 +56,9 @@ const Typewriter: React.FC<TypewriterProps> = ({ text, className = '', startDela
     // Start typing the first character immediately
     typeCharacter();
 
-    return () => { clearTimeout(timeoutId); };
+    return () => {
+      clearTimeout(timeoutId);
+    };
   }, [text, started]);
 
   return (

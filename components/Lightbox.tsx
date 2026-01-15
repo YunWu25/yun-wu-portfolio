@@ -31,17 +31,20 @@ const Lightbox: React.FC<LightboxProps> = ({
   const [cursorDistance, setCursorDistance] = useState(0);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
-  const handleKeyDown = useCallback((e: KeyboardEvent) => {
-    if (!isOpen) return;
-    
-    if (e.key === 'Escape') {
-      onClose();
-    } else if (e.key === 'ArrowRight') {
-      onNext();
-    } else if (e.key === 'ArrowLeft') {
-      onPrev();
-    }
-  }, [isOpen, onClose, onNext, onPrev]);
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if (!isOpen) return;
+
+      if (e.key === 'Escape') {
+        onClose();
+      } else if (e.key === 'ArrowRight') {
+        onNext();
+      } else if (e.key === 'ArrowLeft') {
+        onPrev();
+      }
+    },
+    [isOpen, onClose, onNext, onPrev]
+  );
 
   useEffect(() => {
     if (isOpen) {
@@ -56,11 +59,11 @@ const Lightbox: React.FC<LightboxProps> = ({
 
   const handleContainerMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     setMousePosition({ x: e.clientX, y: e.clientY });
-    
+
     const screenWidth = window.innerWidth;
     const zoneWidth = screenWidth / 3;
     const x = e.clientX;
-    
+
     if (x < zoneWidth) {
       setCursorZone('left');
       const distanceFromEdge = x / zoneWidth;
@@ -88,8 +91,8 @@ const Lightbox: React.FC<LightboxProps> = ({
   const getCursorStyle = () => {
     const baseSize = 40;
     const maxSize = 60;
-    const size = baseSize + (cursorDistance * (maxSize - baseSize));
-    
+    const size = baseSize + cursorDistance * (maxSize - baseSize);
+
     return {
       width: `${size}px`,
       height: `${size}px`,
@@ -99,7 +102,7 @@ const Lightbox: React.FC<LightboxProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div 
+    <div
       className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center"
       onMouseMove={handleContainerMouseMove}
       onClick={handleContainerClick}
@@ -116,17 +119,15 @@ const Lightbox: React.FC<LightboxProps> = ({
       </button>
 
       {/* Image container */}
-      <div 
-        className="max-w-[90vw] max-h-[90vh] flex flex-col items-center relative overflow-hidden"
-      >
+      <div className="max-w-[90vw] max-h-[90vh] flex flex-col items-center relative overflow-hidden">
         <img
           src={imageUrl}
           alt={title}
           className="max-w-full max-h-[80vh] object-contain rounded-lg transition-transform duration-300"
         />
-        
+
         {/* Custom cursor indicator */}
-        <div 
+        <div
           className="fixed pointer-events-none transition-all duration-150 ease-out"
           style={{
             left: `${mousePosition.x}px`,
@@ -136,17 +137,23 @@ const Lightbox: React.FC<LightboxProps> = ({
           }}
         >
           {cursorZone === 'center' && (
-            <div className={`w-full h-full border-2 border-dashed ${COLORS.borderCoral} opacity-70 rounded flex items-center justify-center`}>
+            <div
+              className={`w-full h-full border-2 border-dashed ${COLORS.borderCoral} opacity-70 rounded flex items-center justify-center`}
+            >
               <div className={`w-4 h-4 ${COLORS.bgCoral} opacity-70 rounded-full`} />
             </div>
           )}
           {cursorZone === 'left' && (
-            <div className={`w-full h-full flex items-center justify-center ${COLORS.coral} font-bold text-4xl`}>
+            <div
+              className={`w-full h-full flex items-center justify-center ${COLORS.coral} font-bold text-4xl`}
+            >
               &lt;
             </div>
           )}
           {cursorZone === 'right' && (
-            <div className={`w-full h-full flex items-center justify-center ${COLORS.coral} font-bold text-4xl`}>
+            <div
+              className={`w-full h-full flex items-center justify-center ${COLORS.coral} font-bold text-4xl`}
+            >
               &gt;
             </div>
           )}
@@ -155,9 +162,7 @@ const Lightbox: React.FC<LightboxProps> = ({
         {/* Info */}
         <div className="mt-4 text-center">
           <h3 className="text-white text-xl font-medium">{title}</h3>
-          {subtitle && (
-            <p className="text-white/70 text-sm mt-1">{subtitle}</p>
-          )}
+          {subtitle && <p className="text-white/70 text-sm mt-1">{subtitle}</p>}
         </div>
       </div>
 

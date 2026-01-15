@@ -8,11 +8,7 @@ export default tseslint.config(
   { ignores: ['dist', 'node_modules', 'functions', '.wrangler'] },
   {
     files: ['**/*.{ts,tsx}'],
-    extends: [
-      js.configs.recommended,
-      ...tseslint.configs.strictTypeChecked,
-      prettierConfig,
-    ],
+    extends: [js.configs.recommended, ...tseslint.configs.strictTypeChecked, prettierConfig],
     languageOptions: {
       parserOptions: {
         project: true,

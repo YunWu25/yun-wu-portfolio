@@ -51,9 +51,10 @@ const Video: React.FC<VideoProps> = ({ language }) => {
     void fetchVideos();
   }, []);
 
-  const intro = language === 'en'
-    ? 'A collection of cinematic work exploring visual storytelling through film and video.'
-    : '通过影片和视频探索视觉叙事的电影作品集。';
+  const intro =
+    language === 'en'
+      ? 'A collection of cinematic work exploring visual storytelling through film and video.'
+      : '通过影片和视频探索视觉叙事的电影作品集。';
 
   if (loading) {
     return (
@@ -76,12 +77,14 @@ const Video: React.FC<VideoProps> = ({ language }) => {
         </div>
         <div className="flex flex-col justify-center items-center h-[50vh] text-center">
           <p className="text-gray-500 mb-4">
-            {language === 'en' 
-              ? error ?? 'No videos available at the moment.' 
-              : error ?? '暂时没有可用的视频。'}
+            {language === 'en'
+              ? (error ?? 'No videos available at the moment.')
+              : (error ?? '暂时没有可用的视频。')}
           </p>
-          <button 
-            onClick={() => { window.location.reload(); }}
+          <button
+            onClick={() => {
+              window.location.reload();
+            }}
             className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm transition-colors"
           >
             {language === 'en' ? 'Try Again' : '重试'}
@@ -95,9 +98,7 @@ const Video: React.FC<VideoProps> = ({ language }) => {
     <div className="w-full">
       {/* Page Header */}
       <div className="mb-12 text-center">
-        <p className={`${TYPOGRAPHY.body} ${COLORS.gray500}`}>
-          {intro}
-        </p>
+        <p className={`${TYPOGRAPHY.body} ${COLORS.gray500}`}>{intro}</p>
       </div>
 
       {/* Two Column Grid */}
@@ -117,25 +118,23 @@ const Video: React.FC<VideoProps> = ({ language }) => {
               className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
               loading="lazy"
             />
-            
+
             {/* Play button overlay */}
             <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
               <div className="w-16 h-16 bg-white/90 rounded-full flex items-center justify-center shadow-lg">
                 <svg className="w-8 h-8 text-gray-900 ml-1" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M8 5v14l11-7z"/>
+                  <path d="M8 5v14l11-7z" />
                 </svg>
               </div>
             </div>
-            
+
             {/* Hover overlay with info */}
             <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
               <div className="absolute bottom-0 left-0 right-0 p-6">
                 <h3 className={`${TYPOGRAPHY.cardOverlayTitle} ${COLORS.white} mb-2 line-clamp-2`}>
                   {video.title}
                 </h3>
-                <p className={`${TYPOGRAPHY.cardOverlayMeta} text-white/80`}>
-                  {video.year}
-                </p>
+                <p className={`${TYPOGRAPHY.cardOverlayMeta} text-white/80`}>{video.year}</p>
               </div>
             </div>
 

@@ -63,11 +63,13 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
 
     updateColumnCount();
     window.addEventListener('resize', updateColumnCount);
-    return () => { window.removeEventListener('resize', updateColumnCount); };
+    return () => {
+      window.removeEventListener('resize', updateColumnCount);
+    };
   }, []);
 
   const openLightbox = (photoKey: string) => {
-    const index = photos.findIndex(p => p.key === photoKey);
+    const index = photos.findIndex((p) => p.key === photoKey);
     if (index !== -1) {
       setSelectedPhotoIndex(index);
     }
@@ -80,7 +82,7 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
       columns[columnIndex]?.push(photo);
     });
     // Triple the photos for infinite scroll effect
-    return columns.map(col => [...col, ...col, ...col]);
+    return columns.map((col) => [...col, ...col, ...col]);
   };
 
   const photoColumns = splitPhotosIntoColumns(columnCount);
@@ -97,7 +99,9 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
           <div
             key={`col${columnIndex}-${photo.key}-${index}`}
             className="rounded-lg overflow-hidden shadow-sm transition-all duration-300 group relative cursor-pointer border border-transparent hover:border-gray-300"
-            onClick={() => { openLightbox(photo.key); }}
+            onClick={() => {
+              openLightbox(photo.key);
+            }}
             onMouseEnter={(e) => {
               const parent = e.currentTarget.parentElement;
               if (parent) parent.style.animationPlayState = 'paused';
@@ -126,9 +130,10 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
     </div>
   );
 
-  const intro = language === 'en'
-    ? 'Capturing moments of silence, texture, and light. A collection of works exploring the relationship between natural landscapes and human perception.'
-    : '捕捉沉默、质感和光的瞬间。探索自然景观与人类感知之间关系的作品集。';
+  const intro =
+    language === 'en'
+      ? 'Capturing moments of silence, texture, and light. A collection of works exploring the relationship between natural landscapes and human perception.'
+      : '捕捉沉默、质感和光的瞬间。探索自然景观与人类感知之间关系的作品集。';
 
   if (loading) {
     return (
@@ -152,12 +157,14 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
         </div>
         <div className="flex flex-col justify-center items-center h-[50vh] text-center">
           <p className="text-gray-500 mb-4">
-            {language === 'en' 
-              ? error ?? 'No photos available at the moment.' 
-              : error ?? '暂时没有可用的照片。'}
+            {language === 'en'
+              ? (error ?? 'No photos available at the moment.')
+              : (error ?? '暂时没有可用的照片。')}
           </p>
-          <button 
-            onClick={() => { window.location.reload(); }}
+          <button
+            onClick={() => {
+              window.location.reload();
+            }}
             className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm transition-colors"
           >
             {language === 'en' ? 'Try Again' : '重试'}
@@ -172,9 +179,7 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
   return (
     <div id="photography-root" className="w-full">
       <div id="photography-header" className="mb-12 text-center">
-        <p className={`${TYPOGRAPHY.body} ${COLORS.gray500}`}>
-          {intro}
-        </p>
+        <p className={`${TYPOGRAPHY.body} ${COLORS.gray500}`}>{intro}</p>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 h-[70vh]">
@@ -192,10 +197,12 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
           setSelectedPhotoIndex(null);
         }}
         onNext={() => {
-          setSelectedPhotoIndex((prev) => prev !== null ? (prev + 1) % photos.length : null);
+          setSelectedPhotoIndex((prev) => (prev !== null ? (prev + 1) % photos.length : null));
         }}
         onPrev={() => {
-          setSelectedPhotoIndex((prev) => prev !== null ? (prev - 1 + photos.length) % photos.length : null);
+          setSelectedPhotoIndex((prev) =>
+            prev !== null ? (prev - 1 + photos.length) % photos.length : null
+          );
         }}
       />
     </div>

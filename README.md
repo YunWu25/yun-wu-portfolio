@@ -38,6 +38,7 @@ Portfolio website showcasing Yun Wu's work in visual design, video, and photogra
 ## Features
 
 ### Navigation
+
 - Home (with submenu: Design, Video, Photography)
 - About
 - Project Flow
@@ -45,6 +46,7 @@ Portfolio website showcasing Yun Wu's work in visual design, video, and photogra
 - Mobile-responsive hamburger menu
 
 ### Key Features
+
 - Session-based splash screen with typewriter animation
 - Photography gallery with portrait images
 - Video section with two-column grid layout
@@ -64,21 +66,25 @@ Portfolio website showcasing Yun Wu's work in visual design, video, and photogra
 ### Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone https://github.com/YunWu25/yun-wu-portfolio.git
    ```
 
 2. **Navigate to the project directory**
+
    ```bash
    cd yun-wu-portfolio
    ```
 
 3. **Install dependencies**
+
    ```bash
    npm install
    ```
 
 4. **Start the development server**
+
    ```bash
    npm run dev
    ```
@@ -92,11 +98,11 @@ Portfolio website showcasing Yun Wu's work in visual design, video, and photogra
 
 ## Usage
 
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Start Vite development server |
-| `npm run build` | Build for production |
-| `npm run preview` | Preview production build |
+| Command                       | Description                                                      |
+| ----------------------------- | ---------------------------------------------------------------- |
+| `npm run dev`                 | Start Vite development server                                    |
+| `npm run build`               | Build for production                                             |
+| `npm run preview`             | Preview production build                                         |
 | `npx wrangler pages dev dist` | Test with Cloudflare Pages Functions (run `npm run build` first) |
 
 ---
@@ -164,6 +170,7 @@ yun-wu-portfolio/
 The site is deployed at **yunwustudio.com** via Cloudflare Pages.
 
 To build for production:
+
 ```bash
 npm run build
 ```
@@ -184,7 +191,7 @@ Photo metadata editor at `/admin/`. Protect with Cloudflare Access (Zero Trust â
 
 - Email: [Yunwustudio@gmail.com](mailto:Yunwustudio@gmail.com)
 - Phone: +1 425-837-2524
-- Instagram: [@yun___wu](https://instagram.com/yun___wu)
+- Instagram: [@yun\_\_\_wu](https://instagram.com/yun___wu)
 - LinkedIn: [yun-w-0532b5190](https://linkedin.com/in/yun-w-0532b5190)
 
 **Website**: [yunwustudio.com](https://yunwustudio.com)

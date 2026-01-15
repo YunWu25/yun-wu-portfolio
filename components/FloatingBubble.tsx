@@ -2,24 +2,24 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useBubbleCollision } from './BubbleCollisionContext';
 
 // Layout constants
-const BUBBLE_SIZE = 56;           // w-14 = 14 * 4 = 56px
-const EDGE_PADDING = 8;           // Minimum distance from viewport edge
-const INITIAL_OFFSET = 32;        // Initial position from edges (Tailwind's spacing-8)
+const BUBBLE_SIZE = 56; // w-14 = 14 * 4 = 56px
+const EDGE_PADDING = 8; // Minimum distance from viewport edge
+const INITIAL_OFFSET = 32; // Initial position from edges (Tailwind's spacing-8)
 const VIEWPORT_CONSTRAINT = BUBBLE_SIZE + EDGE_PADDING; // 64px
 
 // Physics constants
-const VELOCITY_DECAY = 0.97;      // Velocity retained per frame (lower = stops faster)
-const MIN_VELOCITY = 0.3;         // Stop threshold
-const BOUNCE_RESTITUTION = 0.8;   // Velocity retained after edge bounce (lower = less bouncy)
-const VELOCITY_SCALE = 16;        // Scales velocity for ~60fps
-const DRAG_THRESHOLD = 5;         // Pixels moved before drag is recognized
+const VELOCITY_DECAY = 0.97; // Velocity retained per frame (lower = stops faster)
+const MIN_VELOCITY = 0.3; // Stop threshold
+const BOUNCE_RESTITUTION = 0.8; // Velocity retained after edge bounce (lower = less bouncy)
+const VELOCITY_SCALE = 16; // Scales velocity for ~60fps
+const DRAG_THRESHOLD = 5; // Pixels moved before drag is recognized
 
 const FloatingBubble: React.FC = () => {
   const [isHovered, setIsHovered] = useState(false);
   const [localIsDragging, setLocalIsDragging] = useState(false);
   const [hasMoved, setHasMoved] = useState(false);
   const [position, setPosition] = useState({ x: INITIAL_OFFSET, y: INITIAL_OFFSET * 3 + 16 });
-  
+
   // Get context for broadcasting position
   const { setBubblePos, setIsDragging } = useBubbleCollision();
   const bubbleRef = useRef<HTMLDivElement>(null);
@@ -34,13 +34,13 @@ const FloatingBubble: React.FC = () => {
   const constrainPosition = useCallback((x: number, y: number) => {
     return {
       x: Math.max(EDGE_PADDING, Math.min(x, window.innerWidth - VIEWPORT_CONSTRAINT)),
-      y: Math.max(EDGE_PADDING, Math.min(y, window.innerHeight - VIEWPORT_CONSTRAINT))
+      y: Math.max(EDGE_PADDING, Math.min(y, window.innerHeight - VIEWPORT_CONSTRAINT)),
     };
   }, []);
 
   // Momentum animation callback ref for self-reference
   const animateMomentumRef = useRef<() => void>(() => {});
-  
+
   // Update momentum animation function in effect
   useEffect(() => {
     animateMomentumRef.current = () => {
@@ -48,17 +48,17 @@ const FloatingBubble: React.FC = () => {
       velocity.current.y *= VELOCITY_DECAY;
 
       // Stop when velocity is negligible
-      if (Math.abs(velocity.current.x) < MIN_VELOCITY && Math.abs(velocity.current.y) < MIN_VELOCITY) {
+      if (
+        Math.abs(velocity.current.x) < MIN_VELOCITY &&
+        Math.abs(velocity.current.y) < MIN_VELOCITY
+      ) {
         animationRef.current = null;
         return;
       }
 
-      setPosition(prev => {
-        const newPos = constrainPosition(
-          prev.x + velocity.current.x,
-          prev.y + velocity.current.y
-        );
-        
+      setPosition((prev) => {
+        const newPos = constrainPosition(prev.x + velocity.current.x, prev.y + velocity.current.y);
+
         // Bounce off edges
         if (newPos.x <= EDGE_PADDING || newPos.x >= window.innerWidth - VIEWPORT_CONSTRAINT) {
           velocity.current.x *= -BOUNCE_RESTITUTION;
@@ -66,7 +66,7 @@ const FloatingBubble: React.FC = () => {
         if (newPos.y <= EDGE_PADDING || newPos.y >= window.innerHeight - VIEWPORT_CONSTRAINT) {
           velocity.current.y *= -BOUNCE_RESTITUTION;
         }
-        
+
         return newPos;
       });
 
@@ -81,27 +81,27 @@ const FloatingBubble: React.FC = () => {
         x: position.x,
         y: position.y,
         width: BUBBLE_SIZE,
-        height: BUBBLE_SIZE
+        height: BUBBLE_SIZE,
       });
     }
   }, [position, localIsDragging, setBubblePos]);
 
   const handleMouseDown = (e: React.MouseEvent) => {
     if (!bubbleRef.current) return;
-    
+
     // Cancel any ongoing momentum animation
     if (animationRef.current) {
       cancelAnimationFrame(animationRef.current);
       animationRef.current = null;
     }
-    
+
     setLocalIsDragging(true);
     setIsDragging(true);
     setHasMoved(false);
     const rect = bubbleRef.current.getBoundingClientRect();
     dragOffset.current = {
       x: e.clientX - rect.left,
-      y: e.clientY - rect.top
+      y: e.clientY - rect.top,
     };
     startPos.current = { x: e.clientX, y: e.clientY };
     lastPos.current = { x: e.clientX, y: e.clientY };
@@ -112,20 +112,20 @@ const FloatingBubble: React.FC = () => {
 
   const handleTouchStart = (e: React.TouchEvent) => {
     if (!bubbleRef.current || !e.touches[0]) return;
-    
+
     // Cancel any ongoing momentum animation
     if (animationRef.current) {
       cancelAnimationFrame(animationRef.current);
       animationRef.current = null;
     }
-    
+
     setLocalIsDragging(true);
     setIsDragging(true);
     setHasMoved(false);
     const rect = bubbleRef.current.getBoundingClientRect();
     dragOffset.current = {
       x: e.touches[0].clientX - rect.left,
-      y: e.touches[0].clientY - rect.top
+      y: e.touches[0].clientY - rect.top,
     };
     startPos.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
     lastPos.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
@@ -136,66 +136,69 @@ const FloatingBubble: React.FC = () => {
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       if (!localIsDragging) return;
-      
+
       // Check if moved more than threshold
       const dx = Math.abs(e.clientX - startPos.current.x);
       const dy = Math.abs(e.clientY - startPos.current.y);
       if (dx > DRAG_THRESHOLD || dy > DRAG_THRESHOLD) {
         setHasMoved(true);
       }
-      
+
       // Calculate velocity
       const now = Date.now();
       const dt = now - lastTime.current;
       if (dt > 0) {
         // Velocity is inverted because position is measured from right/bottom
         velocity.current = {
-          x: -(e.clientX - lastPos.current.x) / dt * VELOCITY_SCALE,
-          y: -(e.clientY - lastPos.current.y) / dt * VELOCITY_SCALE
+          x: (-(e.clientX - lastPos.current.x) / dt) * VELOCITY_SCALE,
+          y: (-(e.clientY - lastPos.current.y) / dt) * VELOCITY_SCALE,
         };
       }
       lastPos.current = { x: e.clientX, y: e.clientY };
       lastTime.current = now;
-      
+
       const newX = window.innerWidth - e.clientX - (BUBBLE_SIZE - dragOffset.current.x);
       const newY = window.innerHeight - e.clientY - (BUBBLE_SIZE - dragOffset.current.y);
-      
+
       setPosition(constrainPosition(newX, newY));
     };
 
     const handleTouchMove = (e: TouchEvent) => {
       if (!localIsDragging || !e.touches[0]) return;
-      
+
       // Check if moved more than threshold
       const dx = Math.abs(e.touches[0].clientX - startPos.current.x);
       const dy = Math.abs(e.touches[0].clientY - startPos.current.y);
       if (dx > DRAG_THRESHOLD || dy > DRAG_THRESHOLD) {
         setHasMoved(true);
       }
-      
+
       // Calculate velocity
       const now = Date.now();
       const dt = now - lastTime.current;
       if (dt > 0) {
         velocity.current = {
-          x: -(e.touches[0].clientX - lastPos.current.x) / dt * VELOCITY_SCALE,
-          y: -(e.touches[0].clientY - lastPos.current.y) / dt * VELOCITY_SCALE
+          x: (-(e.touches[0].clientX - lastPos.current.x) / dt) * VELOCITY_SCALE,
+          y: (-(e.touches[0].clientY - lastPos.current.y) / dt) * VELOCITY_SCALE,
         };
       }
       lastPos.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
       lastTime.current = now;
-      
+
       const newX = window.innerWidth - e.touches[0].clientX - (BUBBLE_SIZE - dragOffset.current.x);
       const newY = window.innerHeight - e.touches[0].clientY - (BUBBLE_SIZE - dragOffset.current.y);
-      
+
       setPosition(constrainPosition(newX, newY));
     };
 
     const handleMouseUp = () => {
       setLocalIsDragging(false);
-      
+
       // Start momentum animation if there's velocity
-      if (Math.abs(velocity.current.x) > MIN_VELOCITY || Math.abs(velocity.current.y) > MIN_VELOCITY) {
+      if (
+        Math.abs(velocity.current.x) > MIN_VELOCITY ||
+        Math.abs(velocity.current.y) > MIN_VELOCITY
+      ) {
         animationRef.current = requestAnimationFrame(animateMomentumRef.current);
       } else {
         // No momentum, stop broadcasting
@@ -234,10 +237,12 @@ const FloatingBubble: React.FC = () => {
         setIsDragging(false);
       }
     };
-    
+
     // Check periodically
     const interval = setInterval(checkMomentumEnd, 100);
-    return () => { clearInterval(interval); };
+    return () => {
+      clearInterval(interval);
+    };
   }, [localIsDragging, setIsDragging]);
 
   const handleClick = (e: React.MouseEvent) => {
@@ -249,20 +254,23 @@ const FloatingBubble: React.FC = () => {
   };
 
   return (
-    <div 
+    <div
       ref={bubbleRef}
       className="fixed z-50"
       style={{
         right: position.x,
         bottom: position.y,
-        cursor: localIsDragging ? 'grabbing' : 'grab'
+        cursor: localIsDragging ? 'grabbing' : 'grab',
       }}
       onMouseDown={handleMouseDown}
       onTouchStart={handleTouchStart}
     >
       {/* Breathing glow */}
-      <div className="absolute -inset-1 rounded-full bg-coral/25 animate-pulse" style={{ animationDuration: '2s' }} />
-      
+      <div
+        className="absolute -inset-1 rounded-full bg-coral/25 animate-pulse"
+        style={{ animationDuration: '2s' }}
+      />
+
       <a
         href="https://www.ebay.com/usr/solarheart-studio"
         target="_blank"
@@ -278,8 +286,12 @@ const FloatingBubble: React.FC = () => {
           ${isHovered && !localIsDragging ? 'scale-110' : 'scale-100'}
           ${localIsDragging ? 'cursor-grabbing' : ''}
         `}
-        onMouseEnter={() => { setIsHovered(true); }}
-        onMouseLeave={() => { setIsHovered(false); }}
+        onMouseEnter={() => {
+          setIsHovered(true);
+        }}
+        onMouseLeave={() => {
+          setIsHovered(false);
+        }}
         aria-label="Visit my eBay Store"
       >
         {/* Shopping Bag Icon */}
@@ -297,7 +309,7 @@ const FloatingBubble: React.FC = () => {
           <line x1="3" y1="6" x2="21" y2="6" />
           <path d="M16 10a4 4 0 0 1-8 0" />
         </svg>
-        
+
         {/* Tooltip - only show when not dragging */}
         {!localIsDragging && (
           <span

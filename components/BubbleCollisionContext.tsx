@@ -1,8 +1,8 @@
 import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 
 interface BubblePosition {
-  x: number;  // from right edge
-  y: number;  // from bottom edge
+  x: number; // from right edge
+  y: number; // from bottom edge
   width: number;
   height: number;
 }
@@ -45,7 +45,7 @@ export const useGlobalWobbleCollision = () => {
     if (!bubblePos || !isDragging) return;
 
     const now = Date.now();
-    
+
     // Convert bubble position (from right/bottom) to absolute coordinates
     const bubbleLeft = window.innerWidth - bubblePos.x - bubblePos.width;
     const bubbleTop = window.innerHeight - bubblePos.y - bubblePos.height;
@@ -54,12 +54,12 @@ export const useGlobalWobbleCollision = () => {
 
     // Query all wobble targets
     const targets = document.querySelectorAll('[data-wobble-target]');
-    
-    targets.forEach(el => {
+
+    targets.forEach((el) => {
       // Check cooldown for this element
       const lastHit = lastCollisionMap.current.get(el) ?? 0;
       if (now - lastHit < COLLISION_COOLDOWN) return;
-      
+
       // Skip if already wobbling
       if (el.classList.contains('animate-wobble')) return;
 
@@ -76,7 +76,7 @@ export const useGlobalWobbleCollision = () => {
       if (isColliding) {
         lastCollisionMap.current.set(el, now);
         el.classList.add('animate-wobble');
-        
+
         // Remove class after animation completes
         setTimeout(() => {
           el.classList.remove('animate-wobble');

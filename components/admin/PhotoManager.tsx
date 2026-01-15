@@ -59,7 +59,9 @@ export const PhotoManager: React.FC = () => {
           onSearchChange={updateSearch}
           onSeasonChange={updateSeason}
           onSortChange={updateSort}
-          onRefresh={() => { void refreshPhotos(); }}
+          onRefresh={() => {
+            void refreshPhotos();
+          }}
         />
 
         {/* Loading state */}
@@ -76,7 +78,9 @@ export const PhotoManager: React.FC = () => {
             <p className="font-medium">Failed to load photos</p>
             <p className="text-sm mt-1">{error}</p>
             <button
-              onClick={() => { void refreshPhotos(); }}
+              onClick={() => {
+                void refreshPhotos();
+              }}
               className="mt-3 px-4 py-2 bg-red-100 hover:bg-red-200 rounded-lg text-sm transition-colors"
             >
               Try again
