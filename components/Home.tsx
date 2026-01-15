@@ -107,7 +107,7 @@ const Home: React.FC<HomeProps> = ({ onNavigate, language }) => {
           <span data-wobble-target className={`inline-block ${TYPOGRAPHY.navSubItem} ${COLORS.gray500}`}>
             {t.location}
           </span>
-          <span data-wobble-target className={`inline-block ${TYPOGRAPHY.navSubItem} text-coral font-mono mt-2 md:mt-0`}>
+          <span data-wobble-target className={`inline-block ${TYPOGRAPHY.navSubItem} ${COLORS.coral} font-mono mt-2 md:mt-0`}>
             {currentTime}
           </span>
         </div>

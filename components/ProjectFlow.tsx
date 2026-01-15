@@ -125,7 +125,7 @@ const ProjectFlow: React.FC<ProjectFlowProps> = ({ language }) => {
 
       {/* Our Journey Title */}
       <div className="text-center mb-12">
-        <h2 className="text-4xl md:text-5xl font-serif text-coral">
+        <h2 className={`text-4xl md:text-5xl font-serif ${COLORS.coral}`}>
           {t.ourJourney}
         </h2>
       </div>
@@ -159,7 +159,7 @@ const ProjectFlow: React.FC<ProjectFlowProps> = ({ language }) => {
 
       {/* FAQ Section */}
       <div id="faq-section" className="mb-16">
-        <h2 className="text-3xl md:text-4xl font-serif text-coral mb-8 text-center">
+        <h2 className={`text-3xl md:text-4xl font-serif ${COLORS.coral} mb-8 text-center`}>
           FAQ
         </h2>
         <div className="space-y-6 max-w-3xl mx-auto">

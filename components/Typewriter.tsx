@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { COLORS } from '../styles';
 
 interface TypewriterProps {
   text: string;
@@ -62,7 +63,7 @@ const Typewriter: React.FC<TypewriterProps> = ({ text, className = '', startDela
     <span className={`${className} font-light`}>
       {displayedText}
       {/* Cursor blinks continuously */}
-      <span className="animate-blink text-coral font-bold inline-block ml-1">|</span>
+      <span className={`animate-blink ${COLORS.coral} font-bold inline-block ml-1`}>|</span>
     </span>
   );
 };

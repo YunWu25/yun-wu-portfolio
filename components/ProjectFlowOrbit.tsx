@@ -227,7 +227,7 @@ const OrbitalSystem: React.FC<OrbitalSystemProps> = ({ phases, expandedPhase, on
 
                 {/* Phase Title */}
                 <h3 className={`
-                  font-sans font-medium text-coral whitespace-nowrap
+                  font-sans font-medium ${COLORS.coral} whitespace-nowrap
                   ${expandedPhase === index ? 'text-lg mb-2' : 'text-xs leading-tight'}
                   transition-all duration-300
                 `}>

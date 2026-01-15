@@ -38,7 +38,7 @@ const Splash: React.FC<SplashProps> = ({ isVisible, onDismiss, language }) => {
     >
       {/* Top Section: Main Title */}
       <div className="grow flex flex-col justify-center items-center w-full max-w-[95%] px-4">
-        <h1 data-wobble-target className="font-bold text-coral tracking-widest whitespace-nowrap text-[5vw] md:text-[5vw] lg:text-[5vw] xl:text-7xl leading-tight select-none px-6 md:px-12">
+        <h1 data-wobble-target className="font-bold ${COLORS.coral} tracking-widest whitespace-nowrap text-[5vw] md:text-[5vw] lg:text-[5vw] xl:text-7xl leading-tight select-none px-6 md:px-12">
           YUN DESIGN PORTFOLIO
         </h1>
       </div>

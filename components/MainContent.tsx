@@ -109,7 +109,7 @@ const MainContent: React.FC<MainContentProps> = ({ activeView, onNavigate, langu
           {/* Mobile: Single toggle button */}
           <button
             onClick={() => { setLanguage(language === 'en' ? 'zh' : 'en'); }}
-            className={`md:hidden bg-white px-3 py-1.5 ${BORDERS.radius.sm} border ${COLORS.borderGray200} ${SHADOWS.sm} text-sm font-medium text-coral hover:bg-coral hover:text-white transition-colors`}
+            className={`md:hidden bg-white px-3 py-1.5 ${BORDERS.radius.sm} border ${COLORS.borderGray200} ${SHADOWS.sm} text-sm font-medium ${COLORS.coral} hover:bg-coral hover:text-white transition-colors`}
           >
             {language === 'en' ? '中文' : 'EN'}
           </button>
@@ -267,7 +267,7 @@ const MainContent: React.FC<MainContentProps> = ({ activeView, onNavigate, langu
                   onNavigate(item.view);
                   setIsMobileMenuOpen(false);
                 }}
-                className={`font-serif text-4xl ${activeView === item.view ? 'text-coral' : COLORS.gray600}`}
+                className={`font-serif text-4xl ${activeView === item.view ? COLORS.coral : COLORS.gray600}`}
               >
                 {item.label}
               </button>

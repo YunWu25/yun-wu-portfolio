@@ -1,5 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { X, ChevronLeft, ChevronRight } from 'lucide-react';
+import React from 'react';
 import { TYPOGRAPHY, COLORS } from '../styles';
 import { Language } from '../App';
 
@@ -52,11 +51,8 @@ const LaptopMockup: React.FC<{ project: Project }> = ({ project }) => {
   );
 };
 
-const ProjectCard: React.FC<{ project: Project; language: Language; onClick: () => void }> = ({ project, language, onClick }) => (
-  <div 
-    className="bg-white border border-gray-100 rounded-xl p-6 md:p-8 flex items-center gap-4 hover:shadow-lg hover:border-gray-200 transition-all duration-300 cursor-pointer group"
-    onClick={onClick}
-  >
+const ProjectCard: React.FC<{ project: Project; language: Language }> = ({ project, language }) => (
+  <div className="bg-white border border-gray-100 rounded-xl p-6 md:p-8 flex items-center gap-4 hover:shadow-lg hover:border-gray-200 transition-all duration-300 group">
     <div className="flex-1 min-w-0">
       <h3 className={`font-sans text-xl md:text-2xl ${COLORS.gray400} mb-1 group-hover:text-coral transition-colors truncate`}>
         {project.title}
@@ -79,8 +75,6 @@ const ProjectCard: React.FC<{ project: Project; language: Language; onClick: () 
 );
 
 const Design: React.FC<DesignProps> = ({ language }) => {
-  const [selectedProjectIndex, setSelectedProjectIndex] = useState<number | null>(null);
-
   const intro = language === 'en'
     ? `To me, the creative process is about more than just visual aesthetics; it is about building functional solutions. 
     Here, you will see how I tackle structural challenges, optimize user experiences through iterative prototyping, and craft digital products from the ground up. 
@@ -211,52 +205,6 @@ const Design: React.FC<DesignProps> = ({ language }) => {
     },
   ];
 
-  // Keyboard navigation for lightbox
-  const handleKeyDown = useCallback((e: KeyboardEvent) => {
-    if (selectedProjectIndex === null) return;
-    
-    if (e.key === 'Escape') {
-      setSelectedProjectIndex(null);
-    } else if (e.key === 'ArrowRight') {
-      setSelectedProjectIndex((prev) => 
-        prev !== null ? (prev + 1) % projects.length : null
-      );
-    } else if (e.key === 'ArrowLeft') {
-      setSelectedProjectIndex((prev) => 
-        prev !== null ? (prev - 1 + projects.length) % projects.length : null
-      );
-    }
-  }, [selectedProjectIndex, projects.length]);
-
-  useEffect(() => {
-    if (selectedProjectIndex !== null) {
-      document.addEventListener('keydown', handleKeyDown);
-      document.body.style.overflow = 'hidden';
-    }
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-      document.body.style.overflow = '';
-    };
-  }, [selectedProjectIndex, handleKeyDown]);
-
-  const closeLightbox = () => {
-    setSelectedProjectIndex(null);
-  };
-
-  const goToNext = () => {
-    setSelectedProjectIndex((prev) => 
-      prev !== null ? (prev + 1) % projects.length : null
-    );
-  };
-
-  const goToPrev = () => {
-    setSelectedProjectIndex((prev) => 
-      prev !== null ? (prev - 1 + projects.length) % projects.length : null
-    );
-  };
-
-  const selectedProject = selectedProjectIndex !== null ? projects[selectedProjectIndex] : null;
-
   return (
     <div id="design-root" className="w-full">
       {/* Intro text - matching Photography/Video pages */}
@@ -273,69 +221,9 @@ const Design: React.FC<DesignProps> = ({ language }) => {
             key={index} 
             project={project} 
             language={language}
-            onClick={() => { setSelectedProjectIndex(index); }}
           />
         ))}
       </div>
-
-      {/* Lightbox Modal - same style as Photography page */}
-      {selectedProject && (
-        <div 
-          className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center"
-          onClick={closeLightbox}
-        >
-          {/* Close button */}
-          <button
-            onClick={closeLightbox}
-            className="absolute top-4 right-4 z-50 p-2 text-white/80 hover:text-white transition-colors"
-            aria-label="Close"
-          >
-            <X size={32} />
-          </button>
-
-          {/* Previous button */}
-          <button
-            onClick={(e) => { e.stopPropagation(); goToPrev(); }}
-            className="absolute left-4 z-50 p-2 text-white/80 hover:text-white transition-colors"
-            aria-label="Previous project"
-          >
-            <ChevronLeft size={40} />
-          </button>
-
-          {/* Next button */}
-          <button
-            onClick={(e) => { e.stopPropagation(); goToNext(); }}
-            className="absolute right-4 z-50 p-2 text-white/80 hover:text-white transition-colors"
-            aria-label="Next project"
-          >
-            <ChevronRight size={40} />
-          </button>
-
-          {/* Image container */}
-          <div 
-            className="max-w-[90vw] max-h-[90vh] flex flex-col items-center"
-            onClick={(e) => { e.stopPropagation(); }}
-          >
-            <img
-              src={getScreenshotUrl(selectedProject.title, selectedProject.type, selectedProject.imageType)}
-              alt={`${selectedProject.title} screenshot`}
-              className="max-w-full max-h-[80vh] object-contain rounded-lg"
-            />
-            {/* Project info */}
-            <div className="mt-4 text-center">
-              <h3 className="text-white text-xl font-medium">{selectedProject.title}</h3>
-              <p className="text-white/70 text-sm mt-1">
-                {selectedProject.type} · {selectedProject.role}
-              </p>
-            </div>
-          </div>
-
-          {/* Project counter */}
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/60 text-sm">
-            {selectedProjectIndex !== null ? selectedProjectIndex + 1 : 0} / {projects.length}
-          </div>
-        </div>
-      )}
     </div>
   );
 };
