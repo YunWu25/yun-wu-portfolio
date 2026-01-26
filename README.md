@@ -31,7 +31,7 @@ Portfolio website for Yun Wu - Visual Designer & Photographer, Seattle, WA.
 
 ## About
 
-Portfolio website showcasing Yun Wu's work in visual design, video, and photography.
+Portfolio website showcasing Yun Wu's work in visual design, video, and photography...
 
 ---
 
