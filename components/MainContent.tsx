@@ -9,6 +9,7 @@ import Design from './Design';
 import Video from './Video';
 import About from './About';
 import Home from './Home';
+import { WeatherToggle } from './weather';
 import { COLORS, TYPOGRAPHY, BORDERS, SHADOWS } from '../styles';
 import { Language } from '../App';
 
@@ -112,9 +113,12 @@ const MainContent: React.FC<MainContentProps> = ({
         id="main-card"
         className="bg-white w-screen h-screen flex flex-col overflow-hidden relative overflow-y-auto custom-scrollbar"
       >
-        {/* === LANGUAGE SWITCHER === */}
-        <div className="absolute md:top-4 top-8 md:right-4 right-8 z-20">
-          {/* Mobile: Single toggle button */}
+        {/* === TOP RIGHT CONTROLS (Weather + Language) === */}
+        <div className="absolute md:top-4 top-8 md:right-4 right-8 z-20 flex items-center gap-2">
+          {/* Weather Toggle */}
+          <WeatherToggle language={language} />
+
+          {/* Language Switcher - Mobile: Single toggle button */}
           <button
             onClick={() => {
               setLanguage(language === 'en' ? 'zh' : 'en');
@@ -124,7 +128,7 @@ const MainContent: React.FC<MainContentProps> = ({
             {language === 'en' ? '中文' : 'EN'}
           </button>
 
-          {/* Desktop: Full switcher */}
+          {/* Language Switcher - Desktop: Full switcher */}
           <div
             className={`hidden md:flex bg-white px-3 py-1.5 ${BORDERS.radius.sm} border ${COLORS.borderGray200} ${SHADOWS.sm} items-center gap-2`}
           >

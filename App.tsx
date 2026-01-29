@@ -7,6 +7,7 @@ import {
   BubbleCollisionProvider,
   useGlobalWobbleCollision,
 } from './components/BubbleCollisionContext';
+import { WeatherProvider, WeatherCanvas } from './components/weather';
 import { PhotoManager } from './components/admin/PhotoManager';
 import { ViewState } from './types';
 import { SCROLL_THRESHOLDS } from './constants';
@@ -157,34 +158,39 @@ const AppContent: React.FC = () => {
   }, [handleWheel, handleTouchMove, handleTouchStart]);
 
   return (
-    <BubbleCollisionProvider>
-      <WobbleCollisionDetector />
-      <div className="relative w-full min-h-screen bg-offwhite text-darkgray font-sans selection:bg-coral selection:text-white overflow-hidden">
-        {/* Overlay Splash Screen */}
-        <Splash
-          isVisible={showSplash}
-          onDismiss={() => {
-            setShowSplash(false);
-          }}
-          language={language}
-        />
+    <WeatherProvider>
+      <BubbleCollisionProvider>
+        <WobbleCollisionDetector />
+        <div className="relative w-full min-h-screen bg-offwhite text-darkgray font-sans selection:bg-coral selection:text-white overflow-hidden">
+          {/* Weather Effects Canvas */}
+          <WeatherCanvas />
 
-        {/* Main Site Content */}
-        <div
-          className={`transition-opacity duration-1000 h-screen w-full flex items-center justify-center ${showSplash ? 'opacity-0 pointer-events-none' : 'opacity-100 pointer-events-auto'}`}
-        >
-          <MainContent
-            activeView={activeView}
-            onNavigate={handleNavigate}
+          {/* Overlay Splash Screen */}
+          <Splash
+            isVisible={showSplash}
+            onDismiss={() => {
+              setShowSplash(false);
+            }}
             language={language}
-            setLanguage={setLanguage}
           />
-        </div>
 
-        {/* Floating eBay Store Bubble */}
-        <FloatingBubble />
-      </div>
-    </BubbleCollisionProvider>
+          {/* Main Site Content */}
+          <div
+            className={`transition-opacity duration-1000 h-screen w-full flex items-center justify-center ${showSplash ? 'opacity-0 pointer-events-none' : 'opacity-100 pointer-events-auto'}`}
+          >
+            <MainContent
+              activeView={activeView}
+              onNavigate={handleNavigate}
+              language={language}
+              setLanguage={setLanguage}
+            />
+          </div>
+
+          {/* Floating eBay Store Bubble */}
+          <FloatingBubble />
+        </div>
+      </BubbleCollisionProvider>
+    </WeatherProvider>
   );
 };
 
