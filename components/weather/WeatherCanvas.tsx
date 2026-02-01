@@ -6,9 +6,14 @@ import SnowEffect from './SnowEffect';
 import SunEffect from './SunEffect';
 import WindEffect from './WindEffect';
 import FogEffect from './FogEffect';
+import { WeatherDebug3D } from './WeatherDebug';
+
+interface WeatherEffectsProps {
+  debug?: boolean;
+}
 
 // Component that renders the appropriate weather effect
-const WeatherEffects: React.FC = () => {
+const WeatherEffects: React.FC<WeatherEffectsProps> = ({ debug = false }) => {
   const { weather } = useWeather();
 
   if (!weather.enabled || weather.type === 'clear') {
@@ -22,11 +27,16 @@ const WeatherEffects: React.FC = () => {
       {weather.type === 'sunny' && <SunEffect />}
       {weather.type === 'windy' && <WindEffect />}
       {weather.type === 'foggy' && <FogEffect />}
+      {debug && <WeatherDebug3D />}
     </>
   );
 };
 
-const WeatherCanvas: React.FC = () => {
+interface WeatherCanvasProps {
+  debug?: boolean;
+}
+
+const WeatherCanvas: React.FC<WeatherCanvasProps> = ({ debug = false }) => {
   const { weather } = useWeather();
 
   // Don't render canvas if weather is disabled or clear
@@ -52,7 +62,7 @@ const WeatherCanvas: React.FC = () => {
         events={() => ({ enabled: false, priority: 0 })}
       >
         <Suspense fallback={null}>
-          <WeatherEffects />
+          <WeatherEffects debug={debug} />
         </Suspense>
       </Canvas>
     </div>

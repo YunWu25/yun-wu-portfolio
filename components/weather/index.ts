@@ -6,6 +6,7 @@ export type { WeatherState, WeatherContextValue } from './WeatherContext';
 
 export { default as WeatherCanvas } from './WeatherCanvas';
 export { default as WeatherToggle } from './WeatherToggle';
+export { WeatherDebugOverlay } from './WeatherDebug';
 
 // Individual effects (for advanced usage)
 export { default as RainEffect } from './RainEffect';

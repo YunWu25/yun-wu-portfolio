@@ -7,7 +7,7 @@ import {
   BubbleCollisionProvider,
   useGlobalWobbleCollision,
 } from './components/BubbleCollisionContext';
-import { WeatherProvider, WeatherCanvas } from './components/weather';
+import { WeatherProvider, WeatherCanvas, WeatherDebugOverlay } from './components/weather';
 import { PhotoManager } from './components/admin/PhotoManager';
 import { ViewState } from './types';
 import { SCROLL_THRESHOLDS } from './constants';
@@ -41,6 +41,22 @@ const AppContent: React.FC = () => {
     const savedLanguage = localStorage.getItem('language');
     return savedLanguage === 'en' || savedLanguage === 'zh' ? savedLanguage : 'en';
   });
+
+  // Weather debug mode - toggle with Ctrl+Shift+D
+  const [weatherDebug, setWeatherDebug] = useState(false);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.shiftKey && e.key === 'D') {
+        e.preventDefault();
+        setWeatherDebug((prev) => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
 
   const activeView = getViewFromPath(location.pathname);
 
@@ -163,7 +179,8 @@ const AppContent: React.FC = () => {
         <WobbleCollisionDetector />
         <div className="relative w-full min-h-screen bg-offwhite text-darkgray font-sans selection:bg-coral selection:text-white overflow-hidden">
           {/* Weather Effects Canvas */}
-          <WeatherCanvas />
+          <WeatherCanvas debug={weatherDebug} />
+          {weatherDebug && <WeatherDebugOverlay />}
 
           {/* Overlay Splash Screen */}
           <Splash
