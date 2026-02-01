@@ -165,12 +165,43 @@ const RainEffect: React.FC<RainEffectProps> = ({ count = 4000 }) => {
 
     const bottomY = -bounds.height / 2;
 
+    // Mouse interaction parameters
+    const mouseWorldX = weather.mouse.position.x * (bounds.width / 2);
+    const mouseWorldY = weather.mouse.position.y * (bounds.height / 2);
+    const mouseRadius = 1.5; // Avoidance radius in world units
+    const mouseForce = 0.15; // Repulsion strength
+    const rippleRadius = 2.5; // Larger radius for ripple effect
+    const rippleForce = weather.mouse.speed * 0.02; // Ripple based on mouse speed
+
     for (let i = 0; i < count; i++) {
       const pos = particles.positions[i];
       const vel = particles.velocities[i];
       const length = particles.lengths[i];
 
       if (!pos || !vel || length === undefined) continue;
+
+      // Calculate distance to mouse (only X and Y, ignore Z depth)
+      const dx = pos.x - mouseWorldX;
+      const dy = pos.y - mouseWorldY;
+      const distSq = dx * dx + dy * dy;
+      const dist = Math.sqrt(distSq);
+
+      // Mouse avoidance - particles pushed away from cursor
+      if (dist < mouseRadius && dist > 0.01) {
+        const force = (1 - dist / mouseRadius) * mouseForce;
+        const dirX = dx / dist;
+        const dirY = dy / dist;
+        pos.x += dirX * force;
+        pos.y += dirY * force;
+      }
+
+      // Ripple effect - mouse movement creates waves
+      if (dist < rippleRadius && rippleForce > 0.001) {
+        const rippleEffect = (1 - dist / rippleRadius) * rippleForce;
+        // Push particles in the direction of mouse movement
+        pos.x += weather.mouse.velocity.x * rippleEffect * 0.5;
+        pos.y -= weather.mouse.velocity.y * rippleEffect * 0.5; // Flip Y
+      }
 
       // Update position with wind
       pos.x += (vel.x + windX) * delta * 60 * weather.intensity;

@@ -94,6 +94,14 @@ const SnowEffect: React.FC<SnowEffectProps> = ({ count = 2000 }) => {
 
     const windX = weather.windDirection.x * 0.15;
 
+    // Mouse interaction parameters (gentler for snow)
+    const mouseWorldX = weather.mouse.position.x * (bounds.width / 2);
+    const mouseWorldY = weather.mouse.position.y * (bounds.height / 2);
+    const mouseRadius = 2.0; // Larger avoidance radius for floaty effect
+    const mouseForce = 0.08; // Gentler repulsion
+    const rippleRadius = 3.0; // Larger ripple radius
+    const rippleForce = weather.mouse.speed * 0.015;
+
     for (let i = 0; i < count; i++) {
       const pos = particles.positions[i];
       const vel = particles.velocities[i];
@@ -102,6 +110,29 @@ const SnowEffect: React.FC<SnowEffectProps> = ({ count = 2000 }) => {
       const wobbleSpeed = particles.wobbleSpeeds[i];
 
       if (!pos || !vel || size === undefined || phase === undefined || wobbleSpeed === undefined) continue;
+
+      // Calculate distance to mouse
+      const dx = pos.x - mouseWorldX;
+      const dy = pos.y - mouseWorldY;
+      const distSq = dx * dx + dy * dy;
+      const dist = Math.sqrt(distSq);
+
+      // Mouse avoidance - snow floats away gently
+      if (dist < mouseRadius && dist > 0.01) {
+        const force = (1 - dist / mouseRadius) * mouseForce;
+        const dirX = dx / dist;
+        const dirY = dy / dist;
+        pos.x += dirX * force;
+        pos.y += dirY * force;
+      }
+
+      // Ripple effect - swirl snow with mouse movement
+      if (dist < rippleRadius && rippleForce > 0.001) {
+        const rippleEffect = (1 - dist / rippleRadius) * rippleForce;
+        // Add some swirl - perpendicular to mouse direction
+        pos.x += weather.mouse.velocity.x * rippleEffect * 0.4;
+        pos.y -= weather.mouse.velocity.y * rippleEffect * 0.4;
+      }
 
       const wobble = Math.sin(timeRef.current * wobbleSpeed + phase) * 0.02;
 
