@@ -1,5 +1,3 @@
-/** Weather system types */
-
 export enum WeatherType {
   CLEAR = 'clear',
   DRIZZLE = 'drizzle',
@@ -13,13 +11,13 @@ export enum WeatherType {
 
 export interface WeatherState {
   type: WeatherType;
-  intensity: number; // 1-5
+  intensity: number; // 1-10
   enabled: boolean;
 }
 
 export interface WindVector {
   x: number; // horizontal force (-1 to 1)
-  y: number; // vertical force (always positive = down)
+  y: number; // vertical force (positive = downward boost, negative = updraft)
   gustStrength: number;
   gustFrequency: number;
 }
@@ -35,18 +33,10 @@ export interface Particle {
   life: number; // 0-1: remaining life
   maxLife: number;
   type: 'rain' | 'snow' | 'splash' | 'mist' | 'dust' | 'debris';
-  // Rain-specific
   length?: number;
-  streak?: boolean;
-  streakY?: number;
-  // Snow-specific
   wobblePhase?: number;
   wobbleSpeed?: number;
   rotation?: number;
-  // Splash-specific
-  originX?: number;
-  originY?: number;
-  angle?: number;
 }
 
 export interface LightningBolt {
@@ -71,8 +61,6 @@ export interface CollisionRect {
 export interface WeatherPreset {
   particleCount: number;
   wind: WindVector;
-  ambientTint: string; // rgba color
-  ambientOpacity: number;
   particleTypes: Particle['type'][];
   hasLightning: boolean;
   hasSunRays: boolean;

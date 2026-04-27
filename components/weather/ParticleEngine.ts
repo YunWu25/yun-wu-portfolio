@@ -5,9 +5,9 @@
 import { Particle, WeatherPreset, WindVector, CollisionRect, LightningBolt } from './types';
 import { checkCollision, getCollisionRects } from './collisionDetection';
 
-const MAX_PARTICLES = 600;
-const MAX_SPLASHES = 80;
-const GLASS_STREAK_MAX = 30;
+const MAX_PARTICLES = 4000;
+const MAX_SPLASHES = 400;
+const GLASS_STREAK_MAX = 100;
 
 // Helpers
 const rand = (min: number, max: number) => min + Math.random() * (max - min);
@@ -115,7 +115,6 @@ export class ParticleEngine {
         p.vy = speed;
         p.vx = this.currentWind.x * speed * 0.5;
         p.length = rand(10, 25) * p.depth;
-        p.streak = false;
         break;
       }
       case 'snow': {
@@ -166,9 +165,7 @@ export class ParticleEngine {
         s.type = 'splash';
         s.x = x;
         s.y = y;
-        s.originX = x;
-        s.originY = y;
-        const angle = rand(-Math.PI * 0.8, -Math.PI * 0.2); // upward arc
+        const angle = rand(-Math.PI * 0.8, -Math.PI * 0.2);
         const speed = rand(1.5, 4);
         s.vx = Math.cos(angle) * speed;
         s.vy = Math.sin(angle) * speed;
@@ -264,12 +261,13 @@ export class ParticleEngine {
   update(dt: number, preset: WeatherPreset) {
     this.time += dt;
 
-    // Smooth wind transition
-    this.currentWind.x = lerp(this.currentWind.x, this.targetWind.x, 0.02);
+    // Smooth wind transition (frame-rate independent: scale lerp factor by dt)
+    const windLerp = 1 - Math.pow(0.98, dt * 60);
+    this.currentWind.x = lerp(this.currentWind.x, this.targetWind.x, windLerp);
+    this.currentWind.y = lerp(this.currentWind.y, this.targetWind.y, windLerp);
     const gust = Math.sin(this.time * this.targetWind.gustFrequency * 1000) * this.targetWind.gustStrength;
     const windX = this.currentWind.x + gust;
-
-    // Update collision rects (cached with TTL)
+    const windY = this.currentWind.y + gust * 0.3;
     const rects = getCollisionRects();
 
     // Update particles
@@ -282,7 +280,7 @@ export class ParticleEngine {
         case 'rain': {
           p.vx = windX * p.vy * 0.3;
           p.x += p.vx * dt * 60;
-          p.y += p.vy * dt * 60;
+          p.y += (p.vy + windY * p.vy) * dt * 60;
 
           // Only ~12% of drops collide with UI elements (rest pass through like a glass pane)
           const hitRect = checkCollision(p.x, p.y, prevY, rects);
@@ -313,7 +311,7 @@ export class ParticleEngine {
           p.wobblePhase = (p.wobblePhase ?? 0) + (p.wobbleSpeed ?? 0.03);
           p.vx = windX * 0.5 + Math.sin(p.wobblePhase) * 0.8;
           p.x += p.vx * dt * 60;
-          p.y += p.vy * dt * 60;
+          p.y += (p.vy + windY * p.vy) * dt * 60;
           p.rotation = (p.rotation ?? 0) + 0.01 * dt * 60;
 
           // Only ~15% of snowflakes collide/accumulate on UI (rest drift through)
@@ -408,7 +406,7 @@ export class ParticleEngine {
 
     // Sun ray animation
     if (preset.hasSunRays) {
-      this.sunRayAngle += dt * 0.3;
+      this.sunRayAngle = (this.sunRayAngle + dt * 0.3) % (Math.PI * 2);
     }
 
     // Respawn dead particles
@@ -467,12 +465,6 @@ export class ParticleEngine {
   /** Render everything to canvas */
   render(ctx: CanvasRenderingContext2D, preset: WeatherPreset) {
     ctx.clearRect(0, 0, this.w, this.h);
-
-    // Ambient tint overlay
-    if (preset.ambientOpacity > 0.001) {
-      ctx.fillStyle = preset.ambientTint;
-      ctx.fillRect(0, 0, this.w, this.h);
-    }
 
     // Lightning flash (full-screen white flash)
     if (this.lightningFlash > 0) {

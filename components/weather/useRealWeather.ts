@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useEffect, useCallback, useRef } from 'react';
 import { WeatherType } from './types';
 
 const POLL_INTERVAL_MS = 15 * 60 * 1000;
@@ -9,7 +9,7 @@ const FALLBACK_LON = -122.3321;
 const INTENSITY_CONFIG = {
   rain: { precipScale: 5, min: 2, max: 10 },
   snow: { snowfallScale: 3, min: 2, max: 10 },
-  wind: { speedThreshold: 30, speedScale: 0.25, min: 3, max: 10 },
+  wind: { speedThreshold: 15, speedScale: 0.25, min: 3, max: 10 },
   thunder: { base: 5, precipBoost: 3, windBoost: 0.05, min: 5, max: 10 },
   drizzle: { precipScale: 10, min: 2, max: 8 },
 };
@@ -32,18 +32,6 @@ interface WeatherApiResponse {
 interface IpGeoResponse {
   lat: number;
   lon: number;
-  city: string;
-  regionName: string;
-  country: string;
-}
-
-export interface WeatherData {
-  type: WeatherType;
-  intensity: number;
-  locationName: string;
-  temperature: number | null;
-  windSpeed: number | null;
-  description: string;
 }
 
 interface MappedWeather {
@@ -141,37 +129,31 @@ function applyWindOverride(result: MappedWeather, windSpeed: number): MappedWeat
   return result;
 }
 
-async function getLocationByIp(): Promise<{ lat: number; lon: number; city: string }> {
+async function getLocationByIp(): Promise<{ lat: number; lon: number }> {
   try {
-    const res = await fetch('http://ip-api.com/json/?fields=lat,lon,city,regionName,country');
+    const res = await fetch('http://ip-api.com/json/?fields=lat,lon');
     if (!res.ok) throw new Error('IP geo failed');
     const data: IpGeoResponse = await res.json();
     if (data.lat && data.lon) {
-      return { lat: data.lat, lon: data.lon, city: data.city || 'Unknown' };
+      return { lat: data.lat, lon: data.lon };
     }
   } catch { /* fallback below */ }
-  return { lat: FALLBACK_LAT, lon: FALLBACK_LON, city: 'Seattle' };
+  return { lat: FALLBACK_LAT, lon: FALLBACK_LON };
 }
 
 export function useRealWeather(
   onUpdate: (type: WeatherType, intensity: number) => void,
 ) {
-  const [data, setData] = useState<WeatherData | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | undefined>(undefined);
-  const locationRef = useRef<{ lat: number; lon: number; city: string } | null>(null);
+  const locationRef = useRef<{ lat: number; lon: number } | null>(null);
   const onUpdateRef = useRef(onUpdate);
 
   useEffect(() => {
     onUpdateRef.current = onUpdate;
   }, [onUpdate]);
 
-  const fetchWeather = useCallback(async (lat: number, lon: number, city: string) => {
+  const fetchWeather = useCallback(async (lat: number, lon: number) => {
     try {
-      setLoading(true);
-      setError(null);
-
       const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=weather_code,temperature_2m,wind_speed_10m,precipitation,rain,snowfall,cloud_cover,wind_gusts_10m&timezone=auto`;
       const res = await fetch(url);
       if (!res.ok) throw new Error(`Weather API: ${res.status}`);
@@ -182,29 +164,23 @@ export function useRealWeather(
       let mapped = mapWeather(c.weather_code, c.precipitation, c.rain, c.snowfall, c.wind_speed_10m, c.wind_gusts_10m);
       mapped = applyWindOverride(mapped, c.wind_speed_10m);
 
-      const result: WeatherData = {
-        type: mapped.type,
-        intensity: mapped.intensity,
-        locationName: city,
-        temperature: c.temperature_2m,
-        windSpeed: c.wind_speed_10m,
-        description: mapped.description,
-      };
+      console.debug(
+        `[weather] ${mapped.description} | type=${mapped.type} intensity=${mapped.intensity} | ` +
+        `wmo=${c.weather_code} temp=${c.temperature_2m}°C wind=${c.wind_speed_10m}km/h ` +
+        `rain=${c.rain}mm snow=${c.snowfall}cm | poll=${POLL_INTERVAL_MS / 60000}min`
+      );
 
-      setData(result);
-      onUpdateRef.current(result.type, result.intensity);
+      onUpdateRef.current(mapped.type, mapped.intensity);
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Failed to fetch weather');
-    } finally {
-      setLoading(false);
+      console.debug('[weather] fetch failed:', e instanceof Error ? e.message : e);
     }
   }, []);
 
-  const startPolling = useCallback((lat: number, lon: number, city: string) => {
-    void fetchWeather(lat, lon, city);
+  const startPolling = useCallback((lat: number, lon: number) => {
+    void fetchWeather(lat, lon);
     if (intervalRef.current) clearInterval(intervalRef.current);
     intervalRef.current = setInterval(() => {
-      void fetchWeather(lat, lon, city);
+      void fetchWeather(lat, lon);
     }, POLL_INTERVAL_MS);
   }, [fetchWeather]);
 
@@ -218,12 +194,12 @@ export function useRealWeather(
   const activate = useCallback(async () => {
     const loc = locationRef.current ?? await getLocationByIp();
     locationRef.current = loc;
-    startPolling(loc.lat, loc.lon, loc.city);
+    startPolling(loc.lat, loc.lon);
   }, [startPolling]);
 
   useEffect(() => {
     return () => { stopPolling(); };
   }, [stopPolling]);
 
-  return { data, loading, error, activate, stopPolling };
+  return { activate };
 }

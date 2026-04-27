@@ -6,17 +6,16 @@ import { invalidateCollisionCache } from './collisionDetection';
 
 const WeatherSystem: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const engineRef = useRef<ParticleEngine | null>(null);
   const rafRef = useRef<number>(0);
   const lastTimeRef = useRef<number>(0);
   const { weather } = useWeather();
   const weatherRef = useRef(weather);
+  const logicalSizeRef = useRef({ w: 0, h: 0 });
 
   useEffect(() => {
     weatherRef.current = weather;
   }, [weather]);
 
-  // Lightning reflection — apply/remove glow on content container
   const applyLightningReflection = useCallback((flash: number, hitPoint: { x: number; y: number } | null) => {
     const container = document.getElementById('content-container');
     if (!container) return;
@@ -28,7 +27,6 @@ const WeatherSystem: React.FC = () => {
       container.style.boxShadow = '';
     }
 
-    // Apply glow near hit point
     const header = document.getElementById('main-card-header');
     if (hitPoint && flash > 0.1 && header) {
       header.style.boxShadow = `0 0 ${Math.round(flash * 15)}px rgba(180, 200, 255, ${flash * 0.2})`;
@@ -45,7 +43,6 @@ const WeatherSystem: React.FC = () => {
     if (!ctx) return;
 
     const engine = new ParticleEngine();
-    engineRef.current = engine;
 
     const resize = () => {
       const dpr = window.devicePixelRatio || 1;
@@ -56,6 +53,7 @@ const WeatherSystem: React.FC = () => {
       canvas.style.width = `${w}px`;
       canvas.style.height = `${h}px`;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      logicalSizeRef.current = { w, h };
       engine.resize(w, h);
       invalidateCollisionCache();
     };
@@ -63,8 +61,12 @@ const WeatherSystem: React.FC = () => {
     resize();
     window.addEventListener('resize', resize);
 
-    // Respect reduced motion
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let prefersReducedMotion = motionQuery.matches;
+    const onMotionChange = (e: MediaQueryListEvent) => {
+      prefersReducedMotion = e.matches;
+    };
+    motionQuery.addEventListener('change', onMotionChange);
 
     const loop = (time: number) => {
       if (!lastTimeRef.current) lastTimeRef.current = time;
@@ -77,12 +79,12 @@ const WeatherSystem: React.FC = () => {
         engine.update(dt, preset);
         engine.render(ctx, preset);
 
-        // Lightning CSS reflection effects
         const flash = engine.getLightningFlash();
         const hitPoint = engine.getLightningHitPoint();
         applyLightningReflection(flash, hitPoint);
       } else {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const { w: lw, h: lh } = logicalSizeRef.current;
+        ctx.clearRect(0, 0, lw, lh);
         applyLightningReflection(0, null);
       }
 
@@ -94,6 +96,7 @@ const WeatherSystem: React.FC = () => {
     return () => {
       cancelAnimationFrame(rafRef.current);
       window.removeEventListener('resize', resize);
+      motionQuery.removeEventListener('change', onMotionChange);
       applyLightningReflection(0, null);
     };
   }, [applyLightningReflection]);

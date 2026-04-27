@@ -61,16 +61,6 @@ export const checkCollision = (
   return null;
 };
 
-/** Check if a point is inside any collision rect */
-export const isInsideRect = (x: number, y: number, rects: CollisionRect[]): boolean => {
-  for (const rect of rects) {
-    if (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom) {
-      return true;
-    }
-  }
-  return false;
-};
-
 /** Force refresh collision cache (call on resize) */
 export const invalidateCollisionCache = (): void => {
   lastCacheTime = 0;
