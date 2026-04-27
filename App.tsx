@@ -10,7 +10,6 @@ import {
 import { PhotoManager } from './components/admin/PhotoManager';
 import { WeatherProvider } from './components/weather/WeatherContext';
 import WeatherSystem from './components/weather/WeatherSystem';
-import WeatherController from './components/weather/WeatherController';
 import { ViewState } from './types';
 import { SCROLL_THRESHOLDS } from './constants';
 
@@ -166,9 +165,6 @@ const AppContent: React.FC = () => {
         <div className="relative w-full min-h-screen bg-offwhite text-darkgray font-sans selection:bg-coral selection:text-white overflow-hidden">
           {/* Weather canvas overlay — z-30, pointer-events: none */}
           <WeatherSystem />
-
-          {/* Weather controller UI — z-45 */}
-          <WeatherController />
 
           {/* Overlay Splash Screen — z-50 */}
           <Splash

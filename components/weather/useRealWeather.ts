@@ -37,7 +37,7 @@ interface IpGeoResponse {
   country: string;
 }
 
-export interface RealWeatherData {
+export interface WeatherData {
   type: WeatherType;
   intensity: number;
   locationName: string;
@@ -155,9 +155,8 @@ async function getLocationByIp(): Promise<{ lat: number; lon: number; city: stri
 
 export function useRealWeather(
   onUpdate: (type: WeatherType, intensity: number) => void,
-  liveModeRef: React.RefObject<boolean>,
 ) {
-  const [data, setData] = useState<RealWeatherData | null>(null);
+  const [data, setData] = useState<WeatherData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | undefined>(undefined);
@@ -183,7 +182,7 @@ export function useRealWeather(
       let mapped = mapWeather(c.weather_code, c.precipitation, c.rain, c.snowfall, c.wind_speed_10m, c.wind_gusts_10m);
       mapped = applyWindOverride(mapped, c.wind_speed_10m);
 
-      const result: RealWeatherData = {
+      const result: WeatherData = {
         type: mapped.type,
         intensity: mapped.intensity,
         locationName: city,
@@ -193,16 +192,13 @@ export function useRealWeather(
       };
 
       setData(result);
-
-      if (liveModeRef.current) {
-        onUpdateRef.current(result.type, result.intensity);
-      }
+      onUpdateRef.current(result.type, result.intensity);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to fetch weather');
     } finally {
       setLoading(false);
     }
-  }, [liveModeRef]);
+  }, []);
 
   const startPolling = useCallback((lat: number, lon: number, city: string) => {
     void fetchWeather(lat, lon, city);
