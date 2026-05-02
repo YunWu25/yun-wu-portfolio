@@ -1,9 +1,17 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
-import { BrowserRouter, useLocation, useNavigate } from 'react-router-dom';
+import { BrowserRouter, useLocation, useNavigate, Routes, Route } from 'react-router-dom';
 import Splash from './components/Splash';
 import MainContent from './components/MainContent';
+import FloatingBubble from './components/FloatingBubble';
+import {
+  BubbleCollisionProvider,
+  useGlobalWobbleCollision,
+} from './components/BubbleCollisionContext';
+import { PhotoManager } from './components/admin/PhotoManager';
+import { WeatherProvider } from './components/weather/WeatherContext';
+import WeatherSystem from './components/weather/WeatherSystem';
 import { ViewState } from './types';
+import { SCROLL_THRESHOLDS } from './constants';
 
 export type Language = 'en' | 'zh';
 
@@ -32,7 +40,7 @@ const AppContent: React.FC = () => {
   const [lastScrollTime, setLastScrollTime] = useState(0);
   const [language, setLanguage] = useState<Language>(() => {
     const savedLanguage = localStorage.getItem('language');
-    return (savedLanguage === 'en' || savedLanguage === 'zh') ? savedLanguage : 'en';
+    return savedLanguage === 'en' || savedLanguage === 'zh' ? savedLanguage : 'en';
   });
 
   const activeView = getViewFromPath(location.pathname);
@@ -65,68 +73,77 @@ const AppContent: React.FC = () => {
   // Handle Navigation Logic
   const handleNavigate = (view: ViewState) => {
     const path = viewToPath[view];
-    navigate(path);
+    void navigate(path);
     if (showSplash) {
       setShowSplash(false);
     }
   };
 
   // Scroll Handler
-  const handleWheel = useCallback((e: WheelEvent) => {
-    const now = Date.now();
-    // Debounce scroll events to prevent jittery state flipping
-    if (now - lastScrollTime < 1200) return;
+  const handleWheel = useCallback(
+    (e: WheelEvent) => {
+      const now = Date.now();
+      // Debounce scroll events to prevent jittery state flipping
+      if (now - lastScrollTime < SCROLL_THRESHOLDS.WHEEL_DEBOUNCE_MS) return;
 
-    if (e.deltaY > 50 && showSplash) {
-      // Scrolling Down: Hide Splash
-      setShowSplash(false);
-      setLastScrollTime(now);
-    } else if (e.deltaY < -80 && !showSplash) {
-      // Scrolling Up
+      if (e.deltaY > SCROLL_THRESHOLDS.SCROLL_DOWN_THRESHOLD && showSplash) {
+        // Scrolling Down: Hide Splash
+        setShowSplash(false);
+        setLastScrollTime(now);
+      } else if (e.deltaY < SCROLL_THRESHOLDS.SCROLL_UP_THRESHOLD && !showSplash) {
+        // Scrolling Up
 
-      // Check if we are inside scrollable content that is NOT at the top
-      if (isScrollableAndNotAtTop(e.target)) {
-        return; // Allow default scrolling behavior inside the div
+        // Check if we are inside scrollable content that is NOT at the top
+        if (isScrollableAndNotAtTop(e.target)) {
+          return; // Allow default scrolling behavior inside the div
+        }
+
+        // Only show splash if we are at the top of the content
+        setShowSplash(true);
+        setLastScrollTime(now);
       }
-
-      // Only show splash if we are at the top of the content
-      setShowSplash(true);
-      setLastScrollTime(now);
-    }
-  }, [showSplash, lastScrollTime]);
+    },
+    [showSplash, lastScrollTime]
+  );
 
   // Touch Handler for Mobile
   const [touchStart, setTouchStart] = useState<number | null>(null);
 
-  const handleTouchStart = (e: TouchEvent) => {
-    setTouchStart(e.touches[0].clientY);
-  };
+  const handleTouchStart = useCallback((e: TouchEvent) => {
+    setTouchStart(e.touches[0]?.clientY ?? null);
+  }, []);
 
-  const handleTouchMove = useCallback((e: TouchEvent) => {
-    if (touchStart === null) return;
+  const handleTouchMove = useCallback(
+    (e: TouchEvent) => {
+      if (touchStart === null) return;
 
-    const currentY = e.touches[0].clientY;
-    const diff = touchStart - currentY;
-    const now = Date.now();
+      const touch = e.touches[0];
+      if (!touch) return;
 
-    if (now - lastScrollTime < 1000) return;
+      const currentY = touch.clientY;
+      const diff = touchStart - currentY;
+      const now = Date.now();
 
-    if (diff > 50 && showSplash) {
-      // Swipe Up (Scroll Down equivalent): Hide Splash
-      setShowSplash(false);
-      setLastScrollTime(now);
-    } else if (diff < -80 && !showSplash) {
-      // Swipe Down (Scroll Up equivalent): Show Splash
+      if (now - lastScrollTime < SCROLL_THRESHOLDS.TOUCH_DEBOUNCE_MS) return;
 
-      // Check if internal content is scrolled down
-      if (isScrollableAndNotAtTop(e.target)) {
-        return;
+      if (diff > SCROLL_THRESHOLDS.SWIPE_UP_THRESHOLD && showSplash) {
+        // Swipe Up (Scroll Down equivalent): Hide Splash
+        setShowSplash(false);
+        setLastScrollTime(now);
+      } else if (diff < SCROLL_THRESHOLDS.SWIPE_DOWN_THRESHOLD && !showSplash) {
+        // Swipe Down (Scroll Up equivalent): Show Splash
+
+        // Check if internal content is scrolled down
+        if (isScrollableAndNotAtTop(e.target)) {
+          return;
+        }
+
+        setShowSplash(true);
+        setLastScrollTime(now);
       }
-
-      setShowSplash(true);
-      setLastScrollTime(now);
-    }
-  }, [showSplash, touchStart, lastScrollTime]);
+    },
+    [showSplash, touchStart, lastScrollTime]
+  );
 
   useEffect(() => {
     // Use passive: false allows preventing default if needed, though we rely on logic branching here
@@ -142,34 +159,55 @@ const AppContent: React.FC = () => {
   }, [handleWheel, handleTouchMove, handleTouchStart]);
 
   return (
-    <div className="relative w-full min-h-screen bg-offwhite text-darkgray font-sans selection:bg-coral selection:text-white overflow-hidden">
+    <BubbleCollisionProvider>
+      <WobbleCollisionDetector />
+      <WeatherProvider>
+        <div className="relative w-full min-h-screen bg-offwhite text-darkgray font-sans selection:bg-coral selection:text-white overflow-hidden">
+          {/* Weather canvas overlay — z-30, pointer-events: none */}
+          <WeatherSystem />
 
-      {/* Overlay Splash Screen */}
-      <Splash
-        isVisible={showSplash}
-        onDismiss={() => setShowSplash(false)}
-        language={language}
-      />
+          {/* Overlay Splash Screen — z-50 */}
+          <Splash
+            isVisible={showSplash}
+            onDismiss={() => {
+              setShowSplash(false);
+            }}
+            language={language}
+          />
 
-      {/* Main Site Content */}
-      <div
-        className={`transition-opacity duration-1000 h-screen w-full flex items-center justify-center ${showSplash ? 'opacity-0 pointer-events-none' : 'opacity-100 pointer-events-auto'}`}
-      >
-        <MainContent
-          activeView={activeView}
-          onNavigate={handleNavigate}
-          language={language}
-          setLanguage={setLanguage}
-        />
-      </div>
-    </div>
+          {/* Main Site Content */}
+          <div
+            className={`transition-opacity duration-1000 h-screen w-full flex items-center justify-center ${showSplash ? 'opacity-0 pointer-events-none' : 'opacity-100 pointer-events-auto'}`}
+          >
+            <MainContent
+              activeView={activeView}
+              onNavigate={handleNavigate}
+              language={language}
+              setLanguage={setLanguage}
+            />
+          </div>
+
+          {/* Floating eBay Store Bubble */}
+          <FloatingBubble />
+        </div>
+      </WeatherProvider>
+    </BubbleCollisionProvider>
   );
+};
+
+// Component that activates global wobble collision detection
+const WobbleCollisionDetector: React.FC = () => {
+  useGlobalWobbleCollision();
+  return null;
 };
 
 const App: React.FC = () => {
   return (
     <BrowserRouter>
-      <AppContent />
+      <Routes>
+        <Route path="/admin/*" element={<PhotoManager />} />
+        <Route path="*" element={<AppContent />} />
+      </Routes>
     </BrowserRouter>
   );
 };

@@ -31,13 +31,14 @@ Portfolio website for Yun Wu - Visual Designer & Photographer, Seattle, WA.
 
 ## About
 
-Portfolio website showcasing Yun Wu's work in visual design, video, and photography.
+Portfolio website showcasing Yun Wu's work in visual design, video, and photography...
 
 ---
 
 ## Features
 
 ### Navigation
+
 - Home (with submenu: Design, Video, Photography)
 - About
 - Project Flow
@@ -45,6 +46,7 @@ Portfolio website showcasing Yun Wu's work in visual design, video, and photogra
 - Mobile-responsive hamburger menu
 
 ### Key Features
+
 - Session-based splash screen with typewriter animation
 - Photography gallery with portrait images
 - Video section with two-column grid layout
@@ -57,28 +59,32 @@ Portfolio website showcasing Yun Wu's work in visual design, video, and photogra
 
 ### Prerequisites
 
-- Node.js (v18+)
+- Node.js (v20+)
 - npm
 - Git
 
 ### Installation
 
 1. **Clone the repository**
+
    ```bash
-   git clone https://github.com/dokaniasourav/yun-wu-portfolio.git
+   git clone https://github.com/YunWu25/yun-wu-portfolio.git
    ```
 
 2. **Navigate to the project directory**
+
    ```bash
    cd yun-wu-portfolio
    ```
 
 3. **Install dependencies**
+
    ```bash
    npm install
    ```
 
 4. **Start the development server**
+
    ```bash
    npm run dev
    ```
@@ -92,11 +98,12 @@ Portfolio website showcasing Yun Wu's work in visual design, video, and photogra
 
 ## Usage
 
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Start development server |
-| `npm run build` | Build for production |
-| `npm run preview` | Preview production build |
+| Command                       | Description                                                      |
+| ----------------------------- | ---------------------------------------------------------------- |
+| `npm run dev`                 | Start Vite development server                                    |
+| `npm run build`               | Build for production                                             |
+| `npm run preview`             | Preview production build                                         |
+| `npx wrangler pages dev dist` | Test with Cloudflare Pages Functions (run `npm run build` first) |
 
 ---
 
@@ -112,8 +119,16 @@ yun-wu-portfolio/
 ├── styles.ts               # Centralized design system
 ├── vite.config.ts          # Vite build configuration
 ├── tsconfig.json           # TypeScript compiler settings
+├── wrangler.toml           # Cloudflare Pages configuration
+├── _routes.json            # Pages Functions route config
 ├── playwright.config.ts    # E2E test configuration
 ├── package.json            # Dependencies and scripts
+│
+├── functions/
+│   └── api/
+│       ├── photos.ts       # Public API for photo listing
+│       └── admin/
+│           └── photos.ts   # Admin API for metadata management
 │
 ├── components/
 │   ├── Splash.tsx          # Animated splash screen
@@ -128,6 +143,8 @@ yun-wu-portfolio/
 │   └── WaveDecoration.tsx  # Wave decoration
 │
 ├── public/
+│   ├── admin/
+│   │   └── index.html      # Admin portal UI
 │   └── images/
 │       ├── about-page-yun.jpg
 │       └── brand-logo/     # 9 brand partner logos
@@ -153,11 +170,18 @@ yun-wu-portfolio/
 The site is deployed at **yunwustudio.com** via Cloudflare Pages.
 
 To build for production:
+
 ```bash
 npm run build
 ```
 
 The build output will be in the `dist/` directory.
+
+---
+
+## Admin Portal
+
+Photo metadata editor at `/admin/`. Protect with Cloudflare Access (Zero Trust → Access → Applications → add path `admin` with email allowlist).
 
 ---
 
@@ -167,7 +191,7 @@ The build output will be in the `dist/` directory.
 
 - Email: [Yunwustudio@gmail.com](mailto:Yunwustudio@gmail.com)
 - Phone: +1 425-837-2524
-- Instagram: [@yun___wu](https://instagram.com/yun___wu)
+- Instagram: [@yun\_\_\_wu](https://instagram.com/yun___wu)
 - LinkedIn: [yun-w-0532b5190](https://linkedin.com/in/yun-w-0532b5190)
 
 **Website**: [yunwustudio.com](https://yunwustudio.com)

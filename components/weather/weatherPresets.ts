@@ -1,0 +1,107 @@
+import { WeatherType, WeatherPreset } from './types';
+
+export const WEATHER_PRESETS: Record<WeatherType, WeatherPreset> = {
+  [WeatherType.CLEAR]: {
+    particleCount: 15,
+    wind: { x: 0.05, y: 0, gustStrength: 0.02, gustFrequency: 0.001 },
+    particleTypes: ['dust'],
+    hasLightning: false,
+    hasSunRays: true,
+    hasAccumulation: false,
+    glassStreaks: false,
+    speed: { min: 0.2, max: 0.6 },
+    size: { min: 1, max: 3 },
+  },
+  [WeatherType.DRIZZLE]: {
+    particleCount: 100,
+    wind: { x: 0.15, y: 0, gustStrength: 0.08, gustFrequency: 0.003 },
+    particleTypes: ['rain'],
+    hasLightning: false,
+    hasSunRays: false,
+    hasAccumulation: false,
+    glassStreaks: true,
+    speed: { min: 4, max: 7 },
+    size: { min: 1, max: 2 },
+  },
+  [WeatherType.RAIN]: {
+    particleCount: 1000,
+    wind: { x: 0.3, y: 0, gustStrength: 0.25, gustFrequency: 0.004 },
+    particleTypes: ['rain'],
+    hasLightning: false,
+    hasSunRays: false,
+    hasAccumulation: false,
+    glassStreaks: true,
+    speed: { min: 8, max: 14 },
+    size: { min: 1.5, max: 3 },
+  },
+  [WeatherType.HEAVY_RAIN]: {
+    particleCount: 1500,
+    wind: { x: 0.6, y: 0.2, gustStrength: 0.35, gustFrequency: 0.008 },
+    particleTypes: ['rain'],
+    hasLightning: false,
+    hasSunRays: false,
+    hasAccumulation: false,
+    glassStreaks: true,
+    speed: { min: 12, max: 20 },
+    size: { min: 2, max: 4 },
+  },
+  [WeatherType.THUNDERSTORM]: {
+    particleCount: 600,
+    wind: { x: 0.7, y: 0.2, gustStrength: 0.5, gustFrequency: 0.010 },
+    particleTypes: ['rain'],
+    hasLightning: true,
+    hasSunRays: false,
+    hasAccumulation: false,
+    glassStreaks: true,
+    speed: { min: 14, max: 22 },
+    size: { min: 2, max: 4.5 },
+  },
+  [WeatherType.SNOW]: {
+    particleCount: 240,
+    wind: { x: 0.2, y: 0.1, gustStrength: 0.15, gustFrequency: 0.004 },
+    particleTypes: ['snow'],
+    hasLightning: false,
+    hasSunRays: false,
+    hasAccumulation: true,
+    glassStreaks: false,
+    speed: { min: 0.8, max: 2.5 },
+    size: { min: 4, max: 10 },
+  },
+  [WeatherType.BLIZZARD]: {
+    particleCount: 600,
+    wind: { x: 0.8, y: -0.1, gustStrength: 0.6, gustFrequency: 0.01 },
+    particleTypes: ['snow'],
+    hasLightning: false,
+    hasSunRays: false,
+    hasAccumulation: true,
+    glassStreaks: false,
+    speed: { min: 2, max: 5 },
+    size: { min: 4, max: 12 },
+  },
+  [WeatherType.WIND]: {
+    particleCount: 50,
+    wind: { x: 1.0, y: 0, gustStrength: 1.0, gustFrequency: 0.012 },
+    particleTypes: ['debris'],
+    hasLightning: false,
+    hasSunRays: false,
+    hasAccumulation: false,
+    glassStreaks: false,
+    speed: { min: 4, max: 10 },
+    size: { min: 3, max: 7 },
+  },
+};
+
+export const getScaledPreset = (type: WeatherType, intensity: number): WeatherPreset => {
+  const base = WEATHER_PRESETS[type];
+  const scale = 0.2 + (intensity / 10) * 0.8; // 0.2 at intensity 1, 1.0 at intensity 10
+  return {
+    ...base,
+    particleCount: Math.round(base.particleCount * scale),
+    wind: {
+      ...base.wind,
+      x: base.wind.x * scale,
+      y: base.wind.y * scale,
+      gustStrength: base.wind.gustStrength * scale,
+    },
+  };
+};

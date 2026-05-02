@@ -5,99 +5,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Yun Wu Portfolio</title>
-    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@400;600;700&family=JetBrains+Mono:wght@400&display=swap"
       rel="stylesheet">
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              coral: '#ff6b6b',
-              offwhite: '#f9f9f9',
-              darkgray: '#333333',
-            },
-            fontFamily: {
-              sans: ['Inter', 'sans-serif'],
-              serif: ['Playfair Display', 'serif'],
-              mono: ['JetBrains Mono', 'monospace'],
-            }
-          }
-        }
-      }
-    </script>
-    <style>
-      body {
-        background-color: #ffffff;
-        overflow: hidden;
-        /* Managed by React app */
-      }
-
-      /* Custom scrollbar for internal content */
-      .custom-scrollbar::-webkit-scrollbar {
-        width: 6px;
-      }
-
-      .custom-scrollbar::-webkit-scrollbar-track {
-        background: #f1f1f1;
-      }
-
-      .custom-scrollbar::-webkit-scrollbar-thumb {
-        background: #ff6b6b;
-        border-radius: 3px;
-      }
-
-      /* Blinking cursor animation */
-      @keyframes blink {
-
-        0%,
-        49% {
-          opacity: 1;
-        }
-
-        50%,
-        100% {
-          opacity: 0;
-        }
-      }
-
-      .animate-blink {
-        animation: blink 1s infinite;
-      }
-
-      @keyframes marquee {
-        from {
-          transform: translateX(0);
-        }
-
-        to {
-          transform: translateX(var(--marquee-distance));
-        }
-      }
-
-      @keyframes scroll-up {
-        from {
-          transform: translateY(0);
-        }
-
-        to {
-          transform: translateY(-33.333%);
-        }
-      }
-
-      @keyframes scroll-down {
-        from {
-          transform: translateY(-33.333%);
-        }
-
-        to {
-          transform: translateY(0);
-        }
-      }
-    </style>
     <script type="importmap">
 {
   "imports": {

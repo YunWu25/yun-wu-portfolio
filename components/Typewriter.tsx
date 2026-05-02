@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { COLORS } from '../styles';
 
 interface TypewriterProps {
   text: string;
@@ -15,15 +16,20 @@ const Typewriter: React.FC<TypewriterProps> = ({ text, className = '', startDela
 
   // Reset state when text or startDelay changes (or component remounts)
   useEffect(() => {
-    setDisplayedText('');
+    const resetId = requestAnimationFrame(() => {
+      setDisplayedText('');
+      setStarted(false);
+    });
     indexRef.current = 0;
-    setStarted(false);
 
     const startTimeout = setTimeout(() => {
       setStarted(true);
     }, startDelay);
 
-    return () => clearTimeout(startTimeout);
+    return () => {
+      cancelAnimationFrame(resetId);
+      clearTimeout(startTimeout);
+    };
   }, [startDelay, text]);
 
   // Typing Logic
@@ -50,14 +56,16 @@ const Typewriter: React.FC<TypewriterProps> = ({ text, className = '', startDela
     // Start typing the first character immediately
     typeCharacter();
 
-    return () => clearTimeout(timeoutId);
+    return () => {
+      clearTimeout(timeoutId);
+    };
   }, [text, started]);
 
   return (
     <span className={`${className} font-light`}>
       {displayedText}
       {/* Cursor blinks continuously */}
-      <span className="animate-blink text-coral font-bold inline-block ml-1">|</span>
+      <span className={`animate-blink ${COLORS.coral} font-bold inline-block ml-1`}>|</span>
     </span>
   );
 };
