@@ -365,7 +365,7 @@ const MainContent: React.FC<MainContentProps> = ({
               data-wobble-target
               className={`${TYPOGRAPHY.body} text-lg tracking-wide text-gray-300`}
             >
-              2025 Yun Wu
+              2026 Yun Wu
             </div>
             {/* Mobile: Icon + text pairs, Desktop: Text only with separators */}
             <div className="flex gap-8 mt-4 md:mt-0">
@@ -381,7 +381,7 @@ const MainContent: React.FC<MainContentProps> = ({
                   className={`${COLORS.coral} md:hidden group-hover:scale-110 transition-transform`}
                 />
                 <span
-                  className={`hover:text-coral hover:underline transition-colors ${TYPOGRAPHY.small}`}
+                  className={`hover:text-coral hover:underline transition-colors ${TYPOGRAPHY.body}`}
                 >
                   EMAIL
                 </span>
@@ -400,7 +400,7 @@ const MainContent: React.FC<MainContentProps> = ({
                   className={`${COLORS.coral} md:hidden group-hover:scale-110 transition-transform`}
                 />
                 <span
-                  className={`hover:text-coral hover:underline transition-colors ${TYPOGRAPHY.small}`}
+                  className={`hover:text-coral hover:underline transition-colors ${TYPOGRAPHY.body}`}
                 >
                   INSTAGRAM
                 </span>
@@ -420,7 +420,7 @@ const MainContent: React.FC<MainContentProps> = ({
                   className={`${COLORS.coral} md:hidden group-hover:scale-110 transition-transform`}
                 />
                 <span
-                  className={`hover:text-coral hover:underline transition-colors ${TYPOGRAPHY.small}`}
+                  className={`hover:text-coral hover:underline transition-colors ${TYPOGRAPHY.body}`}
                 >
                   LINKEDIN
                 </span>

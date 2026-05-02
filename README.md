@@ -202,6 +202,6 @@ Photo metadata editor at `/admin/`. Protect with Cloudflare Access (Zero Trust �
 
 Made with ❤️ in Seattle, WA
 
-**2025 Yun Wu** • Built with React & TypeScript
+**2026 Yun Wu** • Built with React & TypeScript
 
 </div>
