@@ -32,7 +32,7 @@ const About: React.FC<AboutProps> = ({ language }) => {
       bio1: "My past experience communicating with clients has made me skilled at understanding their needs and helping them find the solutions they're looking for. Using that insight as a foundation is one of the ways I want to dedicate myself to my craft. The experience I've gained from working as a consultant has strengthened my ability to approach and solve problems, and I know this journey will continue to be both rewarding and exciting.",
       quote: '"Design is not just what it looks like and feels like. Design is how it works."',
       quoteAuthor: '— Steve Jobs.',
-      bio2: "I enjoy watching films and documentaries, and also love games like Animal Crossing. I'm passionate about documenting my life and the lives of my friends—for the past few years, I've been carefully selecting and sharing photos on a near-weekly basis that capture this stage of my journey.",
+      bio2: "I enjoy watching films and documentaries,My favorite thing is watching TV series at home. I also love games like Animal Crossing. I'm passionate about documenting my life and the lives of my friends—for the past few years, I've been carefully selecting and sharing photos on a near-weekly basis that capture this stage of my journey.",
       services: 'Services',
       servicesDesc: 'Let me help build out a unique, story-led photo campaign for your brand.',
       photography: 'Photography',
@@ -44,18 +44,18 @@ const About: React.FC<AboutProps> = ({ language }) => {
     },
     zh: {
       intro:
-        '"我专注于通过摄影和互动设计进行视觉叙事。在西雅图，我探索自然、技术和人类情感的交集。"',
-      bio1: '与客户沟通的经验使我擅长理解他们的需求并帮助他们找到解决方案。以这种洞察力为基础是我致力于自己工艺的方式之一。作为顾问的经验增强了我解决问题的能力，我知道这段旅程将继续既有收获又令人兴奋。',
+        '"我专注于通过摄影和互动设计来进行视觉叙事。在西雅图，我探索自然、技术和人类情感的交集。"',
+      bio1: '与客户沟通的经验使我擅长理解他们的需求并帮助他们找到解决方案。以这种洞察力为基础是我致力于自己制作工艺的方式之一。作为顾问的经验增强了我解决问题的能力，我相信这段旅程将继续既有收获又令人兴奋。',
       quote: '"设计不仅仅是外观和感觉。设计是它如何工作。"',
       quoteAuthor: '— 史蒂夫·乔布斯',
-      bio2: '我喜欢看电影和纪录片，也喜欢玩《动物森友会》等游戏。我热衷于记录我和朋友们的生活——在过去的几年里，我几乎每周都会精心挑选并分享捕捉这一人生阶段的照片。',
+      bio2: '我喜欢看电影和纪录片，最喜欢的事是在宅家看剧。也喜欢玩《动物森友会》等游戏。我热衷于记录我和朋友们的生活——在过去的几年里，我几乎每周都会精心挑选并分享捕捉这一人生阶段的照片。',
       services: '服务',
       servicesDesc: '让我帮助为您的品牌打造独特的、以故事为主导的照片活动。',
       photography: '摄影',
       photographyDesc:
         '社交媒体激活和品牌代言：凭借超过10万名活跃且不断增长的粉丝，我通过战略性社交渠道合作帮助品牌瞄准新受众。',
       brandAmbassador: '品牌大使',
-      brandAmbassadorDesc: '一直在寻找与我的价值观一致的新品牌进行长期合作，所以请联系我！',
+      brandAmbassadorDesc: '我一直在寻找与我的价值观一致的品牌进行长期合作，所以请联系我！',
     },
   };
 

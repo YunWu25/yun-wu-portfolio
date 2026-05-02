@@ -15,7 +15,7 @@ const ProjectFlow: React.FC<ProjectFlowProps> = ({ language }) => {
   const content = {
     en: {
       intro:
-        "Hey! I'm Yun Wu, a designer who loves turning ideas into something beautiful and functional. Every project is unique, but here's how I usually roll with clients – think of it as our collaborative adventure. I believe great design is about simplicity: making things intuitive, delightful, and effective. Let's make your vision pop!",
+        "Hey! I'm Yun Wu, a designer who loves turning ideas into something beautiful and functional. I believe every project is unique, but here's how I usually roll with clients – think of it as our collaborative adventure. I believe great design is about simplicity: making things intuitive, delightful, and effective. Let's make your vision pop!",
       ourJourney: 'Our Journey',
       phases: [
         {
@@ -59,7 +59,7 @@ const ProjectFlow: React.FC<ProjectFlowProps> = ({ language }) => {
         {
           question: 'Can we collaborate remotely?',
           answer:
-            "Absolutely! Tools like Figma, Zoom, or even coffee chats via video. I'm flexible across countries.",
+            "Absolutely! Tools like Figma, Zoom... or even coffee chats via video. I'm flexible across countries.",
         },
         {
           question: 'What categories do you cover?',
@@ -70,13 +70,13 @@ const ProjectFlow: React.FC<ProjectFlowProps> = ({ language }) => {
     },
     zh: {
       intro:
-        '嘿！我是吴云，一个喜欢把想法变成美丽而实用的东西的设计师。每个项目都是独特的，但这是我通常与客户合作的方式——把它想象成我们的协作冒险。我相信伟大的设计在于简洁：让事物直观、令人愉悦且有效。让我们实现您的愿景！',
+        '嗨！我是伍芸，一个喜欢把想法变成美丽实用东西的设计师。相信每个项目都是独特的，这也是我通常与客户合作的方式——把它想象成我们的协作冒险。我相信伟大的设计在于简洁：让事物直观、令人愉悦且有效。请联系我，让我们一起实现您的愿景！',
       ourJourney: '我们的旅程',
       phases: [
         {
           title: '了解您的需求',
           description:
-            '我们从讨论您的目标开始。我会深入研究用户调研、竞争对手分析，并整理核心需求。这有助于我们发现真正的问题并做出明智的假设来指导我们。',
+            '我们会从讨论您的目标开始。我们会深入研究用户调研、竞争对手分析，并整理核心需求。这有助于我们发现真正的问题并做出明智的假设来指导我们。',
         },
         {
           title: '头脑风暴',
@@ -88,31 +88,31 @@ const ProjectFlow: React.FC<ProjectFlowProps> = ({ language }) => {
         },
         {
           title: '原型魔法',
-          description: '我制作低保真原型，梳理流程，并创建线框图。这是我们演示和快速迭代的地方。',
+          description: '我将制作低保真原型，梳理流程，并创建线框图。这是我们演示和快速迭代的地方。',
         },
         {
           title: '高保真润色',
           description:
-            '最后，我们全彩呈现：风格指南、字体、图标和所有精彩细节。页面以定制风格栩栩如生。',
+            '最后，我们将全彩呈现：风格指南、字体、图标和所有精彩细节。页面以定制风格栩栩如生。',
         },
       ],
       clickToLearn: '点击了解更多',
       faqs: [
         {
           question: '项目需要多长时间？',
-          answer: '短期项目：2周完成。长期项目：最多6个月以达到完美。急活？我能搞定——让我们聊聊！',
+          answer: '短期项目：2周完成。长期项目：最多6个月以达到完美。急活？我能搞定——让先我们聊聊！',
         },
         {
           question: '价格是多少？',
-          answer: '取决于范围，但我追求公平和透明。我们先谈细节，然后我会给您一个满意的报价。',
+          answer: '取决于范围，但我们追求公平和透明。我们先谈细节，然后我会给您一个满意的报价。',
         },
         {
           question: '我们可以远程协作吗？',
-          answer: '当然！使用Figma、Zoom等工具，或视频咖啡聊天。我在各国都很灵活。',
+          answer: '当然！使用但不限于Figma、Zoom等工具，或视频咖啡聊天。我在各国都很灵活。',
         },
         {
           question: '您涵盖哪些类别？',
-          answer: '健康、政府、电子商务、汽车、保险……你能想到的，我可能都设计过！',
+          answer: '健康、政府、电子商务、汽车、保险……你能想到的，我可能都设计或接触过！',
         },
       ],
     },
