@@ -256,7 +256,7 @@ const FloatingBubble: React.FC = () => {
   return (
     <div
       ref={bubbleRef}
-      className="fixed z-50"
+      className={`fixed z-50 ${!localIsDragging ? 'animate-bubble-pulse' : ''}`}
       style={{
         right: position.x,
         bottom: position.y,
@@ -265,11 +265,10 @@ const FloatingBubble: React.FC = () => {
       onMouseDown={handleMouseDown}
       onTouchStart={handleTouchStart}
     >
-      {/* Breathing glow */}
-      <div
-        className="absolute -inset-1 rounded-full bg-coral/25 animate-pulse"
-        style={{ animationDuration: '2s' }}
-      />
+      {/* Outer glow - always visible when not dragging */}
+      {!localIsDragging && (
+        <div className="absolute -inset-3 rounded-full bg-coral/25" />
+      )}
 
       <a
         href="https://www.ebay.com/usr/solarheart-studio"

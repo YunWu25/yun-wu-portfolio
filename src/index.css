@@ -137,3 +137,18 @@ body {
 .animate-slide-down {
   animation: slide-down 0.2s ease-out;
 }
+
+/* Bubble breathing/pulse animation (like orbital system's orb) */
+@keyframes bubble-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.animate-bubble-pulse {
+  animation: bubble-pulse 2s ease-in-out infinite;
+}

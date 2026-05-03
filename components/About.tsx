@@ -34,11 +34,12 @@ const About: React.FC<AboutProps> = ({ language }) => {
       quoteAuthor: '— Steve Jobs.',
       bio2: "I enjoy watching films and documentaries,My favorite thing is watching TV series at home. I also love games like Animal Crossing. I'm passionate about documenting my life and the lives of my friends—for the past few years, I've been carefully selecting and sharing photos on a near-weekly basis that capture this stage of my journey.",
       services: 'Services',
+      video: 'Video',
       servicesDesc: 'Let me help build out a unique, story-led photo campaign for your brand.',
       photography: 'Photography',
       photographyDesc:
         'Social Media Activation and Brand Representation: With an engaged and ever-growing audience of more than 100,000 followers, I help brands target new audiences through strategic social channel partnerships.',
-      brandAmbassador: 'Brand Ambassadorship',
+      brandAmbassador: 'Design',
       brandAmbassadorDesc:
         'Always looking for new brands that align with my values to work on long-term partnerships, so get in touch!',
     },
@@ -50,11 +51,12 @@ const About: React.FC<AboutProps> = ({ language }) => {
       quoteAuthor: '— 史蒂夫·乔布斯',
       bio2: '我喜欢看电影和纪录片，最喜欢的事是在宅家看剧。也喜欢玩《动物森友会》等游戏。我热衷于记录我和朋友们的生活——在过去的几年里，我几乎每周都会精心挑选并分享捕捉这一人生阶段的照片。',
       services: '服务',
+      video: '影片',
       servicesDesc: '让我帮助为您的品牌打造独特的、以故事为主导的照片活动。',
       photography: '摄影',
       photographyDesc:
         '社交媒体激活和品牌代言：凭借超过10万名活跃且不断增长的粉丝，我通过战略性社交渠道合作帮助品牌瞄准新受众。',
-      brandAmbassador: '品牌大使',
+      brandAmbassador: '设计',
       brandAmbassadorDesc: '我一直在寻找与我的价值观一致的品牌进行长期合作，所以请联系我！',
     },
   };
@@ -86,23 +88,33 @@ const About: React.FC<AboutProps> = ({ language }) => {
         />
         <p className={`${TYPOGRAPHY.bodySmall} ${COLORS.gray600} mb-6`}>{t.bio2}</p>
 
-        <div className="mt-12">
-          <h4 data-wobble-target className={`${TYPOGRAPHY.sectionHeading} ${COLORS.gray900} mb-3`}>
+        {/* Services Section */}
+        <div id="services-section" className="mt-16 mb-16">
+          <h2 className={`text-3xl md:text-4xl font-serif ${COLORS.coral} mb-8 text-center`}>
             {t.services}
-          </h4>
-          <p className={`${TYPOGRAPHY.bodySmall} ${COLORS.gray600} mb-6`}>{t.servicesDesc}</p>
+          </h2>
+          <div className="space-y-6 max-w-3xl mx-auto">
+            <div className="border-b border-gray-200 pb-6">
+              <h3 className={`font-sans text-xl md:text-2xl font-medium ${COLORS.gray900} mb-3`}>
+                {t.brandAmbassador}
+              </h3>
+              <p className={`${TYPOGRAPHY.bodySmall} ${COLORS.gray600}`}>{t.brandAmbassadorDesc}</p>
+            </div>
 
-          <h4 data-wobble-target className={`${TYPOGRAPHY.sectionHeading} ${COLORS.gray900} mb-3`}>
-            {t.photography}
-          </h4>
-          <p className={`${TYPOGRAPHY.bodySmall} ${COLORS.gray600} mb-6`}>{t.photographyDesc}</p>
+            <div className="border-b border-gray-200 pb-6">
+              <h3 className={`font-sans text-xl md:text-2xl font-medium ${COLORS.gray900} mb-3`}>
+                {t.video}
+              </h3>
+              <p className={`${TYPOGRAPHY.bodySmall} ${COLORS.gray600}`}>{t.servicesDesc}</p>
+            </div>
 
-          <h4 data-wobble-target className={`${TYPOGRAPHY.sectionHeading} ${COLORS.gray900} mb-3`}>
-            {t.brandAmbassador}
-          </h4>
-          <p className={`${TYPOGRAPHY.bodySmall} ${COLORS.gray600} mb-6`}>
-            {t.brandAmbassadorDesc}
-          </p>
+            <div className="border-b border-gray-200 pb-6 last:border-b-0">
+              <h3 className={`font-sans text-xl md:text-2xl font-medium ${COLORS.gray900} mb-3`}>
+                {t.photography}
+              </h3>
+              <p className={`${TYPOGRAPHY.bodySmall} ${COLORS.gray600}`}>{t.photographyDesc}</p>
+            </div>
+          </div>
         </div>
 
         <div className="mt-16 mb-8 relative overflow-hidden py-12">

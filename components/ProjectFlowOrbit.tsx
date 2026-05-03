@@ -221,7 +221,7 @@ const OrbitalSystem: React.FC<OrbitalSystemProps> = ({ phases, expandedPhase, on
                   setHoveredIndex(null);
                 }}
                 className={`
-                  cursor-pointer rounded-md border border-coral/20 hover:border-coral/40
+                  cursor-pointer rounded-md border
                   transition-all duration-300
                   ${expandedPhase === index ? 'w-80 p-5' : 'px-3 py-2'}
                 `}
@@ -230,13 +230,26 @@ const OrbitalSystem: React.FC<OrbitalSystemProps> = ({ phases, expandedPhase, on
                     expandedPhase === index
                       ? 'scale(1.1)'
                       : hoveredIndex === index
-                        ? 'scale(1.03)'
+                        ? 'scale(1.05)'
                         : 'scale(1)',
                   backgroundColor:
-                    expandedPhase === index ? '#ffffff' : 'rgba(255, 107, 107, 0.08)',
+                    expandedPhase === index
+                      ? '#ffffff'
+                      : hoveredIndex === index
+                        ? 'rgba(255, 107, 107, 0.15)'
+                        : 'rgba(255, 107, 107, 0.08)',
+                  borderColor:
+                    expandedPhase === index
+                      ? 'rgba(255, 107, 107, 0.6)'
+                      : hoveredIndex === index
+                        ? 'rgba(255, 107, 107, 0.6)'
+                        : 'rgba(255, 107, 107, 0.2)',
                   opacity: cardOpacities[index] ?? 1,
                   transition: 'all 0.3s ease-out',
-                  boxShadow: '0 4px 12px rgba(255, 107, 107, 0.1)',
+                  boxShadow:
+                    hoveredIndex === index || expandedPhase === index
+                      ? '0 6px 20px rgba(255, 107, 107, 0.25)'
+                      : '0 4px 12px rgba(255, 107, 107, 0.1)',
                 }}
               >
                 {/* Phase Number Badge - Only show when expanded */}

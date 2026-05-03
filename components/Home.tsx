@@ -114,7 +114,7 @@ const Home: React.FC<HomeProps> = ({ onNavigate, language }) => {
   return (
     <div
       id="home-root"
-      className="flex flex-col justify-end space-y-8 md:space-y-10 w-full min-h-[40vh]"
+      className="flex flex-col justify-center space-y-8 md:space-y-10 w-full min-h-[40vh]"
     >
       {/* Navigation and Contact Rows */}
       <div className="flex flex-col space-y-4">
