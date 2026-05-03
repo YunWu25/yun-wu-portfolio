@@ -151,7 +151,7 @@ const OrbitalSystem: React.FC<OrbitalSystemProps> = ({ phases, expandedPhase, on
         <sphereGeometry args={[0.26, 64, 64]} />
         <meshStandardMaterial
           color="#ff6b6b"
-          emissive="#ff4d8f"
+          emissive="#ff6b6b"
           emissiveIntensity={0.3}
           metalness={0.1}
           roughness={0.9}
@@ -165,7 +165,7 @@ const OrbitalSystem: React.FC<OrbitalSystemProps> = ({ phases, expandedPhase, on
         <sphereGeometry args={[0.175, 64, 64]} />
         <meshStandardMaterial
           color="#ff6b6b"
-          emissive="#ff4d8f"
+          emissive="#ff6b6b"
           emissiveIntensity={0.5}
           metalness={0.1}
           roughness={0.8}
@@ -175,7 +175,7 @@ const OrbitalSystem: React.FC<OrbitalSystemProps> = ({ phases, expandedPhase, on
       {/* Outer glow sphere */}
       <mesh position={[0, 0, 0]}>
         <sphereGeometry args={[0.225, 32, 32]} />
-        <meshBasicMaterial color="#ffb3d9" transparent opacity={0.15} />
+        <meshBasicMaterial color="#ff6b6b" transparent opacity={0.2} />
       </mesh>
 
       {/* Connecting Lines and Phase Cards */}
@@ -191,8 +191,8 @@ const OrbitalSystem: React.FC<OrbitalSystemProps> = ({ phases, expandedPhase, on
             <AnimatedLine
               start={[0, 0, 0]}
               end={[x * 0.85, y * 0.85, z * 0.85]}
-              color="#ffb3b3"
-              glowColor="#ffcccc"
+              color="#ff6b6b"
+              glowColor="#ff6b6b"
               index={index}
             />
 
@@ -221,8 +221,7 @@ const OrbitalSystem: React.FC<OrbitalSystemProps> = ({ phases, expandedPhase, on
                   setHoveredIndex(null);
                 }}
                 className={`
-                  cursor-pointer rounded-md border
-                  ${expandedPhase === index ? 'border-coral' : 'border-coral/30 hover:border-coral'}
+                  cursor-pointer rounded-md border border-coral/20 hover:border-coral/40
                   transition-all duration-300
                   ${expandedPhase === index ? 'w-80 p-5' : 'px-3 py-2'}
                 `}
@@ -234,14 +233,10 @@ const OrbitalSystem: React.FC<OrbitalSystemProps> = ({ phases, expandedPhase, on
                         ? 'scale(1.03)'
                         : 'scale(1)',
                   backgroundColor:
-                    expandedPhase === index
-                      ? '#ffffff'
-                      : `hsl(${350 + (index % 5) * 5}, 100%, ${98 - (index % 5)}%)`,
+                    expandedPhase === index ? '#ffffff' : 'rgba(255, 107, 107, 0.08)',
                   opacity: cardOpacities[index] ?? 1,
-                  transition: 'opacity 0.3s ease-out',
-                  boxShadow: expandedPhase === index
-                    ? '0 10px 40px rgba(255, 107, 107, 0.3)'
-                    : '0 4px 12px rgba(255, 107, 107, 0.15)',
+                  transition: 'all 0.3s ease-out',
+                  boxShadow: '0 4px 12px rgba(255, 107, 107, 0.1)',
                 }}
               >
                 {/* Phase Number Badge - Only show when expanded */}
@@ -308,7 +303,7 @@ const AnimatedLine: React.FC<{
 
   return (
     <mesh ref={tubeRef} geometry={tubeGeometry}>
-      <meshBasicMaterial color={color} transparent opacity={0.3} />
+      <meshBasicMaterial color={color} transparent opacity={0.05} />
     </mesh>
   );
 };

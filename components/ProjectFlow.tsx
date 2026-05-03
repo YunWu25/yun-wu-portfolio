@@ -156,8 +156,8 @@ const ProjectFlow: React.FC<ProjectFlowProps> = ({ language }) => {
           <OrbitControls
             enablePan={false}
             enableZoom={true}
-            minDistance={8}
-            maxDistance={20}
+            minDistance={3}
+            maxDistance={50}
             autoRotate={false}
           />
         </Canvas>
