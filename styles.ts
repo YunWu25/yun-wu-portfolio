@@ -51,16 +51,16 @@ export const TYPOGRAPHY = {
 
 export const BORDERS = {
   radius: {
-    sm: 'rounded-md',
+    sm: 'rounded-lg',
     md: 'rounded-lg',
-    lg: 'rounded-xl',
+    lg: 'rounded-lg',
     full: 'rounded-full',
   },
 };
 
 export const SHADOWS = {
-  sm: 'shadow-sm',
-  md: 'shadow-md',
+  sm: 'shadow-lg',
+  md: 'shadow-lg',
   lg: 'shadow-lg',
 };
 
