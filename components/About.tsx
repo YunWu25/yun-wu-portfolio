@@ -22,6 +22,8 @@ const brandLogos: BrandLogo[] = [
   { name: 'Ride the Wind Workshop', src: 'images/brand-logo/Ride-the-Wind-Workshop.svg' },
   { name: 'Smile', src: 'images/brand-logo/smile.svg' },
   { name: 'US China Press', src: 'images/brand-logo/uschinapress.svg' },
+  { name: 'Asian Photography Association', src: 'images/brand-logo/Asian Photography Association.svg' },
+
 ];
 
 const About: React.FC<AboutProps> = ({ language }) => {
