@@ -316,7 +316,7 @@ const AnimatedLine: React.FC<{
 
   return (
     <mesh ref={tubeRef} geometry={tubeGeometry}>
-      <meshBasicMaterial color={color} transparent opacity={0.05} />
+      <meshBasicMaterial color={color} transparent opacity={0.15} />
     </mesh>
   );
 };

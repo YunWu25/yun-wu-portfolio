@@ -139,8 +139,10 @@ const ProjectFlow: React.FC<ProjectFlowProps> = ({ language }) => {
         <h2 className={`text-4xl md:text-5xl font-serif ${COLORS.coral}`}>{t.ourJourney}</h2>
       </div>
 
-      {/* 3D Three.js Orbital Container */}
-      <div className="relative w-full h-150 md:h-175 mb-24">
+      {/* 3D Perspective Container */}
+      <div className="perspective" style={{ perspective: '1200px' }}>
+        {/* 3D Three.js Orbital Container */}
+        <div className="relative w-full h-150 md:h-175 mb-24" style={{ transform: 'translateZ(0)', transformStyle: 'preserve-3d' }}>
         <Canvas camera={{ position: [0, 0, 12], fov: 50 }} style={{ background: 'transparent' }}>
           {/* Simple lighting */}
           <ambientLight intensity={0.6} />
@@ -161,6 +163,7 @@ const ProjectFlow: React.FC<ProjectFlowProps> = ({ language }) => {
             autoRotate={false}
           />
         </Canvas>
+      </div>
       </div>
 
       {/* FAQ Section */}
