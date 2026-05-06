@@ -149,7 +149,7 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ language }) => {
   };
 
   return (
-    <div className={`fixed z-50 bottom-6 right-6 w-[320px] ${hasStartedChat ? 'h-[400px]' : 'h-[180px]'} bg-white rounded-xl border border-gray-200 shadow-lg hover:shadow-xl hover:border-gray-300 transition-all duration-300 flex flex-col overflow-hidden`}>
+    <div className={`fixed z-50 bottom-4 right-4 md:bottom-6 md:right-6 w-[280px] md:w-[320px] ${hasStartedChat ? 'h-[350px] md:h-[400px]' : 'h-[160px] md:h-[180px]'} bg-white rounded-xl border border-gray-200 shadow-lg hover:shadow-xl hover:border-gray-300 transition-all duration-300 flex flex-col overflow-hidden`}>
       {/* Messages Area */}
       <div className="flex-1 overflow-y-auto">
         {messages.length === 0 ? (

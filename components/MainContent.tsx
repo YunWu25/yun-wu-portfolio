@@ -1,15 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, Suspense, lazy } from 'react';
 import { Mail, Menu, X, ChevronDown } from 'lucide-react';
 import { FaInstagram } from 'react-icons/fa';
 import { ViewState, NavItem } from '../types';
 import { WaveDecoration } from './WaveDecoration';
-import ProjectFlow from './ProjectFlow';
-import Photography from './Photography';
-import Design from './Design';
-import Video from './Video';
-import About from './About';
 import Home from './Home';
 import { COLORS, TYPOGRAPHY, BORDERS, SHADOWS } from '../styles';
+
+// Lazy load heavy components for faster initial page load
+const ProjectFlow = lazy(() => import('./ProjectFlow'));
+const Photography = lazy(() => import('./Photography'));
+const Design = lazy(() => import('./Design'));
+const Video = lazy(() => import('./Video'));
+const About = lazy(() => import('./About'));
+const Time = lazy(() => import('./Time'));
+
+// Loading skeleton component
+const PageLoader: React.FC = () => (
+  <div className="flex items-center justify-center min-h-[200px]">
+    <div className="w-8 h-8 border-2 border-coral border-t-transparent rounded-full animate-spin" />
+  </div>
+);
 import { Language } from '../App';
 
 // Custom outline LinkedIn icon to match Mail icon style
@@ -53,7 +63,8 @@ const MainContent: React.FC<MainContentProps> = ({
   const [homeExpanded, setHomeExpanded] = useState(
     activeView === ViewState.PHOTOGRAPHY ||
       activeView === ViewState.DESIGN ||
-      activeView === ViewState.VIDEO
+      activeView === ViewState.VIDEO ||
+      activeView === ViewState.TIME
   );
 
   const navItems: NavItem[] = [
@@ -63,6 +74,7 @@ const MainContent: React.FC<MainContentProps> = ({
   ];
 
   const homeSubItems = [
+    { label: language === 'en' ? 'Time' : '时光', view: ViewState.TIME },
     { label: language === 'en' ? 'Design' : '设计', view: ViewState.DESIGN },
     { label: language === 'en' ? 'Video' : '影片', view: ViewState.VIDEO },
     { label: language === 'en' ? 'Photography' : '摄影', view: ViewState.PHOTOGRAPHY },
@@ -71,15 +83,41 @@ const MainContent: React.FC<MainContentProps> = ({
   const renderBodyContent = () => {
     switch (activeView) {
       case ViewState.PROJECT_FLOW:
-        return <ProjectFlow language={language} />;
+        return (
+          <Suspense fallback={<PageLoader />}>
+            <ProjectFlow language={language} />
+          </Suspense>
+        );
       case ViewState.ABOUT:
-        return <About language={language} />;
+        return (
+          <Suspense fallback={<PageLoader />}>
+            <About language={language} />
+          </Suspense>
+        );
       case ViewState.PHOTOGRAPHY:
-        return <Photography language={language} />;
+        return (
+          <Suspense fallback={<PageLoader />}>
+            <Photography language={language} />
+          </Suspense>
+        );
       case ViewState.DESIGN:
-        return <Design language={language} />;
+        return (
+          <Suspense fallback={<PageLoader />}>
+            <Design language={language} />
+          </Suspense>
+        );
       case ViewState.VIDEO:
-        return <Video language={language} />;
+        return (
+          <Suspense fallback={<PageLoader />}>
+            <Video language={language} />
+          </Suspense>
+        );
+      case ViewState.TIME:
+        return (
+          <Suspense fallback={<PageLoader />}>
+            <Time language={language} />
+          </Suspense>
+        );
       case ViewState.HOME:
       default:
         return <Home onNavigate={onNavigate} language={language} />;
@@ -100,6 +138,8 @@ const MainContent: React.FC<MainContentProps> = ({
         return language === 'en' ? 'Yun Wu' : '伍芸';
       case ViewState.DESIGN:
         return language === 'en' ? 'Design' : '设计';
+      case ViewState.TIME:
+        return language === 'en' ? 'Time' : '时光';
       default:
         return language === 'en' ? 'Yun Wu' : '伍芸';
     }
@@ -179,7 +219,8 @@ const MainContent: React.FC<MainContentProps> = ({
                       (item.view === ViewState.HOME &&
                         (activeView === ViewState.PHOTOGRAPHY ||
                           activeView === ViewState.DESIGN ||
-                          activeView === ViewState.VIDEO))
+                          activeView === ViewState.VIDEO ||
+                          activeView === ViewState.TIME))
                         ? 'opacity-100 scale-100'
                         : 'opacity-0 group-hover:opacity-40 scale-0 group-hover:scale-75'
                     }`}
@@ -191,7 +232,8 @@ const MainContent: React.FC<MainContentProps> = ({
                       (item.view === ViewState.HOME &&
                         (activeView === ViewState.PHOTOGRAPHY ||
                           activeView === ViewState.DESIGN ||
-                          activeView === ViewState.VIDEO))
+                          activeView === ViewState.VIDEO ||
+                          activeView === ViewState.TIME))
                         ? `${COLORS.gray900} font-medium`
                         : `${COLORS.gray500} group-hover:text-coral`
                     }`}
@@ -207,7 +249,8 @@ const MainContent: React.FC<MainContentProps> = ({
                         activeView === ViewState.HOME ||
                         activeView === ViewState.PHOTOGRAPHY ||
                         activeView === ViewState.DESIGN ||
-                        activeView === ViewState.VIDEO
+                        activeView === ViewState.VIDEO ||
+                        activeView === ViewState.TIME
                           ? COLORS.gray900
                           : `${COLORS.gray500} group-hover:text-coral`
                       }`}
@@ -218,7 +261,7 @@ const MainContent: React.FC<MainContentProps> = ({
                 {item.view === ViewState.HOME && (
                   <div
                     className={`overflow-hidden transition-all duration-300 ${
-                      homeExpanded ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'
+                      homeExpanded ? 'max-h-60 opacity-100' : 'max-h-0 opacity-0'
                     }`}
                   >
                     <div className="ml-7 mt-4 space-y-4">
