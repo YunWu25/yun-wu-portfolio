@@ -12,7 +12,7 @@ interface NavRowProps {
 
 const NavRow: React.FC<NavRowProps> = ({ label, onClick, viewText }) => (
   <div
-    className={`group flex flex-col md:flex-row md:items-center justify-between border-b border-transparent hover:border-gray-100 pb-2 ${TYPOGRAPHY.link}`}
+    className={`group flex flex-col md:flex-row md:items-center justify-between border-b border-gray-200 hover:border-coral pb-4 px-2 -mx-2 hover:bg-gray-50 rounded transition-all ${TYPOGRAPHY.link}`}
     onClick={onClick}
   >
     <span
@@ -29,7 +29,7 @@ const NavRow: React.FC<NavRowProps> = ({ label, onClick, viewText }) => (
       </span>
       <ArrowRight
         size={20}
-        className="ml-2 transform group-hover:translate-x-1 transition-transform"
+        className="ml-2 transform group-hover:translate-x-1 transition-all"
       />
     </div>
   </div>
@@ -44,7 +44,7 @@ interface ContactRowProps {
 
 const ContactRow: React.FC<ContactRowProps> = ({ label, value, href, className = '' }) => (
   <div
-    className={`flex flex-col md:flex-row md:items-center justify-between border-transparent hover:border-gray-100 pb-2 ${className}`}
+    className={`group flex flex-col md:flex-row md:items-center justify-between border-b border-gray-200 hover:border-coral pb-4 px-2 -mx-2 hover:bg-gray-50 rounded transition-all ${className}`}
   >
     <span data-wobble-target className={`inline-block ${TYPOGRAPHY.navSubItem} ${COLORS.gray500}`}>
       {label}
@@ -117,7 +117,7 @@ const Home: React.FC<HomeProps> = ({ onNavigate, language }) => {
       className="flex flex-col justify-center space-y-8 md:space-y-10 w-full min-h-[40vh]"
     >
       {/* Navigation and Contact Rows */}
-      <div className="flex flex-col space-y-4">
+      <div className="flex flex-col space-y-6">
         <NavRow
           label={t.design}
           onClick={() => {
@@ -146,7 +146,7 @@ const Home: React.FC<HomeProps> = ({ onNavigate, language }) => {
           href="mailto:Yunwustudio@gmail.com"
         />
         <ContactRow label={t.call} value="+1 4258372524" href="tel:+14258372524" />
-        <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-transparent pb-2">
+        <div className="group flex flex-col md:flex-row md:items-center justify-between pb-4 px-2 -mx-2 hover:bg-gray-50 rounded transition-all">
           <span
             data-wobble-target
             className={`inline-block ${TYPOGRAPHY.navSubItem} ${COLORS.gray500}`}

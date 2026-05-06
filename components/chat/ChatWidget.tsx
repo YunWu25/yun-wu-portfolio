@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { MessageCircle, X } from 'lucide-react';
 import { Language } from '../../App';
 import ChatMessage from './ChatMessage';
 import ChatInput from './ChatInput';
@@ -14,7 +13,6 @@ interface Message {
 }
 
 const ChatWidget: React.FC<ChatWidgetProps> = ({ language }) => {
-  const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -35,12 +33,12 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ language }) => {
 
   const t = text[language];
 
-  // Add greeting message on first open
+  // Add greeting message on mount
   useEffect(() => {
-    if (isOpen && messages.length === 0) {
+    if (messages.length === 0) {
       setMessages([{ role: 'assistant', content: t.greeting }]);
     }
-  }, [isOpen, messages.length, t.greeting]);
+  }, []);
 
   // Scroll to bottom when messages change
   useEffect(() => {
@@ -149,85 +147,39 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ language }) => {
   };
 
   return (
-    <>
-      {/* Chat Button */}
-      <button
-        onClick={() => { setIsOpen(true); }}
-        className={`fixed bottom-6 left-6 z-50 flex items-center gap-2 px-4 py-2.5 bg-gray-900 hover:bg-gray-800 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 ${
-          isOpen ? 'scale-0 opacity-0' : 'scale-100 opacity-100'
-        }`}
-        aria-label={language === 'zh' ? '打开聊天' : 'Open chat'}
-      >
-        <MessageCircle size={18} />
-        <span className="font-sans text-sm font-medium">
-          {language === 'zh' ? '问 Yun AI' : 'Ask Yun AI'}
-        </span>
-      </button>
-
-      {/* Chat Panel - smaller window */}
-      <div
-        className={`fixed z-50 bottom-6 left-6 w-[380px] h-[520px] bg-white rounded-2xl border border-gray-200 shadow-2xl flex flex-col overflow-hidden transition-all duration-300 origin-bottom-left ${
-          isOpen ? 'scale-100 opacity-100' : 'scale-0 opacity-0 pointer-events-none'
-        }`}
-      >
-        {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 bg-gray-50">
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-full bg-coral flex items-center justify-center">
-              <span className="text-white text-xs font-semibold">Y</span>
-            </div>
-            <h3 className="font-sans text-sm font-semibold text-gray-900">{t.title}</h3>
+    <div className="fixed z-50 bottom-6 right-6 w-[300px] h-[240px] bg-white rounded-xl border border-gray-200 shadow-lg hover:shadow-xl hover:border-gray-300 transition-all duration-300 flex flex-col overflow-hidden">
+      {/* Messages Area */}
+      <div className="flex-1 overflow-y-auto">
+        {messages.length === 0 ? (
+          <div className="h-full flex flex-col items-center justify-center px-4 text-center">
+            <p className="font-sans text-sm text-gray-400">
+              {language === 'zh' ? '问我任何问题...' : 'Ask me anything...'}
+            </p>
           </div>
-          <button
-            onClick={() => { setIsOpen(false); }}
-            className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-200 rounded-lg transition-colors"
-            aria-label={language === 'zh' ? '关闭' : 'Close'}
-          >
-            <X size={18} />
-          </button>
-        </div>
-
-        {/* Messages Area */}
-        <div className="flex-1 overflow-y-auto">
-          {messages.length === 0 ? (
-            <div className="h-full flex flex-col items-center justify-center px-4">
-              <div className="w-10 h-10 rounded-full bg-coral flex items-center justify-center mb-3">
-                <span className="text-white text-base font-semibold">Y</span>
-              </div>
-              <h2 className="font-sans text-base font-medium text-gray-900 mb-1">
-                {language === 'zh' ? '有什么可以帮你的？' : 'How can I help you?'}
-              </h2>
-              <p className="font-sans text-xs text-gray-500 text-center">
-                {language === 'zh'
-                  ? '问我关于伍芸的作品或服务'
-                  : "Ask about Yun's work or services"}
-              </p>
-            </div>
-          ) : (
-            <div>
-              {messages.map((message, index) => (
-                <ChatMessage
-                  key={index}
-                  role={message.role}
-                  content={message.content}
-                  isStreaming={isLoading && index === messages.length - 1 && message.role === 'assistant'}
-                />
-              ))}
-              <div ref={messagesEndRef} />
-            </div>
-          )}
-        </div>
-
-        {/* Input Area */}
-        <ChatInput
-          value={inputValue}
-          onChange={setInputValue}
-          onSend={() => void sendMessage()}
-          disabled={isLoading}
-          language={language}
-        />
+        ) : (
+          <div>
+            {messages.map((message, index) => (
+              <ChatMessage
+                key={index}
+                role={message.role}
+                content={message.content}
+                isStreaming={isLoading && index === messages.length - 1 && message.role === 'assistant'}
+              />
+            ))}
+            <div ref={messagesEndRef} />
+          </div>
+        )}
       </div>
-    </>
+
+      {/* Input Area */}
+      <ChatInput
+        value={inputValue}
+        onChange={setInputValue}
+        onSend={() => void sendMessage()}
+        disabled={isLoading}
+        language={language}
+      />
+    </div>
   );
 };
 

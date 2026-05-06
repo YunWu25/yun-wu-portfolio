@@ -18,7 +18,8 @@ const FloatingBubble: React.FC = () => {
   const [isHovered, setIsHovered] = useState(false);
   const [localIsDragging, setLocalIsDragging] = useState(false);
   const [hasMoved, setHasMoved] = useState(false);
-  const [position, setPosition] = useState({ x: INITIAL_OFFSET, y: INITIAL_OFFSET * 3 + 16 });
+  // Position bubble above the chat window (chat is 300px tall + 24px from bottom = 324px, add padding)
+  const [position, setPosition] = useState({ x: INITIAL_OFFSET, y: 340 });
 
   // Get context for broadcasting position
   const { setBubblePos, setIsDragging } = useBubbleCollision();

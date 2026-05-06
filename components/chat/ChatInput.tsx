@@ -49,7 +49,9 @@ const ChatInput: React.FC<ChatInputProps> = ({ value, onChange, onSend, disabled
         <button
           onClick={onSend}
           disabled={disabled || !value.trim()}
-          className="m-1.5 p-1.5 bg-gray-900 text-white rounded-lg hover:bg-gray-800 disabled:bg-gray-200 disabled:text-gray-400 transition-colors"
+          className={`m-1.5 p-1.5 text-white rounded-lg transition-colors ${
+            value.trim() ? 'bg-coral hover:bg-coral/90' : 'bg-gray-200 text-gray-400'
+          } disabled:bg-gray-200 disabled:text-gray-400`}
           aria-label={language === 'zh' ? '发送' : 'Send'}
         >
           <ArrowUp size={16} strokeWidth={2.5} />
