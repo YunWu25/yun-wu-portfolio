@@ -3,6 +3,7 @@ import { BrowserRouter, useLocation, useNavigate, Routes, Route } from 'react-ro
 import Splash from './components/Splash';
 import MainContent from './components/MainContent';
 import FloatingBubble from './components/FloatingBubble';
+import ChatWidget from './components/chat/ChatWidget';
 import {
   BubbleCollisionProvider,
   useGlobalWobbleCollision,
@@ -189,6 +190,9 @@ const AppContent: React.FC = () => {
 
           {/* Floating eBay Store Bubble */}
           <FloatingBubble />
+
+          {/* AI Chat Widget */}
+          <ChatWidget language={language} />
         </div>
       </WeatherProvider>
     </BubbleCollisionProvider>

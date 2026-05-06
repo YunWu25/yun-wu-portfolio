@@ -8,3 +8,7 @@ pages_build_output_dir = "dist"
 binding = "PHOTOGRAPHY"
 bucket_name = "photography"
 remote = true
+
+# Workers AI binding for chat
+[ai]
+binding = "AI"
