@@ -12,7 +12,7 @@ interface NavRowProps {
 
 const NavRow: React.FC<NavRowProps> = ({ label, onClick, viewText }) => (
   <div
-    className={`group flex flex-col md:flex-row md:items-center justify-between pb-4 px-2 -mx-2 transition-all ${TYPOGRAPHY.link}`}
+    className={`group flex flex-col md:flex-row md:items-center justify-between border-b border-gray-200 pb-4 px-2 -mx-2 transition-all ${TYPOGRAPHY.link}`}
     onClick={onClick}
   >
     <span
@@ -55,7 +55,7 @@ const ContactRow: React.FC<ContactRowProps> = ({ label, value, className = '' })
 
   return (
     <div
-      className={`group flex flex-col md:flex-row md:items-center justify-between pb-4 px-2 -mx-2 transition-all ${className}`}
+      className={`group flex flex-col md:flex-row md:items-center justify-between border-b border-gray-200 pb-4 px-2 -mx-2 transition-all ${className}`}
     >
       <span data-wobble-target className={`inline-block ${TYPOGRAPHY.navSubItem} ${COLORS.gray500}`}>
         {label}
@@ -84,8 +84,6 @@ const Home: React.FC<HomeProps> = ({ onNavigate, language }) => {
       design: 'Design',
       video: 'Video',
       photography: 'Photography',
-      time: 'Time',
-      enterCode: 'Enter Access Code',
       sendEmail: 'Send Email',
       call: 'Call, text, WhatsApp',
       location: 'Currently based in Seattle, WA',
@@ -95,8 +93,6 @@ const Home: React.FC<HomeProps> = ({ onNavigate, language }) => {
       design: '设计',
       video: '影片',
       photography: '摄影',
-      time: '时光',
-      enterCode: '输入访问码',
       sendEmail: '发送邮件',
       call: '电话、短信、WhatsApp',
       location: '目前在西雅图',
@@ -156,8 +152,12 @@ const Home: React.FC<HomeProps> = ({ onNavigate, language }) => {
           viewText={viewText}
         />
 
-        <ContactRow label={t.sendEmail} value="Yunwustudio@gmail.com" />
-        <ContactRow label={t.call} value="+1 4258372524" />
+        <ContactRow
+          label={t.sendEmail}
+          value="Yunwustudio@gmail.com"
+          href="mailto:Yunwustudio@gmail.com"
+        />
+        <ContactRow label={t.call} value="+1 4258372524" href="tel:+14258372524" />
         <div className="group flex flex-col md:flex-row md:items-center justify-between pb-4 transition-all">
           <span
             data-wobble-target
