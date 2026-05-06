@@ -155,7 +155,7 @@ const Design: React.FC<DesignProps> = ({ language }) => {
     },
     {
       title: 'Luna',
-      type: 'Kitchen and Bath',
+      type: 'Web',
       role: 'Social Media Designer',
       link: null,
       imageType: 'jpg',
@@ -197,14 +197,14 @@ const Design: React.FC<DesignProps> = ({ language }) => {
     },
     {
       title: 'CGH',
-      type: 'EHCS',
+      type: 'Ehcs',
       role: 'UI/UX Designer',
       link: null,
       imageType: 'jpg',
     },
     {
       title: 'COC',
-      type: 'APP',
+      type: 'App',
       role: 'UI/UX Designer',
       link: null,
       imageType: 'gif',

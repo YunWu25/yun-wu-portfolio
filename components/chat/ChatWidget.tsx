@@ -16,11 +16,12 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ language }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [hasStartedChat, setHasStartedChat] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const text = {
     en: {
-      title: 'Chat with Yun',
+      title: 'Chat with AI Yun',
       greeting: "Hi! I'm Yun's AI assistant. Ask me anything about her work, services, or projects!",
       error: 'Sorry, something went wrong. Please try again.',
     },
@@ -52,6 +53,7 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ language }) => {
     setMessages((prev) => [...prev, userMessage]);
     setInputValue('');
     setIsLoading(true);
+    setHasStartedChat(true);
 
     // Add placeholder for assistant response
     setMessages((prev) => [...prev, { role: 'assistant', content: '' }]);
@@ -147,7 +149,7 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ language }) => {
   };
 
   return (
-    <div className="fixed z-50 bottom-6 right-6 w-[300px] h-[240px] bg-white rounded-xl border border-gray-200 shadow-lg hover:shadow-xl hover:border-gray-300 transition-all duration-300 flex flex-col overflow-hidden">
+    <div className={`fixed z-50 bottom-6 right-6 w-[320px] ${hasStartedChat ? 'h-[400px]' : 'h-[180px]'} bg-white rounded-xl border border-gray-200 shadow-lg hover:shadow-xl hover:border-gray-300 transition-all duration-300 flex flex-col overflow-hidden`}>
       {/* Messages Area */}
       <div className="flex-1 overflow-y-auto">
         {messages.length === 0 ? (

@@ -12,7 +12,7 @@ interface NavRowProps {
 
 const NavRow: React.FC<NavRowProps> = ({ label, onClick, viewText }) => (
   <div
-    className={`group flex flex-col md:flex-row md:items-center justify-between border-b border-gray-200 hover:border-coral pb-4 px-2 -mx-2 hover:bg-gray-50 rounded transition-all ${TYPOGRAPHY.link}`}
+    className={`group flex flex-col md:flex-row md:items-center justify-between pb-4 px-2 -mx-2 transition-all ${TYPOGRAPHY.link}`}
     onClick={onClick}
   >
     <span
@@ -38,26 +38,38 @@ const NavRow: React.FC<NavRowProps> = ({ label, onClick, viewText }) => (
 interface ContactRowProps {
   label: string;
   value: string;
-  href: string;
   className?: string;
 }
 
-const ContactRow: React.FC<ContactRowProps> = ({ label, value, href, className = '' }) => (
-  <div
-    className={`group flex flex-col md:flex-row md:items-center justify-between border-b border-gray-200 hover:border-coral pb-4 px-2 -mx-2 hover:bg-gray-50 rounded transition-all ${className}`}
-  >
-    <span data-wobble-target className={`inline-block ${TYPOGRAPHY.navSubItem} ${COLORS.gray500}`}>
-      {label}
-    </span>
-    <a
-      data-wobble-target
-      href={href}
-      className={`inline-block ${TYPOGRAPHY.navSubItem} ${COLORS.gray400} hover:text-gray-800 hover:underline decoration-coral decoration-1 underline-offset-8 transition-all mt-2 md:mt-0`}
+const ContactRow: React.FC<ContactRowProps> = ({ label, value, className = '' }) => {
+  const [copied, setCopied] = React.useState(false);
+
+  const handleCopy = () => {
+    void navigator.clipboard.writeText(value).then(() => {
+      setCopied(true);
+      setTimeout(() => {
+        setCopied(false);
+      }, 2000);
+    });
+  };
+
+  return (
+    <div
+      className={`group flex flex-col md:flex-row md:items-center justify-between pb-4 px-2 -mx-2 transition-all ${className}`}
     >
-      {value}
-    </a>
-  </div>
-);
+      <span data-wobble-target className={`inline-block ${TYPOGRAPHY.navSubItem} ${COLORS.gray500}`}>
+        {label}
+      </span>
+      <button
+        data-wobble-target
+        onClick={handleCopy}
+        className={`inline-block ${TYPOGRAPHY.navSubItem} ${COLORS.gray400} hover:text-gray-800 hover:underline decoration-coral decoration-1 underline-offset-8 transition-all mt-2 md:mt-0 cursor-pointer`}
+      >
+        {copied ? 'Copied!' : value}
+      </button>
+    </div>
+  );
+};
 
 interface HomeProps {
   onNavigate: (view: ViewState) => void;
@@ -140,13 +152,9 @@ const Home: React.FC<HomeProps> = ({ onNavigate, language }) => {
           viewText={viewText}
         />
 
-        <ContactRow
-          label={t.sendEmail}
-          value="Yunwustudio@gmail.com"
-          href="mailto:Yunwustudio@gmail.com"
-        />
-        <ContactRow label={t.call} value="+1 4258372524" href="tel:+14258372524" />
-        <div className="group flex flex-col md:flex-row md:items-center justify-between pb-4 px-2 -mx-2 hover:bg-gray-50 rounded transition-all">
+        <ContactRow label={t.sendEmail} value="Yunwustudio@gmail.com" />
+        <ContactRow label={t.call} value="+1 4258372524" />
+        <div className="group flex flex-col md:flex-row md:items-center justify-between pb-4 transition-all">
           <span
             data-wobble-target
             className={`inline-block ${TYPOGRAPHY.navSubItem} ${COLORS.gray500}`}
