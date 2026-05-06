@@ -51,28 +51,40 @@ const LaptopMockup: React.FC<{ project: Project }> = ({ project }) => {
   );
 };
 
-const ProjectCard: React.FC<{ project: Project; language: Language }> = ({ project, language }) => (
-  <div className="bg-white border border-gray-100 rounded-xl p-6 md:p-8 flex items-center gap-4 hover:shadow-lg hover:border-gray-200 transition-all duration-300 group">
-    <div className="flex-1 min-w-0">
-      <h3
-        className={`font-sans text-xl md:text-2xl ${COLORS.gray400} mb-1 group-hover:text-coral transition-colors truncate`}
-      >
-        {project.title}
-      </h3>
-      <p className={`font-sans ${COLORS.gray300} text-xl md:text-2xl mb-3 truncate`}>
-        {project.type}
-      </p>
-      <div className="flex items-baseline gap-2">
-        <span className={`font-sans ${COLORS.gray300} text-lg whitespace-nowrap`}>
-          {language === 'en' ? 'My role' : '我的角色'}
-        </span>
-        <span className={`font-sans text-xl ${COLORS.gray300} truncate`}>{project.role}</span>
+const ProjectCard: React.FC<{ project: Project; language: Language }> = ({ project, language }) => {
+  const cardContent = (
+    <div className="bg-white border border-gray-100 rounded-xl p-6 md:p-8 flex items-center gap-4 hover:shadow-lg hover:border-gray-200 transition-all duration-300 group">
+      <div className="flex-1 min-w-0">
+        <h3
+          className={`font-sans text-xl md:text-2xl ${COLORS.gray400} mb-1 group-hover:text-coral transition-colors truncate`}
+        >
+          {project.title}
+        </h3>
+        <p className={`font-sans ${COLORS.gray300} text-xl md:text-2xl mb-3 truncate`}>
+          {project.type}
+        </p>
+        <div className="flex items-baseline gap-2">
+          <span className={`font-sans ${COLORS.gray300} text-lg whitespace-nowrap`}>
+            {language === 'en' ? 'Role' : '角色'}
+          </span>
+          <span className={`font-sans text-xl ${COLORS.gray300} truncate`}>{project.role}</span>
+        </div>
       </div>
-    </div>
 
-    <LaptopMockup project={project} />
-  </div>
-);
+      <LaptopMockup project={project} />
+    </div>
+  );
+
+  if (project.link) {
+    return (
+      <a href={project.link} target="_blank" rel="noopener noreferrer" className="block">
+        {cardContent}
+      </a>
+    );
+  }
+
+  return cardContent;
+};
 
 const Design: React.FC<DesignProps> = ({ language }) => {
   const intro =
@@ -103,7 +115,7 @@ const Design: React.FC<DesignProps> = ({ language }) => {
       title: 'COC',
       type: 'Web',
       role: 'Designer',
-      link: 'https://scrm_hc.hctcchina.com/',
+      link: null,
       imageType: 'jpg',
     },
     {
@@ -138,7 +150,7 @@ const Design: React.FC<DesignProps> = ({ language }) => {
       title: 'Beauty',
       type: 'Mini Program',
       role: 'UI/UX Designer',
-      link: null,
+      link: 'https://www.zcool.com.cn/work/ZNTg4OTcwNDg=.html',
       imageType: 'jpg',
     },
     {
@@ -152,7 +164,7 @@ const Design: React.FC<DesignProps> = ({ language }) => {
       title: 'Hctc China',
       type: 'Web',
       role: 'Designer',
-      link: 'https://scrm_hc.hctcchina.com/',
+      link: 'https://www.hctcchina.com/index.html',
       imageType: 'jpg',
     },
     {
