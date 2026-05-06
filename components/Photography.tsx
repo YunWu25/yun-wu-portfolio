@@ -25,6 +25,24 @@ interface PhotographyProps {
   language: Language;
 }
 
+// Helper to generate optimized thumbnail URL using Cloudflare Image Resizing
+const getThumbnailUrl = (url: string, width: number = 400): string => {
+  // Extract the path after the domain
+  const match = url.match(/https:\/\/media\.yunwustudio\.com\/(.+)/);
+  if (!match?.[1]) return url;
+
+  // Use Cloudflare Image Resizing: /cdn-cgi/image/options/path
+  return `https://media.yunwustudio.com/cdn-cgi/image/width=${width},quality=80,format=auto/${match[1]}`;
+};
+
+// Fallback to original URL if optimized image fails to load
+const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>, originalUrl: string) => {
+  const target = e.currentTarget;
+  if (target.src !== originalUrl) {
+    target.src = originalUrl;
+  }
+};
+
 const Photography: React.FC<PhotographyProps> = ({ language }) => {
   const [columnCount, setColumnCount] = useState(2);
   const [photos, setPhotos] = useState<PhotoData[]>([]);
@@ -166,7 +184,7 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
         {columnPhotos.map((photo, index) => (
           <div
             key={`col${columnIndex}-${photo.key}-${index}`}
-            className="rounded-lg overflow-hidden shadow-sm transition-all duration-300 group relative cursor-pointer border border-transparent hover:border-gray-300"
+            className="rounded-lg overflow-hidden shadow-sm transition-all duration-300 group relative cursor-pointer border border-transparent hover:border-gray-300 bg-gray-100"
             onClick={() => {
               openLightbox(photo.key);
             }}
@@ -180,10 +198,13 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
             }}
           >
             <img
-              src={photo.url}
+              src={getThumbnailUrl(photo.url, 400)}
               alt={photo.alt}
               className="w-full h-auto object-cover transition-opacity duration-300 group-hover:opacity-90"
-              loading="lazy"
+              loading={index < 4 ? 'eager' : 'lazy'}
+              decoding="async"
+              fetchPriority={index < 2 ? 'high' : 'auto'}
+              onError={(e) => { handleImageError(e, photo.url); }}
             />
             {/* Hover overlay - gradient only at bottom */}
             <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -392,9 +413,10 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
                         return photo ? (
                           <div key={key} className="relative">
                             <img
-                              src={photo.url}
+                              src={getThumbnailUrl(photo.url, 64)}
                               alt={photo.filename}
                               className="w-16 h-16 object-cover rounded"
+                              onError={(e) => { handleImageError(e, photo.url); }}
                             />
                             <span className="absolute -top-1 -right-1 bg-coral text-white text-xs px-1 rounded">
                               ${photo.price ?? defaultPrice}
@@ -490,15 +512,17 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
                           <div
                             key={photo.key}
                             onClick={() => { togglePhotoForPurchase(photo.key); }}
-                            className={`group relative cursor-pointer rounded-lg overflow-hidden border-2 transition-all ${
+                            className={`group relative cursor-pointer rounded-lg overflow-hidden border-2 transition-all bg-gray-100 ${
                               isSelected ? 'border-coral' : 'border-transparent hover:border-gray-300'
                             }`}
                           >
                             <img
-                              src={photo.url}
+                              src={getThumbnailUrl(photo.url, 300)}
                               alt={photo.filename}
                               className="w-full aspect-square object-cover"
                               loading="lazy"
+                              decoding="async"
+                              onError={(e) => { handleImageError(e, photo.url); }}
                             />
                             {/* Selection indicator */}
                             <div
