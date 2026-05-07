@@ -31,7 +31,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   }
 
   const cleanCode = accessCode.trim();
-  const prefix = `OnlyClient/${cleanCode}/`;
+  const prefix = `OnlyClient/OnlyClient/${cleanCode}/`;
 
   try {
     // List objects in the client's folder
