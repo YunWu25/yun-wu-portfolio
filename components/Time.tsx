@@ -113,21 +113,15 @@ const Time: React.FC<TimeProps> = ({ language }) => {
     setSelectedPhotos(new Set());
   };
 
-  const downloadPhoto = async (photo: ClientPhoto) => {
-    try {
-      const response = await fetch(photo.url);
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = photo.filename;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-    } catch (err) {
-      console.error('Download failed:', err);
-    }
+  const downloadPhoto = (photo: ClientPhoto) => {
+    // Use the download API endpoint to avoid CORS issues
+    const downloadUrl = `/api/download-photo?key=${encodeURIComponent(photo.key)}&filename=${encodeURIComponent(photo.filename)}`;
+    const a = document.createElement('a');
+    a.href = downloadUrl;
+    a.download = photo.filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
   };
 
   const downloadSelected = async () => {
@@ -137,9 +131,9 @@ const Time: React.FC<TimeProps> = ({ language }) => {
     const photosToDownload = photos.filter((p) => selectedPhotos.has(p.key));
 
     for (const photo of photosToDownload) {
-      await downloadPhoto(photo);
-      // Small delay between downloads
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      downloadPhoto(photo);
+      // Small delay between downloads to avoid browser blocking
+      await new Promise((resolve) => setTimeout(resolve, 800));
     }
 
     setDownloading(false);
@@ -149,8 +143,9 @@ const Time: React.FC<TimeProps> = ({ language }) => {
     setDownloading(true);
 
     for (const photo of photos) {
-      await downloadPhoto(photo);
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      downloadPhoto(photo);
+      // Small delay between downloads to avoid browser blocking
+      await new Promise((resolve) => setTimeout(resolve, 800));
     }
 
     setDownloading(false);
@@ -302,7 +297,7 @@ const Time: React.FC<TimeProps> = ({ language }) => {
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    void downloadPhoto(photo);
+                    downloadPhoto(photo);
                   }}
                   className="absolute top-3 right-3 w-8 h-8 bg-white/90 rounded-full flex items-center justify-center shadow-md hover:bg-coral hover:text-white transition-all"
                   title={language === 'en' ? 'Download' : '下载'}
