@@ -48,10 +48,10 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ language }) => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  // Click outside to minimize
+  // Click outside to minimize - only after chat has started
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (widgetRef.current && !widgetRef.current.contains(event.target as Node)) {
+      if (hasStartedChat && widgetRef.current && !widgetRef.current.contains(event.target as Node)) {
         setIsExpanded(false);
       }
     };
@@ -60,7 +60,7 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ language }) => {
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, []);
+  }, [hasStartedChat]);
 
   const sendMessage = async () => {
     if (!inputValue.trim() || isLoading) return;
@@ -166,52 +166,68 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ language }) => {
 
   // Determine height based on state
   const getHeight = () => {
-    if (!isExpanded) {
-      // Half size when minimized
-      if (hasStartedChat) return 'h-[175px] md:h-[200px]';
-      return 'h-[80px] md:h-[90px]';
+    if (!isExpanded && hasStartedChat) {
+      return 'h-[44px] md:h-[48px]'; // Folded size when minimized after chat
     }
     if (hasStartedChat) return 'h-[350px] md:h-[400px]';
     return 'h-[160px] md:h-[180px]';
   };
 
+  // Determine width based on state
+  const getWidth = () => {
+    if (!isExpanded && hasStartedChat) {
+      return 'w-[140px] md:w-[160px]'; // Half width when minimized
+    }
+    return 'w-[280px] md:w-[320px]';
+  };
+
   return (
     <div
       ref={widgetRef}
-      onClick={() => { if (!isExpanded) setIsExpanded(true); }}
-      className={`fixed z-50 bottom-4 right-4 md:bottom-6 md:right-6 w-[280px] md:w-[320px] ${getHeight()} bg-white rounded-xl border border-gray-200 shadow-lg hover:shadow-xl hover:border-gray-300 transition-all duration-300 flex flex-col overflow-hidden ${!isExpanded ? 'cursor-pointer' : ''}`}
-    >
-      {/* Messages Area - always visible, even when minimized */}
-      <div className="flex-1 overflow-y-auto">
-        {messages.length === 0 ? (
-          <div className="h-full flex flex-col items-center justify-center px-4 text-center">
-            <p className="font-sans text-sm text-gray-400">
-              {language === 'zh' ? '问我任何问题...' : 'Ask me anything...'}
-            </p>
+      onClick={() => { if (!isExpanded && hasStartedChat) setIsExpanded(true); }}
+      className={`fixed z-50 bottom-4 right-4 md:bottom-6 md:right-6 ${getWidth()} ${getHeight()} bg-white rounded-xl border border-gray-200 shadow-lg hover:shadow-xl hover:border-gray-300 transition-all duration-300 flex flex-col overflow-hidden ${!isExpanded && hasStartedChat ? 'cursor-pointer' : ''}`}>
+      {/* Minimized View */}
+      {!isExpanded && hasStartedChat ? (
+        <div className="h-full flex items-center justify-center px-4">
+          <p className="font-sans text-sm text-gray-500">
+            {language === 'zh' ? '💬 点击展开对话' : '💬 Click to chat'}
+          </p>
+        </div>
+      ) : (
+        <>
+          {/* Messages Area */}
+          <div className="flex-1 overflow-y-auto">
+            {messages.length === 0 ? (
+              <div className="h-full flex flex-col items-center justify-center px-4 text-center">
+                <p className="font-sans text-sm text-gray-400">
+                  {language === 'zh' ? '问我任何问题...' : 'Ask me anything...'}
+                </p>
+              </div>
+            ) : (
+              <div>
+                {messages.map((message, index) => (
+                  <ChatMessage
+                    key={index}
+                    role={message.role}
+                    content={message.content}
+                    isStreaming={isLoading && index === messages.length - 1 && message.role === 'assistant'}
+                  />
+                ))}
+                <div ref={messagesEndRef} />
+              </div>
+            )}
           </div>
-        ) : (
-          <div>
-            {messages.map((message, index) => (
-              <ChatMessage
-                key={index}
-                role={message.role}
-                content={message.content}
-                isStreaming={isLoading && index === messages.length - 1 && message.role === 'assistant'}
-              />
-            ))}
-            <div ref={messagesEndRef} />
-          </div>
-        )}
-      </div>
 
-      {/* Input Area */}
-      <ChatInput
-        value={inputValue}
-        onChange={setInputValue}
-        onSend={() => void sendMessage()}
-        disabled={isLoading || !isExpanded}
-        language={language}
-      />
+          {/* Input Area */}
+          <ChatInput
+            value={inputValue}
+            onChange={setInputValue}
+            onSend={() => void sendMessage()}
+            disabled={isLoading}
+            language={language}
+          />
+        </>
+      )}
     </div>
   );
 };
