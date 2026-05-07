@@ -16,8 +16,7 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ language }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [hasStartedChat, setHasStartedChat] = useState(false);
-  const [isExpanded, setIsExpanded] = useState(true);
+  const [isExpanded, setIsExpanded] = useState(false); // Always start minimized
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const widgetRef = useRef<HTMLDivElement>(null);
 
@@ -48,10 +47,10 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ language }) => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  // Click outside to minimize - only after chat has started
+  // Click outside to minimize
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (hasStartedChat && widgetRef.current && !widgetRef.current.contains(event.target as Node)) {
+      if (widgetRef.current && !widgetRef.current.contains(event.target as Node)) {
         setIsExpanded(false);
       }
     };
@@ -60,7 +59,7 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ language }) => {
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [hasStartedChat]);
+  }, []);
 
   const sendMessage = async () => {
     if (!inputValue.trim() || isLoading) return;
@@ -69,7 +68,6 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ language }) => {
     setMessages((prev) => [...prev, userMessage]);
     setInputValue('');
     setIsLoading(true);
-    setHasStartedChat(true);
 
     // Add placeholder for assistant response
     setMessages((prev) => [...prev, { role: 'assistant', content: '' }]);
@@ -166,28 +164,27 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ language }) => {
 
   // Determine height based on state
   const getHeight = () => {
-    if (!isExpanded && hasStartedChat) {
-      return 'h-[44px] md:h-[48px]'; // Folded size when minimized after chat
+    if (!isExpanded) {
+      return 'h-[44px] md:h-[48px]'; // Minimized size
     }
-    if (hasStartedChat) return 'h-[350px] md:h-[400px]';
-    return 'h-[160px] md:h-[180px]';
+    return 'h-[350px] md:h-[400px]'; // Expanded size
   };
 
   // Determine width based on state
   const getWidth = () => {
-    if (!isExpanded && hasStartedChat) {
-      return 'w-[140px] md:w-[160px]'; // Half width when minimized
+    if (!isExpanded) {
+      return 'w-[140px] md:w-[160px]'; // Minimized size
     }
-    return 'w-[280px] md:w-[320px]';
+    return 'w-[280px] md:w-[320px]'; // Expanded size
   };
 
   return (
     <div
       ref={widgetRef}
-      onClick={() => { if (!isExpanded && hasStartedChat) setIsExpanded(true); }}
-      className={`fixed z-50 bottom-4 right-4 md:bottom-6 md:right-6 ${getWidth()} ${getHeight()} bg-white rounded-xl border border-gray-200 shadow-lg hover:shadow-xl hover:border-gray-300 transition-all duration-300 flex flex-col overflow-hidden ${!isExpanded && hasStartedChat ? 'cursor-pointer' : ''}`}>
+      onClick={() => { if (!isExpanded) setIsExpanded(true); }}
+      className={`fixed z-50 bottom-4 right-4 md:bottom-6 md:right-6 ${getWidth()} ${getHeight()} bg-white rounded-xl border border-gray-200 shadow-lg hover:shadow-xl hover:border-gray-300 transition-all duration-300 flex flex-col overflow-hidden ${!isExpanded ? 'cursor-pointer' : ''}`}>
       {/* Minimized View */}
-      {!isExpanded && hasStartedChat ? (
+      {!isExpanded ? (
         <div className="h-full flex items-center justify-center px-4">
           <p className="font-sans text-sm text-gray-500">
             {language === 'zh' ? '💬 点击展开对话' : '💬 Click to chat'}

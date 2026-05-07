@@ -261,6 +261,13 @@ const Time: React.FC<TimeProps> = ({ language }) => {
           <p className={`${TYPOGRAPHY.body} ${COLORS.gray400}`}>{t.noPhotos}</p>
         </div>
       ) : (
+        <>
+        {/* Instruction text */}
+        <p className={`text-sm ${COLORS.gray400} mb-4`}>
+          {language === 'en'
+            ? '💡 Click photos to select, or tap the download button on each photo'
+            : '💡 点击照片选择，或点击每张照片上的下载按钮'}
+        </p>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {photos.map((photo) => {
             const isSelected = selectedPhotos.has(photo.key);
@@ -280,26 +287,27 @@ const Time: React.FC<TimeProps> = ({ language }) => {
                   loading="lazy"
                 />
 
-                {/* Selection indicator */}
+                {/* Selection indicator - always visible */}
                 <div
-                  className={`absolute top-3 left-3 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
+                  className={`absolute top-3 left-3 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all shadow-sm ${
                     isSelected
                       ? 'bg-coral border-coral'
-                      : 'bg-white/80 border-gray-300 opacity-0 group-hover:opacity-100'
+                      : 'bg-white/80 border-gray-300'
                   }`}
                 >
                   {isSelected && <CheckCircle size={16} className="text-white" />}
                 </div>
 
-                {/* Download button */}
+                {/* Download button - always visible */}
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
                     void downloadPhoto(photo);
                   }}
-                  className="absolute top-3 right-3 w-8 h-8 bg-white/90 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white"
+                  className="absolute top-3 right-3 w-8 h-8 bg-white/90 rounded-full flex items-center justify-center shadow-md hover:bg-coral hover:text-white transition-all"
+                  title={language === 'en' ? 'Download' : '下载'}
                 >
-                  <Download size={16} className={COLORS.gray600} />
+                  <Download size={16} className="text-gray-600 group-hover:text-gray-800" />
                 </button>
 
                 {/* Info overlay */}
@@ -311,6 +319,7 @@ const Time: React.FC<TimeProps> = ({ language }) => {
             );
           })}
         </div>
+        </>
       )}
     </div>
   );

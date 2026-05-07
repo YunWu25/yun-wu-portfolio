@@ -12,7 +12,7 @@ interface NavRowProps {
 
 const NavRow: React.FC<NavRowProps> = ({ label, onClick, viewText }) => (
   <div
-    className={`group flex flex-col md:flex-row md:items-center justify-between border-b border-gray-200 pb-4 px-2 -mx-2 transition-all ${TYPOGRAPHY.link}`}
+    className={`group flex flex-col md:flex-row md:items-center justify-between pb-4 px-2 -mx-2 transition-all ${TYPOGRAPHY.link}`}
     onClick={onClick}
   >
     <span
@@ -56,7 +56,7 @@ const ContactRow: React.FC<ContactRowProps> = ({ label, value, href, className =
 
   return (
     <div
-      className={`group flex flex-col md:flex-row md:items-center justify-between border-b border-gray-200 pb-4 px-2 -mx-2 transition-all ${className}`}
+      className={`group flex flex-col md:flex-row md:items-center justify-between pb-4 px-2 -mx-2 transition-all ${className}`}
     >
       <span data-wobble-target className={`inline-block ${TYPOGRAPHY.navSubItem} ${COLORS.gray500}`}>
         {label}
