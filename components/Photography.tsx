@@ -48,8 +48,25 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
   // Shop state - uses photos from Gallery directly
   const [showShop, setShowShop] = useState(false);
   const [showCheckout, setShowCheckout] = useState(false);
-  const [selectedForPurchase, setSelectedForPurchase] = useState<Set<string>>(new Set());
+  const [selectedForPurchase, setSelectedForPurchase] = useState<Set<string>>(() => {
+    // Restore cart from sessionStorage
+    const saved = sessionStorage.getItem('photoCart');
+    if (saved) {
+      try {
+        const parsed: unknown = JSON.parse(saved);
+        if (Array.isArray(parsed)) return new Set(parsed as string[]);
+      } catch {
+        // Invalid data, use empty set
+      }
+    }
+    return new Set();
+  });
   const [selectedPayment, setSelectedPayment] = useState<string | null>(null);
+
+  // Save cart to sessionStorage when selections change
+  useEffect(() => {
+    sessionStorage.setItem('photoCart', JSON.stringify(Array.from(selectedForPurchase)));
+  }, [selectedForPurchase]);
 
   // Get unique seasons from photos
   const seasons = ['all', ...Array.from(new Set(photos.map((p) => p.season).filter(Boolean)))];
