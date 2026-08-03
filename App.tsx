@@ -34,11 +34,8 @@ const getViewFromPath = (path: string): ViewState => {
 const AppContent: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const [showSplash, setShowSplash] = useState(() => {
-    const saved = sessionStorage.getItem('showSplash');
-    if (saved !== null) return saved === 'true';
-    return location.pathname === '/';
-  });
+  // Splash shows on home page, dismissed once per page load (refresh brings it back)
+  const [showSplash, setShowSplash] = useState(() => location.pathname === '/');
   const [lastScrollTime, setLastScrollTime] = useState(0);
   const [language, setLanguage] = useState<Language>(() => {
     const savedLanguage = localStorage.getItem('language');
@@ -52,26 +49,6 @@ const AppContent: React.FC = () => {
     localStorage.setItem('language', language);
   }, [language]);
 
-  useEffect(() => {
-    sessionStorage.setItem('showSplash', showSplash.toString());
-  }, [showSplash]);
-
-  // Helper to check if the event target is inside a scrollable container that isn't at the top
-  const isScrollableAndNotAtTop = (target: EventTarget | null) => {
-    if (!target || !(target instanceof HTMLElement)) return false;
-
-    // Find the closest scrollable container (in MainContent.tsx, it has overflow-y-auto)
-    const scrollableContainer = target.closest('.overflow-y-auto');
-
-    if (scrollableContainer) {
-      // If scrollTop > 0, we are scrolled down, so scrolling up should just scroll content, not show splash
-      if (scrollableContainer.scrollTop > 0) {
-        return true;
-      }
-    }
-    return false;
-  };
-
   // Handle Navigation Logic
   const handleNavigate = (view: ViewState) => {
     const path = viewToPath[view];
@@ -81,27 +58,16 @@ const AppContent: React.FC = () => {
     }
   };
 
-  // Scroll Handler
+  // Scroll Handler - only dismisses splash, never brings it back
   const handleWheel = useCallback(
     (e: WheelEvent) => {
+      if (!showSplash) return;
+
       const now = Date.now();
-      // Debounce scroll events to prevent jittery state flipping
       if (now - lastScrollTime < SCROLL_THRESHOLDS.WHEEL_DEBOUNCE_MS) return;
 
-      if (e.deltaY > SCROLL_THRESHOLDS.SCROLL_DOWN_THRESHOLD && showSplash) {
-        // Scrolling Down: Hide Splash
+      if (e.deltaY > SCROLL_THRESHOLDS.SCROLL_DOWN_THRESHOLD) {
         setShowSplash(false);
-        setLastScrollTime(now);
-      } else if (e.deltaY < SCROLL_THRESHOLDS.SCROLL_UP_THRESHOLD && !showSplash) {
-        // Scrolling Up
-
-        // Check if we are inside scrollable content that is NOT at the top
-        if (isScrollableAndNotAtTop(e.target)) {
-          return; // Allow default scrolling behavior inside the div
-        }
-
-        // Only show splash if we are at the top of the content
-        setShowSplash(true);
         setLastScrollTime(now);
       }
     },
@@ -115,9 +81,10 @@ const AppContent: React.FC = () => {
     setTouchStart(e.touches[0]?.clientY ?? null);
   }, []);
 
+  // Touch Handler - only dismisses splash, never brings it back
   const handleTouchMove = useCallback(
     (e: TouchEvent) => {
-      if (touchStart === null) return;
+      if (!showSplash || touchStart === null) return;
 
       const touch = e.touches[0];
       if (!touch) return;
@@ -128,19 +95,8 @@ const AppContent: React.FC = () => {
 
       if (now - lastScrollTime < SCROLL_THRESHOLDS.TOUCH_DEBOUNCE_MS) return;
 
-      if (diff > SCROLL_THRESHOLDS.SWIPE_UP_THRESHOLD && showSplash) {
-        // Swipe Up (Scroll Down equivalent): Hide Splash
+      if (diff > SCROLL_THRESHOLDS.SWIPE_UP_THRESHOLD) {
         setShowSplash(false);
-        setLastScrollTime(now);
-      } else if (diff < SCROLL_THRESHOLDS.SWIPE_DOWN_THRESHOLD && !showSplash) {
-        // Swipe Down (Scroll Up equivalent): Show Splash
-
-        // Check if internal content is scrolled down
-        if (isScrollableAndNotAtTop(e.target)) {
-          return;
-        }
-
-        setShowSplash(true);
         setLastScrollTime(now);
       }
     },

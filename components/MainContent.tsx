@@ -77,7 +77,7 @@ const MainContent: React.FC<MainContentProps> = ({
     { label: language === 'en' ? 'Time' : '时光', view: ViewState.TIME },
     { label: language === 'en' ? 'Design' : '设计', view: ViewState.DESIGN },
     { label: language === 'en' ? 'Video' : '影片', view: ViewState.VIDEO },
-    { label: language === 'en' ? 'Photography' : '摄影', view: ViewState.PHOTOGRAPHY },
+    { label: language === 'en' ? 'Gallery' : '画廊', view: ViewState.PHOTOGRAPHY },
   ];
 
   const renderBodyContent = () => {

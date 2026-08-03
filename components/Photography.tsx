@@ -409,15 +409,20 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
                     </div>
                     <div className="flex flex-wrap gap-2">
                       {Array.from(selectedForPurchase).map((key) => {
-                        const photo = sellingPhotos.find((p) => p.key === key);
+                        const photoIndex = sellingPhotos.findIndex((p) => p.key === key);
+                        const photo = photoIndex !== -1 ? sellingPhotos[photoIndex] : null;
+                        const photoNumber = photoIndex + 1;
                         return photo ? (
                           <div key={key} className="relative">
                             <img
                               src={getThumbnailUrl(photo.url, 64)}
-                              alt={photo.filename}
+                              alt={`Photo ${photoNumber}`}
                               className="w-16 h-16 object-cover rounded"
                               onError={(e) => { handleImageError(e, photo.url); }}
                             />
+                            <span className="absolute -top-2 -left-2 bg-gray-700 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
+                              {photoNumber}
+                            </span>
                             <span className="absolute -top-1 -right-1 bg-coral text-white text-xs px-1 rounded">
                               ${photo.price ?? defaultPrice}
                             </span>
@@ -506,8 +511,9 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
                     </div>
                   ) : (
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                      {sellingPhotos.map((photo) => {
+                      {sellingPhotos.map((photo, index) => {
                         const isSelected = selectedForPurchase.has(photo.key);
+                        const photoNumber = index + 1;
                         return (
                           <div
                             key={photo.key}
@@ -538,9 +544,11 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
                             <div className="absolute top-2 right-2 bg-coral text-white text-xs font-bold px-2 py-1 rounded">
                               ${photo.price ?? defaultPrice}
                             </div>
-                            {/* Filename */}
+                            {/* Photo number */}
                             <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/60 to-transparent">
-                              <p className="text-white text-xs truncate">{photo.filename}</p>
+                              <p className="text-white text-xs font-medium">
+                                {language === 'en' ? `Photo ${photoNumber}` : `照片 ${photoNumber}`}
+                              </p>
                             </div>
                           </div>
                         );

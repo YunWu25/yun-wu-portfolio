@@ -95,7 +95,7 @@ const Home: React.FC<HomeProps> = ({ onNavigate, language }) => {
     en: {
       design: 'Design',
       video: 'Video',
-      photography: 'Photography',
+      photography: 'Gallery',
       sendEmail: 'Send Email',
       call: 'Call, text, WhatsApp',
       location: 'Currently based in Seattle, WA',
@@ -104,7 +104,7 @@ const Home: React.FC<HomeProps> = ({ onNavigate, language }) => {
     zh: {
       design: '设计',
       video: '影片',
-      photography: '摄影',
+      photography: '画廊',
       sendEmail: '发送邮件',
       call: '电话、短信、WhatsApp',
       location: '目前在西雅图',
