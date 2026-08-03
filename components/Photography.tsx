@@ -102,6 +102,7 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
 
   const openShop = () => {
     setShowShop(true);
+    setShowCheckout(true); // Show payment options first
     void fetchSellingPhotos();
   };
 
@@ -243,7 +244,7 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
       selected: 'selected',
       noPhotos: 'No photos available for purchase.',
       loading: 'Loading...',
-      backToShop: 'Back to selection',
+      backToShop: 'Select Photos',
       paymentTitle: 'Complete Your Purchase',
       paymentInstructions: 'Please pay using one of the methods below. After payment, I will send you the high-resolution photos.',
       photosSelected: 'photos selected',
@@ -252,6 +253,7 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
       email: 'Email: Yunwustudio@gmail.com',
       total: 'Total',
       each: 'each',
+      noPhotosSelectedHint: 'Click "Select Photos" below to choose which photos you want to purchase.',
     },
     zh: {
       buy: '购买',
@@ -261,7 +263,7 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
       selected: '已选择',
       noPhotos: '暂无可购买的照片。',
       loading: '加载中...',
-      backToShop: '返回选择',
+      backToShop: '选择照片',
       paymentTitle: '完成购买',
       paymentInstructions: '请使用以下方式付款。付款后，我将发送高分辨率照片给您。',
       photosSelected: '张照片已选择',
@@ -270,6 +272,7 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
       email: '邮箱：Yunwustudio@gmail.com',
       total: '总计',
       each: '每张',
+      noPhotosSelectedHint: '点击下方"选择照片"来选择您想购买的照片。',
     },
   };
 
@@ -407,29 +410,35 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
                         ${calculateTotal()}
                       </p>
                     </div>
-                    <div className="flex flex-wrap gap-2">
-                      {Array.from(selectedForPurchase).map((key) => {
-                        const photoIndex = sellingPhotos.findIndex((p) => p.key === key);
-                        const photo = photoIndex !== -1 ? sellingPhotos[photoIndex] : null;
-                        const photoNumber = photoIndex + 1;
-                        return photo ? (
-                          <div key={key} className="relative">
-                            <img
-                              src={getThumbnailUrl(photo.url, 64)}
-                              alt={`Photo ${photoNumber}`}
-                              className="w-16 h-16 object-cover rounded"
-                              onError={(e) => { handleImageError(e, photo.url); }}
-                            />
-                            <span className="absolute -top-2 -left-2 bg-gray-700 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
-                              {photoNumber}
-                            </span>
-                            <span className="absolute -top-1 -right-1 bg-coral text-white text-xs px-1 rounded">
-                              ${photo.price ?? defaultPrice}
-                            </span>
-                          </div>
-                        ) : null;
-                      })}
-                    </div>
+                    {selectedForPurchase.size === 0 ? (
+                      <p className={`${TYPOGRAPHY.body} ${COLORS.gray400} text-center py-4`}>
+                        {t.noPhotosSelectedHint}
+                      </p>
+                    ) : (
+                      <div className="flex flex-wrap gap-2">
+                        {Array.from(selectedForPurchase).map((key) => {
+                          const photoIndex = sellingPhotos.findIndex((p) => p.key === key);
+                          const photo = photoIndex !== -1 ? sellingPhotos[photoIndex] : null;
+                          const photoNumber = photoIndex + 1;
+                          return photo ? (
+                            <div key={key} className="relative">
+                              <img
+                                src={getThumbnailUrl(photo.url, 64)}
+                                alt={`Photo ${photoNumber}`}
+                                className="w-16 h-16 object-cover rounded"
+                                onError={(e) => { handleImageError(e, photo.url); }}
+                              />
+                              <span className="absolute -top-2 -left-2 bg-gray-700 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
+                                {photoNumber}
+                              </span>
+                              <span className="absolute -top-1 -right-1 bg-coral text-white text-xs px-1 rounded">
+                                ${photo.price ?? defaultPrice}
+                              </span>
+                            </div>
+                          ) : null;
+                        })}
+                      </div>
+                    )}
                   </div>
 
                   {/* Payment Options - Horizontal buttons */}
@@ -560,7 +569,16 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
             </div>
 
             {/* Footer */}
-            {!showCheckout && selectedForPurchase.size > 0 && (
+            {showCheckout ? (
+              <div className="p-4 border-t border-gray-200 flex justify-center">
+                <button
+                  onClick={backToShop}
+                  className="px-6 py-3 bg-coral text-white font-semibold rounded-lg hover:bg-coral/90 transition-colors"
+                >
+                  {t.backToShop}
+                </button>
+              </div>
+            ) : selectedForPurchase.size > 0 ? (
               <div className="p-4 border-t border-gray-200 flex items-center justify-between">
                 <div>
                   <p className={`${TYPOGRAPHY.body} ${COLORS.gray600}`}>
@@ -577,7 +595,7 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
                   {t.checkout}
                 </button>
               </div>
-            )}
+            ) : null}
           </div>
         </div>
       )}
