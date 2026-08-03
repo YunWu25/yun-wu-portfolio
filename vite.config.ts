@@ -16,5 +16,19 @@ export default defineConfig(() => {
         '@': path.resolve(__dirname, '.'),
       },
     },
+    build: {
+      // Three.js vendor chunk is large but cached separately
+      chunkSizeWarningLimit: 1200,
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            // Split Three.js into its own chunk for better caching
+            'three-vendor': ['three', '@react-three/fiber', '@react-three/drei'],
+            // Split React into its own chunk
+            'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+          },
+        },
+      },
+    },
   };
 });

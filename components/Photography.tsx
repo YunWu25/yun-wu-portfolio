@@ -42,11 +42,22 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
   const [error, setError] = useState<string | null>(null);
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState<number | null>(null);
 
+  // Filter state
+  const [selectedSeason, setSelectedSeason] = useState<string>('all');
+
   // Shop state - uses photos from Gallery directly
   const [showShop, setShowShop] = useState(false);
   const [showCheckout, setShowCheckout] = useState(false);
   const [selectedForPurchase, setSelectedForPurchase] = useState<Set<string>>(new Set());
   const [selectedPayment, setSelectedPayment] = useState<string | null>(null);
+
+  // Get unique seasons from photos
+  const seasons = ['all', ...Array.from(new Set(photos.map((p) => p.season).filter(Boolean)))];
+
+  // Filter photos by selected season
+  const filteredPhotos = selectedSeason === 'all'
+    ? photos
+    : photos.filter((p) => p.season === selectedSeason);
 
   // Fetch photos from API
   useEffect(() => {
@@ -137,7 +148,7 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
 
   const splitPhotosIntoColumns = (count: number) => {
     const columns: PhotoData[][] = Array.from({ length: count }, () => []);
-    photos.forEach((photo, index) => {
+    filteredPhotos.forEach((photo, index) => {
       const columnIndex = index % count;
       columns[columnIndex]?.push(photo);
     });
@@ -225,6 +236,8 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
       total: 'Total',
       each: 'each',
       noPhotosSelectedHint: 'Click "Select Photos" below to choose which photos you want to purchase.',
+      selectAll: 'Select All',
+      deselectAll: 'Deselect All',
     },
     zh: {
       buy: '购买',
@@ -244,6 +257,8 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
       total: '总计',
       each: '每张',
       noPhotosSelectedHint: '点击下方"选择照片"来选择您想购买的照片。',
+      selectAll: '全选',
+      deselectAll: '取消全选',
     },
   };
 
@@ -304,6 +319,24 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
     <div id="photography-root" className="w-full">
       <div id="photography-header" className="mb-12 text-center">
         <p className={`${TYPOGRAPHY.body} ${COLORS.gray500} mb-4`}>{intro}</p>
+
+        {/* Season Filter */}
+        <div className="flex flex-wrap justify-center gap-2 mb-4">
+          {seasons.map((season) => (
+            <button
+              key={season}
+              onClick={() => setSelectedSeason(season)}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                selectedSeason === season
+                  ? 'bg-coral text-white'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              {season === 'all' ? (language === 'en' ? 'All' : '全部') : season}
+            </button>
+          ))}
+        </div>
+
         <button
           onClick={openShop}
           className="inline-flex items-center gap-2 px-6 py-3 bg-coral text-white font-bold rounded-lg hover:bg-coral/90 transition-colors"
@@ -479,7 +512,21 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
               ) : (
                 /* Photo Selection View - uses Gallery photos */
                 <>
-                  <p className={`${TYPOGRAPHY.body} ${COLORS.gray500} mb-4`}>{t.selectPhotos}</p>
+                  <div className="flex items-center justify-between mb-4">
+                    <p className={`${TYPOGRAPHY.body} ${COLORS.gray500}`}>{t.selectPhotos}</p>
+                    <button
+                      onClick={() => {
+                        if (selectedForPurchase.size === photos.length) {
+                          setSelectedForPurchase(new Set());
+                        } else {
+                          setSelectedForPurchase(new Set(photos.map((p) => p.key)));
+                        }
+                      }}
+                      className="text-sm text-coral hover:text-coral/80 font-medium transition-colors"
+                    >
+                      {selectedForPurchase.size === photos.length ? t.deselectAll : t.selectAll}
+                    </button>
+                  </div>
 
                   {photos.length === 0 ? (
                     <div className="flex justify-center items-center h-48">
