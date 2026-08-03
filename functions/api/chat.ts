@@ -3,6 +3,7 @@
 
 interface Env {
   AI: Ai;
+  CHAT_LOGS: KVNamespace;
 }
 
 interface ChatMessage {
@@ -101,6 +102,23 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     const systemPrompt = language === 'zh' ? SYSTEM_PROMPT_ZH : SYSTEM_PROMPT_EN;
 
     const aiMessages: ChatMessage[] = [{ role: 'system', content: systemPrompt }, ...messages];
+
+    // Log conversation to KV (non-blocking)
+    const userMessages = messages.filter((m) => m.role === 'user');
+    if (userMessages.length > 0 && context.env.CHAT_LOGS) {
+      const logId = `chat_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+      const logEntry = {
+        id: logId,
+        timestamp: new Date().toISOString(),
+        language,
+        messages: userMessages.map((m) => m.content),
+        userAgent: context.request.headers.get('user-agent') ?? 'unknown',
+      };
+      // Fire and forget - don't await to avoid slowing down response
+      void context.env.CHAT_LOGS.put(logId, JSON.stringify(logEntry), {
+        expirationTtl: 60 * 60 * 24 * 30, // Keep logs for 30 days
+      });
+    }
 
     // Using Llama 3.3 70B for better quality responses
     const response = await (context.env.AI.run as (model: string, options: { messages: ChatMessage[]; stream: boolean }) => Promise<ReadableStream>)(

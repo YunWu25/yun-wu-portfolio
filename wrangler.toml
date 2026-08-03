@@ -12,3 +12,8 @@ remote = true
 # Workers AI binding for chat
 [ai]
 binding = "AI"
+
+# KV namespace for chat logs
+[[kv_namespaces]]
+binding = "CHAT_LOGS"
+id = "chat-logs-kv"

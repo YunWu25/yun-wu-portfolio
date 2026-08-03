@@ -9,6 +9,7 @@ import {
   useGlobalWobbleCollision,
 } from './components/BubbleCollisionContext';
 import { PhotoManager } from './components/admin/PhotoManager';
+import { ChatLogs } from './components/admin/ChatLogs';
 import { WeatherProvider } from './components/weather/WeatherContext';
 import WeatherSystem from './components/weather/WeatherSystem';
 import { ViewState } from './types';
@@ -166,6 +167,7 @@ const App: React.FC = () => {
   return (
     <BrowserRouter>
       <Routes>
+        <Route path="/admin/chat-logs" element={<ChatLogs />} />
         <Route path="/admin/*" element={<PhotoManager />} />
         <Route path="*" element={<AppContent />} />
       </Routes>

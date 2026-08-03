@@ -36,14 +36,22 @@ export const PhotoManager: React.FC = () => {
               <span className="text-xl">📷</span>
               Photo Metadata Admin
             </h1>
-            <a
-              href="/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-sm text-gray-500 hover:text-gray-900 transition-colors"
-            >
-              ← Back to Site
-            </a>
+            <div className="flex items-center gap-4">
+              <a
+                href="/admin/chat-logs"
+                className="text-sm text-gray-500 hover:text-gray-900 transition-colors"
+              >
+                Chat Logs
+              </a>
+              <a
+                href="/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-gray-500 hover:text-gray-900 transition-colors"
+              >
+                ← Back to Site
+              </a>
+            </div>
           </div>
         </div>
       </header>

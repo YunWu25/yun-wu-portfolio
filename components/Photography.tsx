@@ -342,7 +342,9 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
           {seasons.map((season) => (
             <button
               key={season}
-              onClick={() => setSelectedSeason(season)}
+              onClick={() => {
+                setSelectedSeason(season);
+              }}
               className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
                 selectedSeason === season
                   ? 'bg-coral text-white'
