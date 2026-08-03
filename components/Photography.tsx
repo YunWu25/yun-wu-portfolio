@@ -42,8 +42,8 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
   const [error, setError] = useState<string | null>(null);
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState<number | null>(null);
 
-  // Filter state
-  const [selectedSeason, setSelectedSeason] = useState<string>('all');
+  // Filter state - use year for simpler filtering
+  const [selectedYear, setSelectedYear] = useState<string>('all');
 
   // Shop state - uses photos from Gallery directly
   const [showShop, setShowShop] = useState(false);
@@ -61,20 +61,26 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
     }
     return new Set();
   });
-  const [selectedPayment, setSelectedPayment] = useState<string | null>(null);
+  const [selectedPayment, setSelectedPayment] = useState<string>('Zelle');
 
   // Save cart to sessionStorage when selections change
   useEffect(() => {
     sessionStorage.setItem('photoCart', JSON.stringify(Array.from(selectedForPurchase)));
   }, [selectedForPurchase]);
 
-  // Get unique seasons from photos
-  const seasons = ['all', ...Array.from(new Set(photos.map((p) => p.season).filter(Boolean)))];
+  // Extract year from season string (e.g., "Fall 2024" → "2024")
+  const getYear = (season: string): string => {
+    const match = season.match(/\d{4}/);
+    return match ? match[0] : '';
+  };
 
-  // Filter photos by selected season
-  const filteredPhotos = selectedSeason === 'all'
+  // Get unique years from photos
+  const years = ['all', ...Array.from(new Set(photos.map((p) => getYear(p.season)).filter(Boolean))).sort().reverse()];
+
+  // Filter photos by selected year
+  const filteredPhotos = selectedYear === 'all'
     ? photos
-    : photos.filter((p) => p.season === selectedSeason);
+    : photos.filter((p) => getYear(p.season) === selectedYear);
 
   // Fetch photos from API
   useEffect(() => {
@@ -127,14 +133,13 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
 
   const backToShop = () => {
     setShowCheckout(false);
-    setSelectedPayment(null);
   };
 
   const closeShop = () => {
     setShowShop(false);
     setShowCheckout(false);
     setSelectedForPurchase(new Set());
-    setSelectedPayment(null);
+    setSelectedPayment('Zelle');
   };
 
   // Handle responsive column count
@@ -337,21 +342,21 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
       <div id="photography-header" className="mb-12 text-center">
         <p className={`${TYPOGRAPHY.body} ${COLORS.gray500} mb-4`}>{intro}</p>
 
-        {/* Season Filter */}
+        {/* Year Filter */}
         <div className="flex flex-wrap justify-center gap-2 mb-4">
-          {seasons.map((season) => (
+          {years.map((year) => (
             <button
-              key={season}
+              key={year}
               onClick={() => {
-                setSelectedSeason(season);
+                setSelectedYear(year);
               }}
               className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                selectedSeason === season
+                selectedYear === year
                   ? 'bg-coral text-white'
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               }`}
             >
-              {season === 'all' ? (language === 'en' ? 'All' : '全部') : season}
+              {year === 'all' ? (language === 'en' ? 'All' : '全部') : year}
             </button>
           ))}
         </div>
@@ -473,7 +478,7 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
                           if (method === 'eBay') {
                             window.open('https://www.ebay.com/itm/205688493212', '_blank');
                           } else {
-                            setSelectedPayment(selectedPayment === method ? null : method);
+                            setSelectedPayment(method);
                           }
                         }}
                         className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-1 ${
