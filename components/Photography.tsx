@@ -174,26 +174,19 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
       const columnIndex = index % count;
       columns[columnIndex]?.push(photo);
     });
-    // Only triple photos for infinite scroll if there are enough (12+) to avoid obvious duplicates
-    if (filteredPhotos.length >= 12) {
-      return columns.map((col) => [...col, ...col, ...col]);
-    }
-    // For fewer photos, just show them once without duplicates
-    return columns;
+    // Always triple photos for consistent infinite scroll animation
+    return columns.map((col) => [...col, ...col, ...col]);
   };
 
   const photoColumns = splitPhotosIntoColumns(columnCount);
-
-  // Only animate if we have enough photos (12+) for smooth infinite scroll
-  const shouldAnimate = filteredPhotos.length >= 12;
 
   const renderColumn = (columnPhotos: PhotoData[], columnIndex: number) => (
     <div key={columnIndex} className="overflow-hidden">
       <div
         className="flex flex-col gap-4"
-        style={shouldAnimate ? {
+        style={{
           animation: `scroll-${columnIndex % 2 === 0 ? 'up' : 'down'} 60s linear infinite`,
-        } : undefined}
+        }}
       >
         {columnPhotos.map((photo, index) => (
           <div
