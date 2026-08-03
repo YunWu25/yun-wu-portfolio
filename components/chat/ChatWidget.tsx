@@ -19,6 +19,7 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ language }) => {
   const [isExpanded, setIsExpanded] = useState(false); // Always start minimized
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const widgetRef = useRef<HTMLDivElement>(null);
+  const greetingInitialized = useRef(false);
 
   const text = {
     en: {
@@ -35,12 +36,13 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ language }) => {
 
   const t = text[language];
 
-  // Add greeting message on mount
+  // Add greeting message on mount (runs once)
   useEffect(() => {
-    if (messages.length === 0) {
+    if (!greetingInitialized.current) {
+      greetingInitialized.current = true;
       setMessages([{ role: 'assistant', content: t.greeting }]);
     }
-  }, []);
+  }, [t.greeting]);
 
   // Scroll to bottom when messages change
   useEffect(() => {

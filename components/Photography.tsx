@@ -13,14 +13,6 @@ interface PhotoData {
   season: string;
 }
 
-interface SellingPhoto {
-  key: string;
-  url: string;
-  filename: string;
-  size: number;
-  price?: number;
-}
-
 interface PhotographyProps {
   language: Language;
 }
@@ -50,11 +42,9 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
   const [error, setError] = useState<string | null>(null);
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState<number | null>(null);
 
-  // Shop state
+  // Shop state - uses photos from Gallery directly
   const [showShop, setShowShop] = useState(false);
   const [showCheckout, setShowCheckout] = useState(false);
-  const [sellingPhotos, setSellingPhotos] = useState<SellingPhoto[]>([]);
-  const [shopLoading, setShopLoading] = useState(false);
   const [selectedForPurchase, setSelectedForPurchase] = useState<Set<string>>(new Set());
   const [selectedPayment, setSelectedPayment] = useState<string | null>(null);
 
@@ -84,26 +74,9 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
     void fetchPhotos();
   }, []);
 
-  // Fetch selling photos when shop is opened
-  const fetchSellingPhotos = async () => {
-    if (sellingPhotos.length > 0) return; // Already loaded
-    setShopLoading(true);
-    try {
-      const response = await fetch('/api/selling-photos');
-      if (!response.ok) throw new Error('Failed to fetch');
-      const data: { photos: SellingPhoto[] } = await response.json();
-      setSellingPhotos(data.photos);
-    } catch (err) {
-      console.error('Failed to fetch selling photos:', err);
-    } finally {
-      setShopLoading(false);
-    }
-  };
-
   const openShop = () => {
     setShowShop(true);
     setShowCheckout(true); // Show payment options first
-    void fetchSellingPhotos();
   };
 
   const togglePhotoForPurchase = (key: string) => {
@@ -229,10 +202,8 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
   const defaultPrice = 25;
 
   const calculateTotal = () => {
-    return Array.from(selectedForPurchase).reduce((total, key) => {
-      const photo = sellingPhotos.find((p) => p.key === key);
-      return total + (photo?.price ?? defaultPrice);
-    }, 0);
+    // All gallery photos use the default price
+    return selectedForPurchase.size * defaultPrice;
   };
 
   const shopText = {
@@ -417,8 +388,8 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
                     ) : (
                       <div className="flex flex-wrap gap-2">
                         {Array.from(selectedForPurchase).map((key) => {
-                          const photoIndex = sellingPhotos.findIndex((p) => p.key === key);
-                          const photo = photoIndex !== -1 ? sellingPhotos[photoIndex] : null;
+                          const photoIndex = photos.findIndex((p) => p.key === key);
+                          const photo = photoIndex !== -1 ? photos[photoIndex] : null;
                           const photoNumber = photoIndex + 1;
                           return photo ? (
                             <div key={key} className="relative">
@@ -432,7 +403,7 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
                                 {photoNumber}
                               </span>
                               <span className="absolute -top-1 -right-1 bg-coral text-white text-xs px-1 rounded">
-                                ${photo.price ?? defaultPrice}
+                                ${defaultPrice}
                               </span>
                             </div>
                           ) : null;
@@ -506,21 +477,17 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
                   </div>
                 </div>
               ) : (
-                /* Photo Selection View */
+                /* Photo Selection View - uses Gallery photos */
                 <>
                   <p className={`${TYPOGRAPHY.body} ${COLORS.gray500} mb-4`}>{t.selectPhotos}</p>
 
-                  {shopLoading ? (
-                    <div className="flex justify-center items-center h-48">
-                      <p className={COLORS.gray400}>{t.loading}</p>
-                    </div>
-                  ) : sellingPhotos.length === 0 ? (
+                  {photos.length === 0 ? (
                     <div className="flex justify-center items-center h-48">
                       <p className={COLORS.gray400}>{t.noPhotos}</p>
                     </div>
                   ) : (
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                      {sellingPhotos.map((photo, index) => {
+                      {photos.map((photo, index) => {
                         const isSelected = selectedForPurchase.has(photo.key);
                         const photoNumber = index + 1;
                         return (
@@ -533,7 +500,7 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
                           >
                             <img
                               src={getThumbnailUrl(photo.url, 300)}
-                              alt={photo.filename}
+                              alt={photo.title}
                               className="w-full aspect-square object-cover"
                               loading="lazy"
                               decoding="async"
@@ -551,7 +518,7 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
                             </div>
                             {/* Price badge */}
                             <div className="absolute top-2 right-2 bg-coral text-white text-xs font-bold px-2 py-1 rounded">
-                              ${photo.price ?? defaultPrice}
+                              ${defaultPrice}
                             </div>
                             {/* Photo number */}
                             <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/60 to-transparent">
