@@ -150,7 +150,7 @@ const MainContent: React.FC<MainContentProps> = ({
       case ViewState.TIME:
         return language === 'en' ? 'Time' : '时光';
       case ViewState.GAME:
-        return language === 'en' ? "Let's Game" : '游戏时间';
+        return language === 'en' ? 'Game' : '游戏';
       default:
         return language === 'en' ? 'Yun Wu' : '伍芸';
     }
@@ -263,8 +263,7 @@ const MainContent: React.FC<MainContentProps> = ({
                         activeView === ViewState.PHOTOGRAPHY ||
                         activeView === ViewState.DESIGN ||
                         activeView === ViewState.VIDEO ||
-                        activeView === ViewState.TIME ||
-                        activeView === ViewState.GAME
+                        activeView === ViewState.TIME
                           ? COLORS.gray900
                           : `${COLORS.gray500} group-hover:text-coral`
                       }`}
@@ -379,7 +378,7 @@ const MainContent: React.FC<MainContentProps> = ({
 
         {/* === MOBILE NAV OVERLAY === */}
         {isMobileMenuOpen && (
-          <div className="absolute inset-0 bg-white z-50 flex flex-col items-center justify-center space-y-6 md:hidden overflow-y-auto py-20">
+          <div className="absolute inset-0 bg-white z-50 flex flex-col items-center justify-center space-y-8 md:hidden">
             <button
               onClick={() => {
                 setIsMobileMenuOpen(false);
@@ -389,34 +388,16 @@ const MainContent: React.FC<MainContentProps> = ({
               <X size={32} />
             </button>
             {navItems.map((item) => (
-              <div key={item.label} className="flex flex-col items-center">
-                <button
-                  onClick={() => {
-                    onNavigate(item.view);
-                    setIsMobileMenuOpen(false);
-                  }}
-                  className={`font-serif text-4xl ${activeView === item.view ? COLORS.coral : COLORS.gray600}`}
-                >
-                  {item.label}
-                </button>
-                {/* Show sub-items under Home */}
-                {item.view === ViewState.HOME && (
-                  <div className="flex flex-col items-center mt-4 space-y-3">
-                    {homeSubItems.map((subItem) => (
-                      <button
-                        key={subItem.label}
-                        onClick={() => {
-                          onNavigate(subItem.view);
-                          setIsMobileMenuOpen(false);
-                        }}
-                        className={`font-serif text-2xl ${activeView === subItem.view ? COLORS.coral : COLORS.gray400}`}
-                      >
-                        {subItem.label}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
+              <button
+                key={item.label}
+                onClick={() => {
+                  onNavigate(item.view);
+                  setIsMobileMenuOpen(false);
+                }}
+                className={`font-serif text-4xl ${activeView === item.view ? COLORS.coral : COLORS.gray600}`}
+              >
+                {item.label}
+              </button>
             ))}
           </div>
         )}
