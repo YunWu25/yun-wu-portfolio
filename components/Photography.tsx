@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { TYPOGRAPHY, COLORS } from '../styles';
 import { Language } from '../App';
 import Lightbox from './Lightbox';
 import { ShoppingCart, X, CheckCircle, ChevronLeft, ExternalLink } from 'lucide-react';
+import { PHOTO_CATEGORIES, PhotoCategory } from '../types';
 
 interface PhotoData {
   key: string;
@@ -11,6 +12,9 @@ interface PhotoData {
   alt: string;
   artist: string;
   season: string;
+  category: PhotoCategory;
+  forSale: boolean;
+  showInGallery: boolean;
 }
 
 interface PhotographyProps {
@@ -74,13 +78,26 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
     return match ? match[0] : '';
   };
 
-  // Get unique years from photos
-  const years = ['all', ...Array.from(new Set(photos.map((p) => getYear(p.season)).filter(Boolean))).sort().reverse()];
+  // Filter photos for gallery - only show photos marked as showInGallery
+  const galleryPhotos = photos.filter((p) => p.showInGallery);
 
-  // Filter photos by selected year
+  // Get unique years from gallery photos
+  const years = ['all', ...Array.from(new Set(galleryPhotos.map((p) => getYear(p.season)).filter(Boolean))).sort().reverse()];
+
+  // Filter gallery photos by selected year
   const filteredPhotos = selectedYear === 'all'
-    ? photos
-    : photos.filter((p) => getYear(p.season) === selectedYear);
+    ? galleryPhotos
+    : galleryPhotos.filter((p) => getYear(p.season) === selectedYear);
+
+  // Filter photos for shop - only show photos marked as forSale
+  const shopPhotos = photos.filter((p) => p.forSale);
+
+  // Get categories that have photos for sale
+  const shopCategories = useMemo(() => {
+    const categoriesWithPhotos = new Set(shopPhotos.map((p) => p.category));
+    return PHOTO_CATEGORIES.filter((cat) => categoriesWithPhotos.has(cat.value));
+  }, [shopPhotos]);
+
 
   // Fetch photos from API
   useEffect(() => {
@@ -162,7 +179,7 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
   }, []);
 
   const openLightbox = (photoKey: string) => {
-    const index = photos.findIndex((p) => p.key === photoKey);
+    const index = galleryPhotos.findIndex((p) => p.key === photoKey);
     if (index !== -1) {
       setSelectedPhotoIndex(index);
     }
@@ -335,7 +352,7 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
     );
   }
 
-  const selectedPhoto = selectedPhotoIndex !== null ? photos[selectedPhotoIndex] : null;
+  const selectedPhoto = selectedPhotoIndex !== null ? galleryPhotos[selectedPhotoIndex] : null;
 
   return (
     <div id="photography-root" className="w-full">
@@ -377,7 +394,7 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
       <Lightbox
         isOpen={selectedPhotoIndex !== null}
         currentIndex={selectedPhotoIndex ?? 0}
-        totalItems={photos.length}
+        totalItems={galleryPhotos.length}
         imageUrl={selectedPhoto?.url ?? ''}
         title={selectedPhoto?.title ?? ''}
         subtitle={selectedPhoto ? `${selectedPhoto.artist} · ${selectedPhoto.season}` : ''}
@@ -385,11 +402,11 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
           setSelectedPhotoIndex(null);
         }}
         onNext={() => {
-          setSelectedPhotoIndex((prev) => (prev !== null ? (prev + 1) % photos.length : null));
+          setSelectedPhotoIndex((prev) => (prev !== null ? (prev + 1) % galleryPhotos.length : null));
         }}
         onPrev={() => {
           setSelectedPhotoIndex((prev) =>
-            prev !== null ? (prev - 1 + photos.length) % photos.length : null
+            prev !== null ? (prev - 1 + galleryPhotos.length) % galleryPhotos.length : null
           );
         }}
       />
@@ -540,62 +557,80 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
                     <p className={`${TYPOGRAPHY.body} ${COLORS.gray500}`}>{t.selectPhotos}</p>
                     <button
                       onClick={() => {
-                        if (selectedForPurchase.size === photos.length) {
+                        if (selectedForPurchase.size === shopPhotos.length) {
                           setSelectedForPurchase(new Set());
                         } else {
-                          setSelectedForPurchase(new Set(photos.map((p) => p.key)));
+                          setSelectedForPurchase(new Set(shopPhotos.map((p) => p.key)));
                         }
                       }}
                       className="text-sm text-coral hover:text-coral/80 font-medium transition-colors"
                     >
-                      {selectedForPurchase.size === photos.length ? t.deselectAll : t.selectAll}
+                      {selectedForPurchase.size === shopPhotos.length ? t.deselectAll : t.selectAll}
                     </button>
                   </div>
 
-                  {photos.length === 0 ? (
+                  {shopPhotos.length === 0 ? (
                     <div className="flex justify-center items-center h-48">
                       <p className={COLORS.gray400}>{t.noPhotos}</p>
                     </div>
                   ) : (
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                      {photos.map((photo, index) => {
-                        const isSelected = selectedForPurchase.has(photo.key);
-                        const photoNumber = index + 1;
+                    <div className="space-y-6">
+                      {/* Group photos by category */}
+                      {shopCategories.map((cat) => {
+                        const categoryPhotos = shopPhotos.filter((p) => p.category === cat.value);
+                        if (categoryPhotos.length === 0) return null;
                         return (
-                          <div
-                            key={photo.key}
-                            onClick={() => { togglePhotoForPurchase(photo.key); }}
-                            className={`group relative cursor-pointer rounded-lg overflow-hidden border-2 transition-all bg-gray-100 ${
-                              isSelected ? 'border-coral' : 'border-transparent hover:border-gray-300'
-                            }`}
-                          >
-                            <img
-                              src={getThumbnailUrl(photo.url, 300)}
-                              alt={photo.title}
-                              className="w-full aspect-square object-cover"
-                              loading="lazy"
-                              decoding="async"
-                              onError={(e) => { handleImageError(e, photo.url); }}
-                            />
-                            {/* Selection indicator */}
-                            <div
-                              className={`absolute top-2 left-2 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
-                                isSelected
-                                  ? 'bg-coral border-coral'
-                                  : 'bg-white/80 border-gray-300 opacity-0 group-hover:opacity-100'
-                              }`}
-                            >
-                              {isSelected && <CheckCircle size={16} className="text-white" />}
+                          <div key={cat.value}>
+                            {/* Category Header */}
+                            <div className={`flex items-center gap-2 mb-3 px-2 py-1.5 rounded-lg ${cat.bgColor}`}>
+                              <span className={`w-3 h-3 rounded-full ${cat.bgColor.replace('100', '500')}`} />
+                              <span className={`text-sm font-semibold ${cat.color}`}>{cat.label}</span>
+                              <span className="text-xs text-gray-400">({categoryPhotos.length})</span>
                             </div>
-                            {/* Price badge */}
-                            <div className="absolute top-2 right-2 bg-coral text-white text-xs font-bold px-2 py-1 rounded">
-                              ${defaultPrice}
-                            </div>
-                            {/* Photo number */}
-                            <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/60 to-transparent">
-                              <p className="text-white text-xs font-medium">
-                                {language === 'en' ? `Photo ${photoNumber}` : `照片 ${photoNumber}`}
-                              </p>
+                            {/* Photos Grid */}
+                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                              {categoryPhotos.map((photo, index) => {
+                                const isSelected = selectedForPurchase.has(photo.key);
+                                const photoNumber = index + 1;
+                                return (
+                                  <div
+                                    key={photo.key}
+                                    onClick={() => { togglePhotoForPurchase(photo.key); }}
+                                    className={`group relative cursor-pointer rounded-lg overflow-hidden border-2 transition-all bg-gray-100 ${
+                                      isSelected ? 'border-coral' : 'border-transparent hover:border-gray-300'
+                                    }`}
+                                  >
+                                    <img
+                                      src={getThumbnailUrl(photo.url, 300)}
+                                      alt={photo.title}
+                                      className="w-full aspect-square object-cover"
+                                      loading="lazy"
+                                      decoding="async"
+                                      onError={(e) => { handleImageError(e, photo.url); }}
+                                    />
+                                    {/* Selection indicator */}
+                                    <div
+                                      className={`absolute top-2 left-2 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
+                                        isSelected
+                                          ? 'bg-coral border-coral'
+                                          : 'bg-white/80 border-gray-300 opacity-0 group-hover:opacity-100'
+                                      }`}
+                                    >
+                                      {isSelected && <CheckCircle size={16} className="text-white" />}
+                                    </div>
+                                    {/* Price badge */}
+                                    <div className="absolute top-2 right-2 bg-coral text-white text-xs font-bold px-2 py-1 rounded">
+                                      ${defaultPrice}
+                                    </div>
+                                    {/* Photo number */}
+                                    <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/60 to-transparent">
+                                      <p className="text-white text-xs font-medium">
+                                        {language === 'en' ? `Photo ${photoNumber}` : `照片 ${photoNumber}`}
+                                      </p>
+                                    </div>
+                                  </div>
+                                );
+                              })}
                             </div>
                           </div>
                         );

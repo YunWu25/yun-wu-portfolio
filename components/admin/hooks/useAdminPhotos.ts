@@ -145,7 +145,7 @@ export function useAdminPhotos(): UseAdminPhotosReturn {
     setPhotos((prev) =>
       prev.map((p) =>
         p.key === data.key
-          ? { ...p, title: data.title, alt: data.alt, artist: data.artist, season: data.season }
+          ? { ...p, title: data.title, alt: data.alt, artist: data.artist, season: data.season, category: data.category, forSale: data.forSale, showInGallery: data.showInGallery }
           : p
       )
     );

@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { AdminPhoto, PhotoMetadataUpdate } from '../../types';
+import { AdminPhoto, PhotoMetadataUpdate, PHOTO_CATEGORIES, PhotoCategory } from '../../types';
 
 interface PhotoCardProps {
   photo: AdminPhoto;
@@ -14,6 +14,9 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({ photo, onSave }) => {
     alt: photo.alt,
     artist: photo.artist,
     season: photo.season,
+    category: photo.category,
+    forSale: photo.forSale,
+    showInGallery: photo.showInGallery,
   });
   const [originalData] = useState(formData);
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
@@ -23,7 +26,10 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({ photo, onSave }) => {
     formData.title !== originalData.title ||
     formData.alt !== originalData.alt ||
     formData.artist !== originalData.artist ||
-    formData.season !== originalData.season;
+    formData.season !== originalData.season ||
+    formData.category !== originalData.category ||
+    formData.forSale !== originalData.forSale ||
+    formData.showInGallery !== originalData.showInGallery;
 
   const handleChange = (field: keyof typeof formData, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -131,6 +137,89 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({ photo, onSave }) => {
               handleChange('season', v);
             }}
           />
+          {/* Category Dropdown */}
+          <div className="flex flex-col gap-1">
+            <label htmlFor="category" className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+              Category
+            </label>
+            <select
+              id="category"
+              value={formData.category}
+              onChange={(e) => {
+                setFormData((prev) => ({ ...prev, category: e.target.value as PhotoCategory }));
+              }}
+              className={`
+                px-3 py-2 border rounded-lg text-sm transition-colors cursor-pointer
+                focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent
+                ${formData.category !== originalData.category ? 'border-amber-400 bg-amber-50' : 'border-gray-200'}
+              `}
+            >
+              {PHOTO_CATEGORIES.map((cat) => (
+                <option key={cat.value} value={cat.value}>
+                  {cat.label}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        {/* Toggles Row */}
+        <div className="flex flex-wrap gap-6">
+          {/* Show in Gallery Toggle */}
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => {
+                setFormData((prev) => ({ ...prev, showInGallery: !prev.showInGallery }));
+              }}
+              className={`
+                relative inline-flex h-6 w-11 items-center rounded-full transition-colors cursor-pointer
+                ${formData.showInGallery ? 'bg-green-500' : 'bg-gray-300'}
+                ${formData.showInGallery !== originalData.showInGallery ? 'ring-2 ring-amber-400' : ''}
+              `}
+            >
+              <span
+                className={`
+                  inline-block h-4 w-4 transform rounded-full bg-white transition-transform
+                  ${formData.showInGallery ? 'translate-x-6' : 'translate-x-1'}
+                `}
+              />
+            </button>
+            <span className="text-sm font-medium text-gray-700">
+              {formData.showInGallery ? '🖼️ In Gallery' : 'Hidden'}
+            </span>
+            {formData.showInGallery !== originalData.showInGallery && (
+              <span className="text-xs text-amber-600">Changed</span>
+            )}
+          </div>
+
+          {/* For Sale Toggle */}
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => {
+                setFormData((prev) => ({ ...prev, forSale: !prev.forSale }));
+              }}
+              className={`
+                relative inline-flex h-6 w-11 items-center rounded-full transition-colors cursor-pointer
+                ${formData.forSale ? 'bg-coral' : 'bg-gray-300'}
+                ${formData.forSale !== originalData.forSale ? 'ring-2 ring-amber-400' : ''}
+              `}
+            >
+              <span
+                className={`
+                  inline-block h-4 w-4 transform rounded-full bg-white transition-transform
+                  ${formData.forSale ? 'translate-x-6' : 'translate-x-1'}
+                `}
+              />
+            </button>
+            <span className="text-sm font-medium text-gray-700">
+              {formData.forSale ? '🛒 For Sale' : 'Not for sale'}
+            </span>
+            {formData.forSale !== originalData.forSale && (
+              <span className="text-xs text-amber-600">Changed</span>
+            )}
+          </div>
         </div>
 
         {/* Actions */}

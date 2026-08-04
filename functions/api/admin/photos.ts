@@ -6,6 +6,8 @@ interface Env {
   PHOTOGRAPHY: R2Bucket;
 }
 
+type PhotoCategory = 'pet' | 'plant' | 'people' | 'landscape' | 'architecture' | 'food' | 'other';
+
 interface PhotoData {
   key: string;
   url: string;
@@ -13,6 +15,9 @@ interface PhotoData {
   alt: string;
   artist: string;
   season: string;
+  category: PhotoCategory;
+  forSale: boolean;
+  showInGallery: boolean;
   size: number;
   uploaded: string;
 }
@@ -23,6 +28,9 @@ interface UpdateRequest {
   alt?: string;
   artist?: string;
   season?: string;
+  category?: PhotoCategory;
+  forSale?: boolean;
+  showInGallery?: boolean;
 }
 
 // GET: List all photos with their metadata
@@ -47,6 +55,9 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
           alt: customMeta.alt || filename,
           artist: customMeta.artist || '',
           season: customMeta.season || '',
+          category: (customMeta.category as PhotoCategory) || 'other',
+          forSale: customMeta.forSale === 'true',
+          showInGallery: customMeta.showInGallery !== 'false', // Default to true
           size: obj.size,
           uploaded: obj.uploaded.toISOString(),
         };
@@ -98,6 +109,9 @@ export const onRequestPut: PagesFunction<Env> = async (context) => {
       ...(body.alt !== undefined && { alt: body.alt }),
       ...(body.artist !== undefined && { artist: body.artist }),
       ...(body.season !== undefined && { season: body.season }),
+      ...(body.category !== undefined && { category: body.category }),
+      ...(body.forSale !== undefined && { forSale: String(body.forSale) }),
+      ...(body.showInGallery !== undefined && { showInGallery: String(body.showInGallery) }),
     };
 
     // Copy the object back to itself with updated metadata

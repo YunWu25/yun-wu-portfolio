@@ -5,6 +5,8 @@ interface Env {
   PHOTOGRAPHY: R2Bucket;
 }
 
+type PhotoCategory = 'pet' | 'plant' | 'people' | 'landscape' | 'architecture' | 'food' | 'other';
+
 interface PhotoData {
   key: string;
   url: string;
@@ -12,6 +14,9 @@ interface PhotoData {
   alt: string;
   artist: string;
   season: string;
+  category: PhotoCategory;
+  forSale: boolean;
+  showInGallery: boolean;
 }
 
 export const onRequestGet: PagesFunction<Env> = async (context) => {
@@ -43,6 +48,10 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
         alt: customMeta.alt || filename,
         artist: customMeta.artist || 'Yun Wu',
         season: customMeta.season || 'Fall 2024',
+        category: (customMeta.category as PhotoCategory) || 'other',
+        forSale: customMeta.forSale === 'true',
+        // Default to showing in gallery unless explicitly set to 'false'
+        showInGallery: customMeta.showInGallery !== 'false',
       };
     });
 
