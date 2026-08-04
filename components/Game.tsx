@@ -188,7 +188,7 @@ const Game: React.FC<GameProps> = ({ language }) => {
   const text = {
     en: {
       description: 'Help the cat collect snacks and dodge obstacles! Use ← → or A/D to move, SPACE/↑/CLICK to jump. Mobile: Use on-screen arrows!',
-      title: 'SNACK CATCHER',
+      title: 'Let\'s Go',
       startPrompt: 'Press SPACE or Click to Start',
       gameOver: 'GAME OVER',
       retry: 'Press SPACE to Retry',
@@ -736,7 +736,7 @@ const Game: React.FC<GameProps> = ({ language }) => {
         ctx.fillStyle = '#fff';
         ctx.font = '14px sans-serif';
         ctx.fillText(
-          language === 'en' ? 'Click a difficulty to start!' : '点击难度开始游戏！',
+          language === 'en' ? 'Let\'s grow!' : '开始游戏！',
           canvas.width / 2,
           buttonY + buttonHeight + 30
         );
