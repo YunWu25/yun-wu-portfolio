@@ -1060,15 +1060,8 @@ const Game: React.FC<GameProps> = ({ language }) => {
       const groundLevel = canvas.height - 50 - player.height;
       if (!onPlatform && player.y >= groundLevel) {
         player.y = groundLevel;
-
-        // Apply bounciness if falling fast enough
-        if (player.velocityY > player.minBounceVelocity) {
-          player.velocityY = -player.velocityY * player.bounciness;
-          player.isGrounded = false; // Still in air due to bounce
-        } else {
-          player.velocityY = 0;
-          player.isGrounded = true;
-        }
+        player.velocityY = 0;
+        player.isGrounded = true;
       } else if (!onPlatform && player.y < groundLevel) {
         player.isGrounded = false;
       }
