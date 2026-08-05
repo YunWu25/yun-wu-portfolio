@@ -396,11 +396,11 @@ const Game: React.FC<GameProps> = ({ language }) => {
     width: 50,
     height: 50,
     velocityY: 0,
-    gravity: 0.2,            // Very light gravity for floaty jumps
-    jumpForce: -9,           // Initial upward velocity
-    maxFallSpeed: 7,         // Terminal velocity
-    bounciness: 0.25,        // Bounce factor - subtle bounce (0 = no bounce, 1 = full bounce)
-    minBounceVelocity: 2.5,  // Higher threshold for less frequent bouncing
+    gravity: 0.4,            // Snappy gravity for responsive jumps
+    jumpForce: -11,          // Strong jump force
+    maxFallSpeed: 12,        // Fast fall for quick landing
+    bounciness: 0,           // No bounce - instant landing
+    minBounceVelocity: 0,    // Disabled
     isGrounded: false,
     speed: 6,
   });
@@ -997,12 +997,8 @@ const Game: React.FC<GameProps> = ({ language }) => {
       // Keep player within canvas bounds
       player.x = Math.max(0, Math.min(canvas.width - player.width, player.x));
 
-      // Update player - vertical movement with Earth-like gravity
-      // Variable gravity: less at peak of jump for natural "hang time" feel
-      const isNearPeak = Math.abs(player.velocityY) < 2;
-      const effectiveGravity = isNearPeak ? player.gravity * 0.6 : player.gravity;
-
-      player.velocityY += effectiveGravity;
+      // Update player - vertical movement with snappy gravity
+      player.velocityY += player.gravity;
 
       // Terminal velocity - max fall speed
       if (player.velocityY > player.maxFallSpeed) {
