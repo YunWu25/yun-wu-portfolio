@@ -1,11 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { MessageSquare, RefreshCw, Calendar, Globe } from 'lucide-react';
 
+interface ChatMessage {
+  time: string;
+  content: string;
+}
+
 interface ChatLogEntry {
   id: string;
-  timestamp: string;
+  // New session-based format
+  firstSeen?: string;
+  lastSeen?: string;
+  ipHint?: string;
+  messages: ChatMessage[] | string[]; // Support both old and new formats
+  // Legacy format
+  timestamp?: string;
   language: 'en' | 'zh';
-  messages: string[];
   userAgent: string;
 }
 
@@ -126,38 +136,58 @@ export const ChatLogs: React.FC = () => {
               {logs.length} conversation{logs.length !== 1 ? 's' : ''} logged
             </p>
 
-            {logs.map((log) => (
-              <div
-                key={log.id}
-                className="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-sm transition-shadow"
-              >
-                <div className="flex items-center gap-4 text-sm text-gray-500 mb-3">
-                  <span className="flex items-center gap-1">
-                    <Calendar className="w-4 h-4" />
-                    {formatDate(log.timestamp)}
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <Globe className="w-4 h-4" />
-                    {log.language === 'zh' ? '中文' : 'English'}
-                  </span>
-                  <span>{getDeviceType(log.userAgent)}</span>
-                </div>
+            {logs.map((log) => {
+              // Get timestamp from new or old format
+              const timestamp = log.firstSeen ?? log.timestamp ?? '';
+              const messageCount = log.messages.length;
 
-                <div className="space-y-2">
-                  {log.messages.map((message, idx) => (
-                    <div
-                      key={idx}
-                      className="bg-gray-50 rounded-lg px-4 py-3 text-gray-700"
-                    >
-                      <span className="text-xs text-gray-400 block mb-1">
-                        Question {idx + 1}:
+              return (
+                <div
+                  key={log.id}
+                  className="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-sm transition-shadow"
+                >
+                  <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500 mb-3">
+                    <span className="flex items-center gap-1">
+                      <Calendar className="w-4 h-4" />
+                      {formatDate(timestamp)}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Globe className="w-4 h-4" />
+                      {log.language === 'zh' ? '中文' : 'English'}
+                    </span>
+                    <span>{getDeviceType(log.userAgent)}</span>
+                    {log.ipHint && (
+                      <span className="text-gray-400">IP: {log.ipHint}</span>
+                    )}
+                    {messageCount > 1 && (
+                      <span className="bg-coral/10 text-coral px-2 py-0.5 rounded-full text-xs">
+                        {messageCount} messages
                       </span>
-                      {message}
-                    </div>
-                  ))}
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    {log.messages.map((message, idx) => {
+                      // Handle both old (string) and new ({ time, content }) formats
+                      const content = typeof message === 'string' ? message : message.content;
+                      const time = typeof message === 'string' ? null : message.time;
+
+                      return (
+                        <div
+                          key={idx}
+                          className="bg-gray-50 rounded-lg px-4 py-3 text-gray-700"
+                        >
+                          <span className="text-xs text-gray-400 block mb-1">
+                            {time ? formatDate(time) : `Question ${idx + 1}`}
+                          </span>
+                          {content}
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </main>

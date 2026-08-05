@@ -219,19 +219,62 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 
     const aiMessages: ChatMessage[] = [{ role: 'system', content: systemPrompt }, ...messages];
 
-    // Log conversation to KV (non-blocking)
+    // Log conversation to KV - group by IP + date (same guest = same conversation)
     const userMessages = messages.filter((m) => m.role === 'user');
     if (userMessages.length > 0 && context.env.CHAT_LOGS) {
-      const logId = `chat_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
-      const logEntry = {
-        id: logId,
-        timestamp: new Date().toISOString(),
-        language,
-        messages: userMessages.map((m) => m.content),
-        userAgent: context.request.headers.get('user-agent') ?? 'unknown',
-      };
+      // Get client IP from Cloudflare headers
+      const clientIP = context.request.headers.get('cf-connecting-ip') ??
+                       context.request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
+                       'unknown';
+
+      // Create session ID: IP hash + date (same guest on same day = same session)
+      const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+      const ipHash = clientIP.split('.').slice(-2).join(''); // Use last 2 octets for privacy
+      const sessionId = `session_${today}_${ipHash}`;
+
+      // Try to get existing session
+      const existingData = await context.env.CHAT_LOGS.get(sessionId);
+
+      interface SessionLog {
+        id: string;
+        firstSeen: string;
+        lastSeen: string;
+        language: string;
+        userAgent: string;
+        ipHint: string;
+        messages: Array<{ time: string; content: string }>;
+      }
+
+      const now = new Date().toISOString();
+      const newMessages = userMessages.map((m) => ({
+        time: now,
+        content: m.content
+      }));
+
+      let logEntry: SessionLog;
+      if (existingData) {
+        // Append to existing conversation
+        const existing = JSON.parse(existingData) as SessionLog;
+        logEntry = {
+          ...existing,
+          lastSeen: now,
+          messages: [...existing.messages, ...newMessages],
+        };
+      } else {
+        // Create new conversation
+        logEntry = {
+          id: sessionId,
+          firstSeen: now,
+          lastSeen: now,
+          language,
+          userAgent: context.request.headers.get('user-agent') ?? 'unknown',
+          ipHint: `***.***${ipHash ? '.' + ipHash : ''}`, // Partial IP for privacy
+          messages: newMessages,
+        };
+      }
+
       // Fire and forget - don't await to avoid slowing down response
-      void context.env.CHAT_LOGS.put(logId, JSON.stringify(logEntry), {
+      void context.env.CHAT_LOGS.put(sessionId, JSON.stringify(logEntry), {
         expirationTtl: 60 * 60 * 24 * 30, // Keep logs for 30 days
       });
     }
