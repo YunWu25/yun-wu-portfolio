@@ -402,7 +402,7 @@ const Game: React.FC<GameProps> = ({ language }) => {
     bounciness: 0,           // No bounce - instant landing
     minBounceVelocity: 0,    // Disabled
     isGrounded: false,
-    speed: 6,
+    speed: 8,
   });
 
   // Track which movement keys are pressed
