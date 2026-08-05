@@ -4,6 +4,99 @@
 interface Env {
   AI: Ai;
   CHAT_LOGS: KVNamespace;
+  PHOTOGRAPHY: R2Bucket;
+}
+
+type PhotoCategory = 'pet' | 'plant' | 'people' | 'landscape' | 'architecture' | 'food' | 'other';
+
+interface PhotoData {
+  url: string;
+  title: string;
+  category: PhotoCategory;
+}
+
+// Fetch photos from R2 bucket
+async function getPhotos(bucket: R2Bucket): Promise<PhotoData[]> {
+  try {
+    const listed = await bucket.list({
+      prefix: 'public/images/',
+      include: ['customMetadata'],
+    } as R2ListOptions & { include: string[] });
+
+    const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.avif'];
+    const imageObjects = listed.objects.filter((obj) => {
+      const key = obj.key.toLowerCase();
+      if (key.endsWith('/')) return false;
+      return imageExtensions.some((ext) => key.endsWith(ext));
+    });
+
+    return imageObjects.map((obj) => {
+      const customMeta = obj.customMetadata || {};
+      return {
+        url: `https://media.yunwustudio.com/${obj.key}`,
+        title: customMeta.title || obj.key.split('/').pop() || 'Photo',
+        category: (customMeta.category as PhotoCategory) || 'other',
+      };
+    });
+  } catch (error) {
+    console.error('Error fetching photos:', error);
+    return [];
+  }
+}
+
+// Build photo gallery info for system prompt
+function buildPhotoPrompt(photos: PhotoData[], language: 'en' | 'zh'): string {
+  const categories: Record<PhotoCategory, PhotoData[]> = {
+    pet: [],
+    plant: [],
+    people: [],
+    landscape: [],
+    architecture: [],
+    food: [],
+    other: [],
+  };
+
+  for (const photo of photos) {
+    categories[photo.category].push(photo);
+  }
+
+  if (language === 'zh') {
+    let prompt = `\n\n## 照片库\n你可以分享伍芸拍摄的照片！当用户询问照片时，用markdown格式回复：![描述](url)\n\n`;
+    prompt += `可用照片分类：\n`;
+    if (categories.pet.length > 0) prompt += `- 宠物 (${categories.pet.length}张): 狗、猫等宠物照片\n`;
+    if (categories.plant.length > 0) prompt += `- 植物 (${categories.plant.length}张)\n`;
+    if (categories.people.length > 0) prompt += `- 人物 (${categories.people.length}张)\n`;
+    if (categories.landscape.length > 0) prompt += `- 风景 (${categories.landscape.length}张)\n`;
+    if (categories.architecture.length > 0) prompt += `- 建筑 (${categories.architecture.length}张)\n`;
+    if (categories.food.length > 0) prompt += `- 美食 (${categories.food.length}张)\n`;
+
+    prompt += `\n当用户要求看照片时（如"给我看狗的照片"），从对应分类选择1-3张照片分享。\n`;
+    prompt += `\n### 照片URLs:\n`;
+    for (const [cat, list] of Object.entries(categories)) {
+      if (list.length > 0) {
+        prompt += `${cat}: ${list.slice(0, 5).map(p => p.url).join(', ')}\n`;
+      }
+    }
+    return prompt;
+  }
+
+  let prompt = `\n\n## Photo Gallery\nYou can share photos taken by Yun! When users ask for photos, respond with markdown: ![description](url)\n\n`;
+  prompt += `Available photo categories:\n`;
+  if (categories.pet.length > 0) prompt += `- Pet (${categories.pet.length} photos): dogs, cats, and other pets\n`;
+  if (categories.plant.length > 0) prompt += `- Plant (${categories.plant.length} photos)\n`;
+  if (categories.people.length > 0) prompt += `- People (${categories.people.length} photos)\n`;
+  if (categories.landscape.length > 0) prompt += `- Landscape (${categories.landscape.length} photos)\n`;
+  if (categories.architecture.length > 0) prompt += `- Architecture (${categories.architecture.length} photos)\n`;
+  if (categories.food.length > 0) prompt += `- Food (${categories.food.length} photos)\n`;
+
+  prompt += `\nWhen users ask for photos (e.g., "show me dog pictures"), pick 1-3 photos from the matching category.\n`;
+  prompt += `\n### Photo URLs:\n`;
+  for (const [cat, list] of Object.entries(categories)) {
+    if (list.length > 0) {
+      prompt += `${cat}: ${list.slice(0, 5).map(p => p.url).join(', ')}\n`;
+    }
+  }
+  return prompt;
 }
 
 interface ChatMessage {
@@ -99,7 +192,11 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       });
     }
 
-    const systemPrompt = language === 'zh' ? SYSTEM_PROMPT_ZH : SYSTEM_PROMPT_EN;
+    // Fetch photos and build enhanced system prompt
+    const photos = context.env.PHOTOGRAPHY ? await getPhotos(context.env.PHOTOGRAPHY) : [];
+    const basePrompt = language === 'zh' ? SYSTEM_PROMPT_ZH : SYSTEM_PROMPT_EN;
+    const photoPrompt = photos.length > 0 ? buildPhotoPrompt(photos, language) : '';
+    const systemPrompt = basePrompt + photoPrompt;
 
     const aiMessages: ChatMessage[] = [{ role: 'system', content: systemPrompt }, ...messages];
 
