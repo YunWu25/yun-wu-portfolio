@@ -70,11 +70,12 @@ function buildPhotoPrompt(photos: PhotoData[], language: 'en' | 'zh'): string {
     if (categories.architecture.length > 0) prompt += `- 建筑 (${categories.architecture.length}张)\n`;
     if (categories.food.length > 0) prompt += `- 美食 (${categories.food.length}张)\n`;
 
-    prompt += `\n当用户要求看照片时（如"给我看狗的照片"），从对应分类选择1-3张照片分享。\n`;
+    prompt += `\n当用户要求看照片时，选择1-2张照片分享。`;
+    prompt += `\n重要：当用户说"更多"、"下一张"、"还有吗"、"再来一张"时，一定要分享之前没展示过的不同照片！\n`;
     prompt += `\n### 照片URLs:\n`;
     for (const [cat, list] of Object.entries(categories)) {
       if (list.length > 0) {
-        prompt += `${cat}: ${list.slice(0, 5).map(p => p.url).join(', ')}\n`;
+        prompt += `${cat}: ${list.slice(0, 15).map(p => p.url).join(', ')}\n`;
       }
     }
     return prompt;
@@ -89,11 +90,12 @@ function buildPhotoPrompt(photos: PhotoData[], language: 'en' | 'zh'): string {
   if (categories.architecture.length > 0) prompt += `- Architecture (${categories.architecture.length} photos)\n`;
   if (categories.food.length > 0) prompt += `- Food (${categories.food.length} photos)\n`;
 
-  prompt += `\nWhen users ask for photos (e.g., "show me dog pictures"), pick 1-3 photos from the matching category.\n`;
+  prompt += `\nWhen users ask for photos, pick 1-2 photos from the matching category.`;
+  prompt += `\nIMPORTANT: When users say "more", "another", "next", or "show me more", always share DIFFERENT photos that you haven't shown before!\n`;
   prompt += `\n### Photo URLs:\n`;
   for (const [cat, list] of Object.entries(categories)) {
     if (list.length > 0) {
-      prompt += `${cat}: ${list.slice(0, 5).map(p => p.url).join(', ')}\n`;
+      prompt += `${cat}: ${list.slice(0, 15).map(p => p.url).join(', ')}\n`;
     }
   }
   return prompt;
