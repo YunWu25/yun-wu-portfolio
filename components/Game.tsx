@@ -396,9 +396,9 @@ const Game: React.FC<GameProps> = ({ language }) => {
     width: 50,
     height: 50,
     velocityY: 0,
-    gravity: 0.28,           // Even lighter gravity for floatier jumps
-    jumpForce: -10,          // Initial upward velocity
-    maxFallSpeed: 9,         // Terminal velocity
+    gravity: 0.2,            // Very light gravity for floaty jumps
+    jumpForce: -9,           // Initial upward velocity
+    maxFallSpeed: 7,         // Terminal velocity
     bounciness: 0.25,        // Bounce factor - subtle bounce (0 = no bounce, 1 = full bounce)
     minBounceVelocity: 2.5,  // Higher threshold for less frequent bouncing
     isGrounded: false,
