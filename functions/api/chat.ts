@@ -44,6 +44,18 @@ async function getPhotos(bucket: R2Bucket): Promise<PhotoData[]> {
   }
 }
 
+// Shuffle array randomly (Fisher-Yates algorithm)
+function shuffleArray<T>(array: T[]): T[] {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    const temp = shuffled[i]!;
+    shuffled[i] = shuffled[j]!;
+    shuffled[j] = temp;
+  }
+  return shuffled;
+}
+
 // Build photo gallery info for system prompt
 function buildPhotoPrompt(photos: PhotoData[], language: 'en' | 'zh'): string {
   const categories: Record<PhotoCategory, PhotoData[]> = {
@@ -60,6 +72,11 @@ function buildPhotoPrompt(photos: PhotoData[], language: 'en' | 'zh'): string {
     categories[photo.category].push(photo);
   }
 
+  // Shuffle each category so AI sees different photos each conversation
+  for (const cat of Object.keys(categories) as PhotoCategory[]) {
+    categories[cat] = shuffleArray(categories[cat]);
+  }
+
   if (language === 'zh') {
     let prompt = `\n\n## 照片库\n你可以分享伍芸拍摄的照片！当用户询问照片时，用markdown格式回复：![描述](url)\n\n`;
     prompt += `可用照片分类：\n`;
@@ -70,9 +87,9 @@ function buildPhotoPrompt(photos: PhotoData[], language: 'en' | 'zh'): string {
     if (categories.architecture.length > 0) prompt += `- 建筑 (${categories.architecture.length}张)\n`;
     if (categories.food.length > 0) prompt += `- 美食 (${categories.food.length}张)\n`;
 
-    prompt += `\n当用户要求看照片时，选择1-2张照片分享。`;
-    prompt += `\n重要：当用户说"更多"、"下一张"、"还有吗"、"再来一张"时，一定要分享之前没展示过的不同照片！\n`;
-    prompt += `\n### 照片URLs:\n`;
+    prompt += `\n当用户要求看照片时，从列表中随机选择1-2张照片分享。`;
+    prompt += `\n重要：每次都要选择不同的照片！不要重复之前展示过的照片！\n`;
+    prompt += `\n### 照片URLs (已随机排序):\n`;
     for (const [cat, list] of Object.entries(categories)) {
       if (list.length > 0) {
         prompt += `${cat}: ${list.slice(0, 15).map(p => p.url).join(', ')}\n`;
@@ -90,9 +107,9 @@ function buildPhotoPrompt(photos: PhotoData[], language: 'en' | 'zh'): string {
   if (categories.architecture.length > 0) prompt += `- Architecture (${categories.architecture.length} photos)\n`;
   if (categories.food.length > 0) prompt += `- Food (${categories.food.length} photos)\n`;
 
-  prompt += `\nWhen users ask for photos, pick 1-2 photos from the matching category.`;
-  prompt += `\nIMPORTANT: When users say "more", "another", "next", or "show me more", always share DIFFERENT photos that you haven't shown before!\n`;
-  prompt += `\n### Photo URLs:\n`;
+  prompt += `\nWhen users ask for photos, RANDOMLY pick 1-2 different photos from the list.`;
+  prompt += `\nIMPORTANT: Always pick DIFFERENT photos each time! Never repeat the same photo twice!\n`;
+  prompt += `\n### Photo URLs (randomly ordered):\n`;
   for (const [cat, list] of Object.entries(categories)) {
     if (list.length > 0) {
       prompt += `${cat}: ${list.slice(0, 15).map(p => p.url).join(', ')}\n`;
