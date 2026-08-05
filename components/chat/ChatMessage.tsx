@@ -23,21 +23,28 @@ function renderContent(content: string): React.ReactNode[] {
       );
     }
 
-    // Add the image
+    // Add the image wrapped in a link to open full size
     const alt = match[1];
     const url = match[2];
     elements.push(
-      <img
+      <a
         key={key++}
-        src={url}
-        alt={alt}
-        className="max-w-full h-auto rounded-lg my-2 shadow-sm"
-        loading="lazy"
-        onError={(e) => {
-          // Hide broken images
-          (e.target as HTMLImageElement).style.display = 'none';
-        }}
-      />
+        href={url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="block cursor-pointer"
+      >
+        <img
+          src={url}
+          alt={alt}
+          className="max-w-full h-auto rounded-lg my-2 shadow-sm hover:shadow-md hover:scale-[1.02] transition-all duration-200"
+          loading="lazy"
+          onError={(e) => {
+            // Hide broken images
+            (e.target as HTMLImageElement).parentElement!.style.display = 'none';
+          }}
+        />
+      </a>
     );
 
     lastIndex = match.index + match[0].length;
