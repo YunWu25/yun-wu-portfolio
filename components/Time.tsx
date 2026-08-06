@@ -36,6 +36,7 @@ const Time: React.FC<TimeProps> = ({ language }) => {
       placeholder: 'Access code',
       submit: 'Access Gallery',
       invalidCode: 'Invalid access code. Please try again.',
+      invalidFormat: 'Invalid code format. Special characters are not allowed.',
       selectAll: 'Select All',
       deselectAll: 'Deselect All',
       downloadSelected: 'Download Selected',
@@ -50,6 +51,7 @@ const Time: React.FC<TimeProps> = ({ language }) => {
       placeholder: '访问码',
       submit: '访问画廊',
       invalidCode: '访问码无效，请重试。',
+      invalidFormat: '访问码格式不正确，请勿输入特殊字符。',
       selectAll: '全选',
       deselectAll: '取消全选',
       downloadSelected: '下载所选',
@@ -64,16 +66,26 @@ const Time: React.FC<TimeProps> = ({ language }) => {
 
   const handleSubmitCode = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!accessCode.trim()) return;
+    const cleanCode = accessCode.trim();
+    if (!cleanCode) return;
+
+    // Frontend validation - must match backend pattern exactly
+    const allowedPattern = /^[a-zA-Z0-9_\-\u4e00-\u9fa5]+$/;
+    if (!allowedPattern.test(cleanCode)) {
+      setError(t.invalidFormat);
+      return;
+    }
 
     setLoading(true);
     setError(null);
 
     try {
-      const response = await fetch(`/api/client-photos?code=${encodeURIComponent(accessCode.trim())}`);
+      const response = await fetch(`/api/client-photos?code=${encodeURIComponent(cleanCode)}`);
 
       if (!response.ok) {
-        if (response.status === 401) {
+        if (response.status === 400) {
+          setError(t.invalidFormat);
+        } else if (response.status === 401) {
           setError(t.invalidCode);
         } else {
           throw new Error('Failed to fetch photos');
