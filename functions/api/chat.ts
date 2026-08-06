@@ -219,7 +219,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 
     const aiMessages: ChatMessage[] = [{ role: 'system', content: systemPrompt }, ...messages];
 
-    // Log conversation to KV - group by IP + date (same guest = same conversation)
+    // Log conversation to KV - group by IP + date + device (same guest = same conversation)
     const userMessages = messages.filter((m) => m.role === 'user');
     if (userMessages.length > 0 && context.env.CHAT_LOGS) {
       // Get client IP from Cloudflare headers
@@ -227,10 +227,16 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
                        context.request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
                        'unknown';
 
-      // Create session ID: IP hash + date (same guest on same day = same session)
+      // Get User-Agent and create a short hash for device identification
+      const userAgent = context.request.headers.get('user-agent') ?? 'unknown';
+      const deviceHash = userAgent.length.toString(36) +
+                         (userAgent.includes('Mobile') ? 'm' : 'd') +
+                         (userAgent.includes('Chrome') ? 'c' : userAgent.includes('Safari') ? 's' : userAgent.includes('Firefox') ? 'f' : 'x');
+
+      // Create session ID: IP hash + date + device (same guest + same device on same day = same session)
       const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
       const ipHash = clientIP.split('.').slice(-2).join(''); // Use last 2 octets for privacy
-      const sessionId = `session_${today}_${ipHash}`;
+      const sessionId = `session_${today}_${ipHash}_${deviceHash}`;
 
       // Try to get existing session
       const existingData = await context.env.CHAT_LOGS.get(sessionId);
