@@ -15,7 +15,8 @@ interface Project {
 }
 
 const getScreenshotUrl = (title: string, type: string, imageType: 'jpg' | 'gif'): string => {
-  const filename = `${title} ${type}.${imageType}`;
+  // Handle empty type (e.g., "Luna Kitchen and Bath" with no type suffix)
+  const filename = type ? `${title} ${type}.${imageType}` : `${title}.${imageType}`;
   return `https://media.yunwustudio.com/public/design/${encodeURIComponent(filename)}`;
 };
 
@@ -154,8 +155,8 @@ const Design: React.FC<DesignProps> = ({ language }) => {
       imageType: 'jpg',
     },
     {
-      title: 'Luna',
-      type: 'Web',
+      title: 'Luna Kitchen and Bath',
+      type: '',
       role: 'Social Media Designer',
       link: null,
       imageType: 'jpg',
@@ -197,16 +198,16 @@ const Design: React.FC<DesignProps> = ({ language }) => {
     },
     {
       title: 'CGH',
-      type: 'Ehcs',
+      type: 'EHCS',
       role: 'UI/UX Designer',
-      link: null,
+      link: 'https://media.yunwustudio.com/public/design/CGH%20EHCS.jpg',
       imageType: 'jpg',
     },
     {
       title: 'COC',
-      type: 'App',
+      type: 'APP',
       role: 'UI/UX Designer',
-      link: null,
+      link: 'https://media.yunwustudio.com/public/design/COC%20APP.gif',
       imageType: 'gif',
     },
     {
