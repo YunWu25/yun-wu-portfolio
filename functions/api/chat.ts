@@ -1,5 +1,6 @@
 // Cloudflare Pages Function: POST /api/chat
 // AI chat endpoint using Cloudflare Workers AI
+// Refactored: Dynamic photo fetching from R2 metadata with strict prompt injection
 
 interface Env {
   AI: Ai;
@@ -7,7 +8,49 @@ interface Env {
   PHOTOGRAPHY: R2Bucket;
 }
 
-type PhotoCategory = 'animal' | 'plant' | 'flower' | 'people' | 'landscape' | 'architecture' | 'food' | 'yun' | 'sky' | 'lake' | 'client' | 'music' | 'museum' | 'dog' | 'cat' | 'christmas' | 'other';
+// =============================================================================
+// PHOTO TYPES & CATEGORIES
+// =============================================================================
+
+type PhotoCategory =
+  | 'animal'
+  | 'plant'
+  | 'flower'
+  | 'people'
+  | 'landscape'
+  | 'architecture'
+  | 'food'
+  | 'yun'
+  | 'sky'
+  | 'lake'
+  | 'client'
+  | 'music'
+  | 'museum'
+  | 'dog'
+  | 'cat'
+  | 'christmas'
+  | 'other';
+
+// Category display names for prompt
+const CATEGORY_LABELS: Record<PhotoCategory, { en: string; zh: string }> = {
+  animal: { en: 'Animal', zh: '动物' },
+  plant: { en: 'Plant', zh: '植物' },
+  flower: { en: 'Flower', zh: '花卉' },
+  people: { en: 'People', zh: '人物' },
+  landscape: { en: 'Landscape', zh: '风景' },
+  architecture: { en: 'Architecture', zh: '建筑' },
+  food: { en: 'Food', zh: '美食' },
+  yun: { en: 'Yun Wu', zh: '伍芸' },
+  sky: { en: 'Sky', zh: '天空' },
+  lake: { en: 'Lake', zh: '湖泊' },
+  client: { en: 'Portrait', zh: '人像' },
+  music: { en: 'Music', zh: '音乐' },
+  museum: { en: 'Museum', zh: '博物馆' },
+  dog: { en: 'Dog', zh: '狗狗' },
+  cat: { en: 'Cat', zh: '猫咪' },
+  christmas: { en: 'Christmas', zh: '圣诞节' },
+  other: { en: 'Other', zh: '其他' },
+};
 
 interface PhotoData {
   url: string;
@@ -15,34 +58,49 @@ interface PhotoData {
   category: PhotoCategory;
 }
 
-// Fetch photos from R2 bucket
-async function getPhotos(bucket: R2Bucket): Promise<PhotoData[]> {
+// =============================================================================
+// R2 PHOTO FETCHING
+// =============================================================================
+
+async function fetchPhotosFromR2(bucket: R2Bucket): Promise<PhotoData[]> {
   try {
     const listed = await bucket.list({
       prefix: 'public/images/',
       include: ['customMetadata'],
     } as R2ListOptions & { include: string[] });
 
-    const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.avif'];
-    const imageObjects = listed.objects.filter((obj) => {
-      const key = obj.key.toLowerCase();
-      if (key.endsWith('/')) return false;
-      return imageExtensions.some((ext) => key.endsWith(ext));
-    });
+    const imageExtensions = ['.jpg', '.jpeg', '.png', '.webp', '.avif'];
 
-    return imageObjects.map((obj) => {
-      const customMeta = obj.customMetadata || {};
-      return {
-        url: `https://media.yunwustudio.com/${obj.key}`,
-        title: customMeta.title || obj.key.split('/').pop() || 'Photo',
-        category: (customMeta.category as PhotoCategory) || 'other',
-      };
-    });
+    return listed.objects
+      .filter((obj) => {
+        // Filter out directories and non-image files
+        if (obj.size === 0 || obj.key.endsWith('/')) return false;
+        const key = obj.key.toLowerCase();
+        if (!imageExtensions.some((ext) => key.endsWith(ext))) return false;
+
+        // Only include photos marked for gallery display
+        const meta = obj.customMetadata ?? {};
+        return meta.showInGallery !== 'false';
+      })
+      .map((obj) => {
+        const meta = obj.customMetadata ?? {};
+        const filename = obj.key.split('/').pop() ?? 'Photo';
+
+        return {
+          url: `https://media.yunwustudio.com/${obj.key}`,
+          title: meta.title || filename.replace(/\.[^.]+$/, ''),
+          category: (meta.category as PhotoCategory) || 'other',
+        };
+      });
   } catch (error) {
-    console.error('Error fetching photos:', error);
+    console.error('Error fetching photos from R2:', error);
     return [];
   }
 }
+
+// =============================================================================
+// HELPER FUNCTIONS
+// =============================================================================
 
 // Shuffle array randomly (Fisher-Yates algorithm)
 function shuffleArray<T>(array: T[]): T[] {
@@ -56,99 +114,134 @@ function shuffleArray<T>(array: T[]): T[] {
   return shuffled;
 }
 
-// Build photo gallery info for system prompt
-function buildPhotoPrompt(photos: PhotoData[], language: 'en' | 'zh'): string {
-  const categories: Record<PhotoCategory, PhotoData[]> = {
-    animal: [],
-    plant: [],
-    flower: [],
-    people: [],
-    landscape: [],
-    architecture: [],
-    food: [],
-    yun: [],
-    sky: [],
-    lake: [],
-    client: [],
-    music: [],
-    museum: [],
-    dog: [],
-    cat: [],
-    christmas: [],
-    other: [],
-  };
+// Group photos by category
+function groupByCategory(photos: PhotoData[]): Map<PhotoCategory, PhotoData[]> {
+  const groups = new Map<PhotoCategory, PhotoData[]>();
 
   for (const photo of photos) {
-    // Handle unknown categories by falling back to 'other'
-    const category = categories[photo.category] ? photo.category : 'other';
-    categories[category].push(photo);
+    const existing = groups.get(photo.category) ?? [];
+    existing.push(photo);
+    groups.set(photo.category, existing);
   }
 
-  // Shuffle each category so AI sees different photos each conversation
-  for (const cat of Object.keys(categories) as PhotoCategory[]) {
-    categories[cat] = shuffleArray(categories[cat]);
+  return groups;
+}
+
+// Pick N random photos from an array
+function pickRandom<T>(array: T[], count: number): T[] {
+  return shuffleArray(array).slice(0, Math.min(count, array.length));
+}
+
+// Build pre-formatted markdown block for photos (ALL photos together, no splitting)
+function buildMarkdownBlock(photos: PhotoData[]): string {
+  return photos.map((p) => `![${p.title}](${p.url})`).join('\n');
+}
+
+// =============================================================================
+// PHOTO PROMPT BUILDER - Dynamic from R2
+// =============================================================================
+
+interface SelectedPhotoGroup {
+  category: PhotoCategory;
+  photos: PhotoData[];
+}
+
+function buildPhotoPrompt(
+  selectedGroups: SelectedPhotoGroup[],
+  language: 'en' | 'zh'
+): string {
+  if (selectedGroups.length === 0) {
+    return ''; // No photos available
   }
 
   if (language === 'zh') {
-    let prompt = `\n\n## 照片库\n你可以分享伍芸拍摄的照片！当用户询问照片时，用markdown格式回复：![描述](url)\n\n`;
-    prompt += `可用照片分类：\n`;
-    if (categories.animal.length > 0) prompt += `- 其他动物 (${categories.animal.length}张): 其他的动物朋友们\n`;
-    if (categories.plant.length > 0) prompt += `- 植物 (${categories.plant.length}张)\n`;
-    if (categories.flower.length > 0) prompt += `- 花卉 (${categories.flower.length}张): 花朵、花束照片\n`;
-    if (categories.people.length > 0) prompt += `- 人物 (${categories.people.length}张)\n`;
-    if (categories.landscape.length > 0) prompt += `- 风景 (${categories.landscape.length}张)\n`;
-    if (categories.architecture.length > 0) prompt += `- 建筑 (${categories.architecture.length}张)\n`;
-    if (categories.food.length > 0) prompt += `- 美食 (${categories.food.length}张)\n`;
-    if (categories.yun.length > 0) prompt += `- 伍芸 (${categories.yun.length}张): 伍芸本人的照片\n`;
-    if (categories.sky.length > 0) prompt += `- 天空 (${categories.sky.length}张): 天空、云彩照片\n`;
-    if (categories.lake.length > 0) prompt += `- 湖泊 (${categories.lake.length}张): 湖泊、水景、船只照片\n`;
-    if (categories.client.length > 0) prompt += `- 游客 (${categories.client.length}张): 游客人像\n`;
-    if (categories.music.length > 0) prompt += `- 音乐 (${categories.music.length}张): 音乐、乐器、演出照片\n`;
-    if (categories.museum.length > 0) prompt += `- 博物馆 (${categories.museum.length}张): 博物馆、艺术展览\n`;
-    if (categories.dog.length > 0) prompt += `- 狗狗 (${categories.dog.length}张)\n`;
-    if (categories.cat.length > 0) prompt += `- 猫咪 (${categories.cat.length}张)\n`;
-    if (categories.christmas.length > 0) prompt += `- 圣诞节 (${categories.christmas.length}张)\n`;
+    let prompt = `\n\n## 照片分享规则（严格遵守）\n`;
+    prompt += `你可以分享伍芸拍摄的照片。以下是本次对话中【唯一可用】的照片：\n\n`;
 
-    prompt += `\n当用户要求看照片时，分享下面列出的照片。这些是随机选择的照片。\n`;
-    prompt += `\n### 可用照片:\n`;
-    for (const [cat, list] of Object.entries(categories)) {
-      if (list.length > 0) {
-        // Only give 3 random photos per category - forces variety
-        prompt += `${cat}: ${list.slice(0, 3).map(p => p.url).join(', ')}\n`;
-      }
+    for (const group of selectedGroups) {
+      const label = CATEGORY_LABELS[group.category].zh;
+      prompt += `### ${label}照片（必须整组发送）\n`;
+      prompt += `\`\`\`\n${buildMarkdownBlock(group.photos)}\n\`\`\`\n\n`;
     }
+
+    prompt += `## 重要规则\n`;
+    prompt += `1. 当用户要求看某类照片时，必须【原封不动】复制上面对应的整个 Markdown 代码块发送。\n`;
+    prompt += `2. 【严禁】自己编造任何 URL、文件名、或品种名称。只能使用上面列出的链接。\n`;
+    prompt += `3. 【严禁】拆分照片组——必须一次性发送该分类的全部照片。\n`;
+    prompt += `4. 如果用户要求的分类不在上面列表中，请礼貌回复：\n`;
+    prompt += `   "抱歉，这个分类的照片暂时不在本次对话中。您可以前往网站顶部的【Photography】页面浏览完整作品集哦！"\n`;
+    prompt += `5. 本次可用分类：${selectedGroups.map((g) => CATEGORY_LABELS[g.category].zh).join('、')}。其他分类本次不可用。\n`;
+
     return prompt;
   }
 
-  let prompt = `\n\n## Photo Gallery\nYou can share photos taken by Yun! When users ask for photos, respond with markdown: ![description](url)\n\n`;
-  prompt += `Available photo categories:\n`;
-  if (categories.animal.length > 0) prompt += `- Other Animal (${categories.animal.length} photos): Other animals\n`;
-  if (categories.plant.length > 0) prompt += `- Plant (${categories.plant.length} photos)\n`;
-  if (categories.flower.length > 0) prompt += `- Flower (${categories.flower.length} photos): flowers and bouquets\n`;
-  if (categories.people.length > 0) prompt += `- People (${categories.people.length} photos)\n`;
-  if (categories.landscape.length > 0) prompt += `- Landscape (${categories.landscape.length} photos)\n`;
-  if (categories.architecture.length > 0) prompt += `- Architecture (${categories.architecture.length} photos)\n`;
-  if (categories.food.length > 0) prompt += `- Food (${categories.food.length} photos)\n`;
-  if (categories.yun.length > 0) prompt += `- Yun (${categories.yun.length} photos): photos of Yun Wu herself\n`;
-  if (categories.sky.length > 0) prompt += `- Sky (${categories.sky.length} photos): sky and clouds\n`;
-  if (categories.lake.length > 0) prompt += `- Lake (${categories.lake.length} photos): lakes, water, boats\n`;
-  if (categories.client.length > 0) prompt += `- Client (${categories.client.length} photos): client portraits\n`;
-  if (categories.music.length > 0) prompt += `- Music (${categories.music.length} photos): music, instruments, performances\n`;
-  if (categories.museum.length > 0) prompt += `- Museum (${categories.museum.length} photos): museums, art exhibitions\n`;
-  if (categories.dog.length > 0) prompt += `- Dog (${categories.dog.length} photos): dog photos\n`;
-  if (categories.cat.length > 0) prompt += `- Cat (${categories.cat.length} photos): cat photos\n`;
-  if (categories.christmas.length > 0) prompt += `- Christmas (${categories.christmas.length} photos): Christmas holiday photos\n`;
+  // English version
+  let prompt = `\n\n## Photo Sharing Rules (STRICT)\n`;
+  prompt += `You can share photos taken by Yun. Below are the ONLY photos available in this conversation:\n\n`;
 
-  prompt += `\nWhen users ask for photos, share the photos listed below. These are randomly selected for this conversation.\n`;
-  prompt += `\n### Available photos:\n`;
-  for (const [cat, list] of Object.entries(categories)) {
-    if (list.length > 0) {
-      // Only give 3 random photos per category - forces variety
-      prompt += `${cat}: ${list.slice(0, 3).map(p => p.url).join(', ')}\n`;
-    }
+  for (const group of selectedGroups) {
+    const label = CATEGORY_LABELS[group.category].en;
+    prompt += `### ${label} Photos (must send as complete group)\n`;
+    prompt += `\`\`\`\n${buildMarkdownBlock(group.photos)}\n\`\`\`\n\n`;
   }
+
+  prompt += `## Critical Rules\n`;
+  prompt += `1. When user asks for a photo category, copy-paste the EXACT markdown block above. Do not modify it.\n`;
+  prompt += `2. NEVER invent URLs, filenames, or breed/species names. Only use the links listed above.\n`;
+  prompt += `3. NEVER split photo groups—always send ALL photos in that category together.\n`;
+  prompt += `4. If user asks for a category NOT listed above, politely reply:\n`;
+  prompt += `   "Sorry, that category isn't available in this chat session. Please visit the Photography page at the top of the website to browse the full portfolio!"\n`;
+  prompt += `5. Available categories this session: ${selectedGroups.map((g) => CATEGORY_LABELS[g.category].en).join(', ')}. Other categories are not available.\n`;
+
   return prompt;
 }
+
+// Main function: Fetch photos, sample categories, build prompt
+async function preparePhotoPrompt(
+  bucket: R2Bucket | undefined,
+  language: 'en' | 'zh'
+): Promise<string> {
+  if (!bucket) {
+    return '';
+  }
+
+  // Fetch all gallery photos from R2
+  const allPhotos = await fetchPhotosFromR2(bucket);
+  if (allPhotos.length === 0) {
+    return '';
+  }
+
+  // Group by category
+  const categoryGroups = groupByCategory(allPhotos);
+
+  // Filter to categories with at least 2 photos (for quality grouping)
+  const validCategories = Array.from(categoryGroups.entries())
+    .filter(([_, photos]) => photos.length >= 2)
+    .map(([cat]) => cat);
+
+  if (validCategories.length === 0) {
+    return '';
+  }
+
+  // Pick 3 random categories (or fewer if not enough)
+  const selectedCategories = pickRandom(validCategories, 3);
+
+  // From each selected category, pick 2-3 random photos
+  const selectedGroups: SelectedPhotoGroup[] = selectedCategories.map((cat) => {
+    const photos = categoryGroups.get(cat) ?? [];
+    const photosPerCategory = photos.length >= 3 ? 3 : 2;
+    return {
+      category: cat,
+      photos: pickRandom(photos, photosPerCategory),
+    };
+  });
+
+  return buildPhotoPrompt(selectedGroups, language);
+}
+
+// =============================================================================
+// CHAT TYPES & SYSTEM PROMPTS
+// =============================================================================
 
 interface ChatMessage {
   role: 'user' | 'assistant' | 'system';
@@ -198,19 +291,15 @@ Enjoys films, documentaries, TV series, and Animal Crossing. Passionate about do
 
 ## Extended Assistance (Welcome!)
 You can also help visitors with:
-1. **Coding**: Programming questions, debugging, web development tips. Connect to Yun's UI/UX design and frontend development experience when relevant.
-2. **Math**: Solve math problems, explain concepts. Relate to logical thinking used in design systems when appropriate.
-3. **Learning Chinese**: Help visitors learn Mandarin, explain characters, phrases, and culture. Yun is a native Chinese speaker and can share cultural insights.
+1. **Coding**: Programming questions, debugging, web development tips.
+2. **Math**: Solve math problems, explain concepts.
+3. **Learning Chinese**: Help visitors learn Mandarin, explain characters, phrases, and culture.
 
 ## Guardrails (Topic Limits)
 - For political, controversial, or sensitive topics, politely decline: "Sorry, as Yun's AI assistant, I can only help with technology, learning, Yun's portfolio, and business inquiries."
 - Stay focused on helpful, constructive conversations.
 
 ## Business CTA
-When users ask about photography, design, or collaboration:
-- Provide Yunwustudio@gmail.com for inquiries
-- Actively invite them: "Feel free to ask me to 'show a dog photo' or 'show landscape photos' to explore Yun's work!"
-
 For pricing or availability inquiries, direct visitors to email: Yunwustudio@gmail.com`;
 
 const SYSTEM_PROMPT_ZH = `你是伍芸作品集网站 yunwustudio.com 的AI助手。
@@ -250,20 +339,20 @@ const SYSTEM_PROMPT_ZH = `你是伍芸作品集网站 yunwustudio.com 的AI助�
 
 ## 扩展助手能力（欢迎提问！）
 你还可以帮助访客：
-1. **编程**：解答编程问题、调试代码、网页开发技巧。可以适时联系伍芸的UI/UX设计和前端开发经验。
-2. **数学**：解决数学问题、解释概念。可以联系设计系统中的逻辑思维。
-3. **学中文**：帮助访客学习普通话、解释汉字、词语和中国文化。伍芸是中文母语者，可以分享文化见解。
+1. **编程**：解答编程问题、调试代码、网页开发技巧。
+2. **数学**：解决数学问题、解释概念。
+3. **学中文**：帮助访客学习普通话、解释汉字、词语和中国文化。
 
 ## 安全与话题限制
 - 对于政治、争议性或敏感话题，优雅拒绝："抱歉，作为伍芸的AI助理，我只能协助您探讨技术、学习、以及伍芸的作品集与商务合作。"
 - 保持对话积极、有建设性。
 
 ## 商务引导（CTA）
-当用户询问摄影、设计或合作意向时：
-- 提供联系邮箱 Yunwustudio@gmail.com
-- 主动邀请用户欣赏作品："您可以问我'看一张狗狗的照片'或者'看看风景照'来欣赏伍芸的作品哦！"
-
 价格或档期咨询请联系：Yunwustudio@gmail.com`;
+
+// =============================================================================
+// MAIN HANDLER
+// =============================================================================
 
 export const onRequestPost: PagesFunction<Env> = async (context) => {
   try {
@@ -276,50 +365,51 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       });
     }
 
-    // Fetch photos and build enhanced system prompt
-    const photos = context.env.PHOTOGRAPHY ? await getPhotos(context.env.PHOTOGRAPHY) : [];
+    // Dynamically fetch and sample photos from R2
+    const photoPrompt = await preparePhotoPrompt(context.env.PHOTOGRAPHY, language);
+
+    // Build system prompt
     const basePrompt = language === 'zh' ? SYSTEM_PROMPT_ZH : SYSTEM_PROMPT_EN;
-    const photoPrompt = photos.length > 0 ? buildPhotoPrompt(photos, language) : '';
 
     // Build personalized username prompt if provided
     let usernamePrompt = '';
     const cleanUsername = username?.trim();
     if (cleanUsername) {
-      usernamePrompt = language === 'zh'
-        ? `\n\n## 当前对话访客\n当前正在和你聊天的访客名字叫「${cleanUsername}」。在对话过程中，请偶尔、自然地称呼他们的名字，让他们感受到个性化与亲切的互动（但切勿每句话都重复，保持自然）。`
-        : `\n\n## Current Visitor\nThe visitor's name is "${cleanUsername}". Please address them by their name occasionally and naturally during the conversation to provide a personalized experience (do not overdo it, keep it natural).`;
+      usernamePrompt =
+        language === 'zh'
+          ? `\n\n## 当前对话访客\n当前正在和你聊天的访客名字叫「${cleanUsername}」。在对话过程中，请偶尔、自然地称呼他们的名字，让他们感受到个性化与亲切的互动（但切勿每句话都重复，保持自然）。`
+          : `\n\n## Current Visitor\nThe visitor's name is "${cleanUsername}". Please address them by their name occasionally and naturally during the conversation to provide a personalized experience (do not overdo it, keep it natural).`;
     }
 
     const systemPrompt = basePrompt + usernamePrompt + photoPrompt;
 
     const aiMessages: ChatMessage[] = [{ role: 'system', content: systemPrompt }, ...messages];
 
-    // Log conversation to KV - group by IP + date + device (same guest = same conversation)
-    // Only get the LAST user message (the new one) - previous messages are already logged
-    // NOTE: Potential Read-Modify-Write race condition exists here. If user sends multiple
-    // messages rapidly, some messages may be lost due to concurrent reads before writes complete.
-    // This only affects analytics logs, not user-facing functionality. Future optimization could
-    // use KV atomic operations or a queue-based approach if log completeness becomes critical.
+    // Log conversation to KV - group by IP + date + device
     const userMessages = messages.filter((m) => m.role === 'user');
     const lastUserMessage = userMessages.length > 0 ? userMessages[userMessages.length - 1] : null;
     if (lastUserMessage && context.env.CHAT_LOGS) {
-      // Get client IP from Cloudflare headers
-      const clientIP = context.request.headers.get('cf-connecting-ip') ??
-                       context.request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
-                       'unknown';
+      const clientIP =
+        context.request.headers.get('cf-connecting-ip') ??
+        context.request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
+        'unknown';
 
-      // Get User-Agent and create a short hash for device identification
       const userAgent = context.request.headers.get('user-agent') ?? 'unknown';
-      const deviceHash = userAgent.length.toString(36) +
-                         (userAgent.includes('Mobile') ? 'm' : 'd') +
-                         (userAgent.includes('Chrome') ? 'c' : userAgent.includes('Safari') ? 's' : userAgent.includes('Firefox') ? 'f' : 'x');
+      const deviceHash =
+        userAgent.length.toString(36) +
+        (userAgent.includes('Mobile') ? 'm' : 'd') +
+        (userAgent.includes('Chrome')
+          ? 'c'
+          : userAgent.includes('Safari')
+            ? 's'
+            : userAgent.includes('Firefox')
+              ? 'f'
+              : 'x');
 
-      // Create session ID: IP hash + date + device (same guest + same device on same day = same session)
-      const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
-      const ipHash = clientIP.split('.').slice(-2).join(''); // Use last 2 octets for privacy
+      const today = new Date().toISOString().split('T')[0];
+      const ipHash = clientIP.split('.').slice(-2).join('');
       const sessionId = `session_${today}_${ipHash}_${deviceHash}`;
 
-      // Try to get existing session
       const existingData = await context.env.CHAT_LOGS.get(sessionId);
 
       interface SessionLog {
@@ -336,42 +426,37 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       const now = new Date().toISOString();
       const newMessage = {
         time: now,
-        content: lastUserMessage.content
+        content: lastUserMessage.content,
       };
 
       let logEntry: SessionLog;
       if (existingData) {
-        // Append to existing conversation
         const existing = JSON.parse(existingData) as SessionLog;
         logEntry = {
           ...existing,
           lastSeen: now,
-          // Update username if provided (user may set it after starting conversation)
           username: cleanUsername ?? existing.username,
           messages: [...existing.messages, newMessage],
         };
       } else {
-        // Create new conversation
         logEntry = {
           id: sessionId,
           firstSeen: now,
           lastSeen: now,
           language,
           userAgent: context.request.headers.get('user-agent') ?? 'unknown',
-          ipHint: `***.***${ipHash ? '.' + ipHash : ''}`, // Partial IP for privacy
+          ipHint: `***.***${ipHash ? '.' + ipHash : ''}`,
           username: cleanUsername,
           messages: [newMessage],
         };
       }
 
-      // Fire and forget - don't await to avoid slowing down response
       void context.env.CHAT_LOGS.put(sessionId, JSON.stringify(logEntry), {
-        expirationTtl: 60 * 60 * 24 * 30, // Keep logs for 30 days
+        expirationTtl: 60 * 60 * 24 * 30,
       });
     }
 
-    // Using Llama 3.2 3B for reliable responses
-    // Add 15-second timeout to prevent infinite waiting if AI hangs
+    // Using Llama 3.2 3B with 15-second timeout
     const AI_TIMEOUT_MS = 15000;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -386,7 +471,6 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       setTimeout(() => reject(new Error('AI response timeout - please try again')), AI_TIMEOUT_MS);
     });
 
-    // Race between AI response and timeout
     const response = await Promise.race([aiPromise, timeoutPromise]);
 
     return new Response(response as ReadableStream, {
@@ -399,9 +483,12 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   } catch (error) {
     console.error('Chat API error:', error);
     const errorMessage = error instanceof Error ? error.message : String(error);
-    return new Response(JSON.stringify({ error: 'Failed to process chat request', details: errorMessage }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return new Response(
+      JSON.stringify({ error: 'Failed to process chat request', details: errorMessage }),
+      {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' },
+      }
+    );
   }
 };
