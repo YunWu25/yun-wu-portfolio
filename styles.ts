@@ -24,12 +24,6 @@ export const COLORS = {
   borderGray300: 'border-gray-300',
 };
 
-export const FONTS = {
-  serif: 'font-serif',
-  sans: 'font-sans',
-  mono: 'font-mono',
-};
-
 export const TYPOGRAPHY = {
   body: 'font-sans text-xl md:text-2xl font-light leading-relaxed',
   bodySmall: 'font-sans text-lg font-light leading-loose',

@@ -23,12 +23,8 @@ export const SCROLL_THRESHOLDS = {
   WHEEL_DEBOUNCE_MS: 1200,
   /** Minimum deltaY pixels to trigger scroll-down action (hide splash) */
   SCROLL_DOWN_THRESHOLD: 50,
-  /** Minimum negative deltaY pixels to trigger scroll-up action (show splash) */
-  SCROLL_UP_THRESHOLD: -80,
   /** Minimum milliseconds between touch events */
   TOUCH_DEBOUNCE_MS: 1000,
   /** Minimum swipe distance in pixels to trigger swipe-up (hide splash) */
   SWIPE_UP_THRESHOLD: 50,
-  /** Minimum negative swipe distance to trigger swipe-down (show splash) */
-  SWIPE_DOWN_THRESHOLD: -80,
 } as const;

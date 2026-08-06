@@ -138,6 +138,22 @@ body {
   animation: slide-down 0.2s ease-out;
 }
 
+/* Slide up animation for content transitions */
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-up {
+  animation: slide-up 0.3s ease-out;
+}
+
 /* Bubble breathing/pulse animation (like orbital system's orb) */
 @keyframes bubble-pulse {
   0%,
