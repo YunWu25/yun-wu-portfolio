@@ -7,7 +7,7 @@ interface Env {
   PHOTOGRAPHY: R2Bucket;
 }
 
-type PhotoCategory = 'pet' | 'plant' | 'people' | 'landscape' | 'architecture' | 'food' | 'other';
+type PhotoCategory = 'pet' | 'plant' | 'flower' | 'people' | 'landscape' | 'architecture' | 'food' | 'yun' | 'sky' | 'lake' | 'client' | 'other';
 
 interface PhotoData {
   url: string;
@@ -61,10 +61,15 @@ function buildPhotoPrompt(photos: PhotoData[], language: 'en' | 'zh'): string {
   const categories: Record<PhotoCategory, PhotoData[]> = {
     pet: [],
     plant: [],
+    flower: [],
     people: [],
     landscape: [],
     architecture: [],
     food: [],
+    yun: [],
+    sky: [],
+    lake: [],
+    client: [],
     other: [],
   };
 
@@ -82,10 +87,15 @@ function buildPhotoPrompt(photos: PhotoData[], language: 'en' | 'zh'): string {
     prompt += `可用照片分类：\n`;
     if (categories.pet.length > 0) prompt += `- 宠物 (${categories.pet.length}张): 狗、猫等宠物照片\n`;
     if (categories.plant.length > 0) prompt += `- 植物 (${categories.plant.length}张)\n`;
+    if (categories.flower.length > 0) prompt += `- 花卉 (${categories.flower.length}张): 花朵、花束照片\n`;
     if (categories.people.length > 0) prompt += `- 人物 (${categories.people.length}张)\n`;
     if (categories.landscape.length > 0) prompt += `- 风景 (${categories.landscape.length}张)\n`;
     if (categories.architecture.length > 0) prompt += `- 建筑 (${categories.architecture.length}张)\n`;
     if (categories.food.length > 0) prompt += `- 美食 (${categories.food.length}张)\n`;
+    if (categories.yun.length > 0) prompt += `- 伍芸 (${categories.yun.length}张): 伍芸本人的照片\n`;
+    if (categories.sky.length > 0) prompt += `- 天空 (${categories.sky.length}张): 天空、云彩照片\n`;
+    if (categories.lake.length > 0) prompt += `- 湖泊 (${categories.lake.length}张): 湖泊、水景、船只照片\n`;
+    if (categories.client.length > 0) prompt += `- 游客 (${categories.client.length}张): 游客人像\n`;
 
     prompt += `\n当用户要求看照片时，分享下面列出的照片。这些是随机选择的照片。\n`;
     prompt += `\n### 可用照片:\n`;
@@ -102,10 +112,15 @@ function buildPhotoPrompt(photos: PhotoData[], language: 'en' | 'zh'): string {
   prompt += `Available photo categories:\n`;
   if (categories.pet.length > 0) prompt += `- Pet (${categories.pet.length} photos): dogs, cats, and other pets\n`;
   if (categories.plant.length > 0) prompt += `- Plant (${categories.plant.length} photos)\n`;
+  if (categories.flower.length > 0) prompt += `- Flower (${categories.flower.length} photos): flowers and bouquets\n`;
   if (categories.people.length > 0) prompt += `- People (${categories.people.length} photos)\n`;
   if (categories.landscape.length > 0) prompt += `- Landscape (${categories.landscape.length} photos)\n`;
   if (categories.architecture.length > 0) prompt += `- Architecture (${categories.architecture.length} photos)\n`;
   if (categories.food.length > 0) prompt += `- Food (${categories.food.length} photos)\n`;
+  if (categories.yun.length > 0) prompt += `- Yun (${categories.yun.length} photos): photos of Yun Wu herself\n`;
+  if (categories.sky.length > 0) prompt += `- Sky (${categories.sky.length} photos): sky and clouds\n`;
+  if (categories.lake.length > 0) prompt += `- Lake (${categories.lake.length} photos): lakes, water, boats\n`;
+  if (categories.client.length > 0) prompt += `- Client (${categories.client.length} photos): client portraits\n`;
 
   prompt += `\nWhen users ask for photos, share the photos listed below. These are randomly selected for this conversation.\n`;
   prompt += `\n### Available photos:\n`;

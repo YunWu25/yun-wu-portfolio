@@ -23,15 +23,20 @@ export interface NavItem {
 }
 
 // Photo categories with colors
-export type PhotoCategory = 'pet' | 'plant' | 'people' | 'landscape' | 'architecture' | 'food' | 'other';
+export type PhotoCategory = 'pet' | 'plant' | 'flower' | 'people' | 'landscape' | 'architecture' | 'food' | 'yun' | 'sky' | 'lake' | 'client' | 'other';
 
 export const PHOTO_CATEGORIES: { value: PhotoCategory; label: string; color: string; bgColor: string }[] = [
   { value: 'pet', label: 'Pet', color: 'text-orange-600', bgColor: 'bg-orange-100' },
   { value: 'plant', label: 'Plant', color: 'text-green-600', bgColor: 'bg-green-100' },
+  { value: 'flower', label: 'Flower', color: 'text-pink-600', bgColor: 'bg-pink-100' },
   { value: 'people', label: 'People', color: 'text-blue-600', bgColor: 'bg-blue-100' },
   { value: 'landscape', label: 'Landscape', color: 'text-teal-600', bgColor: 'bg-teal-100' },
   { value: 'architecture', label: 'Architecture', color: 'text-purple-600', bgColor: 'bg-purple-100' },
   { value: 'food', label: 'Food', color: 'text-yellow-600', bgColor: 'bg-yellow-100' },
+  { value: 'yun', label: 'Yun', color: 'text-rose-600', bgColor: 'bg-rose-100' },
+  { value: 'sky', label: 'Sky', color: 'text-sky-600', bgColor: 'bg-sky-100' },
+  { value: 'lake', label: 'Lake', color: 'text-cyan-600', bgColor: 'bg-cyan-100' },
+  { value: 'client', label: 'Client', color: 'text-indigo-600', bgColor: 'bg-indigo-100' },
   { value: 'other', label: 'Other', color: 'text-gray-600', bgColor: 'bg-gray-100' },
 ];
 
