@@ -230,11 +230,14 @@ async function preparePhotoPrompt(
   userMessage: string
 ): Promise<PhotoPromptResult> {
   if (!bucket) {
+    console.log('[Chat] No R2 bucket configured');
     return { prompt: '', photosToAppend: null };
   }
 
   // Fetch all gallery photos from R2
   const allPhotos = await fetchPhotosFromR2(bucket);
+  console.log(`[Chat] Fetched ${allPhotos.length} photos from R2`);
+
   if (allPhotos.length === 0) {
     return { prompt: '', photosToAppend: null };
   }
@@ -242,19 +245,37 @@ async function preparePhotoPrompt(
   // Group by category
   const categoryGroups = groupByCategory(allPhotos);
 
+  // Log available categories and photo counts
+  const categoryStats = Array.from(categoryGroups.entries())
+    .map(([cat, photos]) => `${cat}:${photos.length}`)
+    .join(', ');
+  console.log(`[Chat] Categories available: ${categoryStats}`);
+
   // Detect if user is asking for a specific photo category
   const detectedCategory = detectPhotoCategory(userMessage);
+  console.log(`[Chat] User message: "${userMessage}" -> Detected category: ${detectedCategory ?? 'none'}`);
 
   if (detectedCategory) {
     const photos = categoryGroups.get(detectedCategory);
+    const photoCount = photos?.length ?? 0;
+    console.log(`[Chat] Found ${photoCount} photos for category "${detectedCategory}"`);
+
     if (photos && photos.length > 0) {
       // User asked for a specific category - prepare photos to append after AI response
       const selectedPhotos = pickRandom(photos, Math.min(photos.length, 3));
+      console.log(`[Chat] Selected photos: ${selectedPhotos.map(p => p.title).join(', ')}`);
       const photosMarkdown = buildMarkdownBlock(selectedPhotos);
       return {
         prompt: buildDetectedPhotoPrompt(detectedCategory, language),
         photosToAppend: '\n\n' + photosMarkdown,
       };
+    } else {
+      // Category detected but no photos found - tell user
+      const label = CATEGORY_LABELS[detectedCategory];
+      const noPhotosPrompt = language === 'zh'
+        ? `\n\n## 用户请求了${label.zh}照片\n用户想看${label.zh}照片，但目前没有${label.zh}类别的照片可以展示。请礼貌地告知用户，并推荐他们看看其他类别的照片。`
+        : `\n\n## User requested ${label.en} photos\nThe user wants to see ${label.en} photos, but there are currently no photos in that category. Please politely let them know and suggest they check out other categories.`;
+      return { prompt: noPhotosPrompt, photosToAppend: null };
     }
   }
 

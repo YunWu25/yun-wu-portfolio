@@ -1,15 +1,19 @@
 // Debug endpoint to see what photos are loaded from R2
 // GET /api/debug-photos
+// GET /api/debug-photos?category=dog - filter by category
+// GET /api/debug-photos?gallery=true - only show gallery photos (what chat uses)
 
 interface Env {
   PHOTOGRAPHY: R2Bucket;
 }
 
 interface PhotoData {
+  key: string;
   url: string;
   title: string;
   category: string;
   showInGallery: boolean;
+  allMetadata: Record<string, string>;
 }
 
 export const onRequestGet: PagesFunction<Env> = async (context) => {
@@ -21,6 +25,11 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       });
     }
 
+    // Parse query params
+    const url = new URL(context.request.url);
+    const filterCategory = url.searchParams.get('category');
+    const galleryOnly = url.searchParams.get('gallery') === 'true';
+
     const listed = await context.env.PHOTOGRAPHY.list({
       prefix: 'public/images/',
       include: ['customMetadata'],
@@ -28,7 +37,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
 
     const imageExtensions = ['.jpg', '.jpeg', '.png', '.webp', '.avif'];
 
-    const photos: PhotoData[] = listed.objects
+    let photos: PhotoData[] = listed.objects
       .filter((obj) => {
         if (obj.size === 0 || obj.key.endsWith('/')) return false;
         const key = obj.key.toLowerCase();
@@ -39,12 +48,22 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
         const filename = obj.key.split('/').pop() ?? 'Photo';
 
         return {
+          key: obj.key,
           url: `https://media.yunwustudio.com/${obj.key}`,
           title: meta.title || filename,
           category: meta.category || 'other',
           showInGallery: meta.showInGallery !== 'false',
+          allMetadata: meta,
         };
       });
+
+    // Apply filters
+    if (galleryOnly) {
+      photos = photos.filter(p => p.showInGallery);
+    }
+    if (filterCategory) {
+      photos = photos.filter(p => p.category.toLowerCase() === filterCategory.toLowerCase());
+    }
 
     // Group by category
     const byCategory: Record<string, PhotoData[]> = {};
@@ -55,14 +74,26 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       byCategory[photo.category]!.push(photo);
     }
 
+    // Category counts summary
+    const categoryCounts: Record<string, number> = {};
+    for (const [cat, catPhotos] of Object.entries(byCategory)) {
+      categoryCounts[cat] = catPhotos.length;
+    }
+
     return new Response(
       JSON.stringify({
+        note: 'This shows what the chat API sees. Use ?gallery=true to see only gallery photos, ?category=dog to filter by category.',
+        filters: { category: filterCategory, galleryOnly },
         totalPhotos: photos.length,
-        categories: Object.keys(byCategory),
+        categoryCounts,
+        categories: Object.keys(byCategory).sort(),
         byCategory,
       }, null, 2),
       {
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Cache-Control': 'no-cache',
+        },
       }
     );
   } catch (error) {
