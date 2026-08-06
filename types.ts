@@ -23,7 +23,7 @@ export interface NavItem {
 }
 
 // Photo categories with colors
-export type PhotoCategory = 'pet' | 'plant' | 'flower' | 'people' | 'landscape' | 'architecture' | 'food' | 'yun' | 'sky' | 'lake' | 'client' | 'other';
+export type PhotoCategory = 'pet' | 'plant' | 'flower' | 'people' | 'landscape' | 'architecture' | 'food' | 'yun' | 'sky' | 'lake' | 'client' | 'music' | 'museum' | 'dog' | 'cat' | 'christmas' | 'other';
 
 export const PHOTO_CATEGORIES: { value: PhotoCategory; label: string; color: string; bgColor: string }[] = [
   { value: 'pet', label: 'Pet', color: 'text-orange-600', bgColor: 'bg-orange-100' },
@@ -37,6 +37,11 @@ export const PHOTO_CATEGORIES: { value: PhotoCategory; label: string; color: str
   { value: 'sky', label: 'Sky', color: 'text-sky-600', bgColor: 'bg-sky-100' },
   { value: 'lake', label: 'Lake', color: 'text-cyan-600', bgColor: 'bg-cyan-100' },
   { value: 'client', label: 'Client', color: 'text-indigo-600', bgColor: 'bg-indigo-100' },
+  { value: 'music', label: 'Music', color: 'text-violet-600', bgColor: 'bg-violet-100' },
+  { value: 'museum', label: 'Museum', color: 'text-amber-600', bgColor: 'bg-amber-100' },
+  { value: 'dog', label: 'Dog', color: 'text-orange-500', bgColor: 'bg-orange-50' },
+  { value: 'cat', label: 'Cat', color: 'text-slate-600', bgColor: 'bg-slate-100' },
+  { value: 'christmas', label: 'Christmas', color: 'text-red-600', bgColor: 'bg-red-100' },
   { value: 'other', label: 'Other', color: 'text-gray-600', bgColor: 'bg-gray-100' },
 ];
 
