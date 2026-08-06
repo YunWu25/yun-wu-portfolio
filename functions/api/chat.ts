@@ -204,9 +204,9 @@ async function preparePhotoPrompt(
   // Group by category
   const categoryGroups = groupByCategory(allPhotos);
 
-  // Filter to categories with at least 2 photos (for quality grouping)
+  // Filter to categories with at least 1 photo
   const validCategories = Array.from(categoryGroups.entries())
-    .filter(([_, photos]) => photos.length >= 2)
+    .filter(([_, photos]) => photos.length >= 1)
     .map(([cat]) => cat);
 
   if (validCategories.length === 0) {
@@ -224,10 +224,10 @@ async function preparePhotoPrompt(
   const randomFill = pickRandom(remainingCategories, 3 - guaranteedCategories.length);
   const selectedCategories = [...guaranteedCategories, ...randomFill];
 
-  // From each selected category, pick 2-3 random photos
+  // From each selected category, pick up to 3 random photos
   const selectedGroups: SelectedPhotoGroup[] = selectedCategories.map((cat) => {
     const photos = categoryGroups.get(cat) ?? [];
-    const photosPerCategory = photos.length >= 3 ? 3 : 2;
+    const photosPerCategory = Math.min(photos.length, 3);
     return {
       category: cat,
       photos: pickRandom(photos, photosPerCategory),
