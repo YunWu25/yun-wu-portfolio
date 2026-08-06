@@ -5,7 +5,7 @@ interface Env {
   PHOTOGRAPHY: R2Bucket;
 }
 
-type PhotoCategory = 'pet' | 'plant' | 'flower' | 'people' | 'landscape' | 'architecture' | 'food' | 'yun' | 'sky' | 'lake' | 'client' | 'music' | 'museum' | 'dog' | 'cat' | 'christmas' | 'other';
+type PhotoCategory = 'animal' | 'plant' | 'flower' | 'people' | 'landscape' | 'architecture' | 'food' | 'yun' | 'sky' | 'lake' | 'client' | 'music' | 'museum' | 'dog' | 'cat' | 'christmas' | 'other';
 
 interface PhotoData {
   key: string;
