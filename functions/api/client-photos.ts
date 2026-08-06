@@ -31,7 +31,17 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   }
 
   const cleanCode = accessCode.trim();
-  const prefix = `OnlyClient/OnlyClient/${cleanCode}/`;
+
+  // Whitelist validation: only allow alphanumeric, underscore, hyphen, and Chinese characters
+  // This provides defense-in-depth against malformed input (R2 is safe, but validation is good practice)
+  if (!/^[a-zA-Z0-9_\-\u4e00-\u9fa5]+$/.test(cleanCode)) {
+    return new Response(JSON.stringify({ error: 'Invalid access code format' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  const prefix = `OnlyClient/${cleanCode}/`;
 
   try {
     // List objects in the client's folder

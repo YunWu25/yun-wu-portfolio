@@ -586,7 +586,7 @@ const Game: React.FC<GameProps> = ({ language }) => {
     oscillator.stop(now + 0.2);
   }, []);
 
-  // Upbeat arcade music generator
+  // Simple single-voice melody (royalty-free, programmatically generated)
   const playArcadeMusic = useCallback(() => {
     const ctx = initAudio();
     if (isMutedRef.current) return;
@@ -596,19 +596,16 @@ const Game: React.FC<GameProps> = ({ language }) => {
       clearInterval(musicIntervalRef.current);
     }
 
-    const bpm = 140;
+    const bpm = 120;
     const beatDuration = 60 / bpm;
 
-    // Catchy arcade melody pattern (pentatonic scale for pleasant sound)
+    // Simple pentatonic melody - single voice, royalty-free generated tones
     const melodyNotes = [
-      392, 440, 523, 587, 659, 587, 523, 440, // G4, A4, C5, D5, E5, D5, C5, A4
-      523, 587, 659, 784, 659, 587, 523, 440, // C5, D5, E5, G5, E5, D5, C5, A4
-      392, 523, 392, 523, 440, 523, 587, 523, // Variation
-      659, 587, 523, 440, 392, 440, 523, 392, // Resolution
+      523, 587, 659, 784, 659, 587, 523, 0,   // C5, D5, E5, G5, E5, D5, C5, rest
+      587, 659, 784, 880, 784, 659, 587, 0,   // D5, E5, G5, A5, G5, E5, D5, rest
+      523, 659, 523, 659, 587, 523, 440, 0,   // Variation with rest
+      587, 523, 440, 523, 587, 659, 523, 0,   // Resolution with rest
     ];
-
-    // Bass line
-    const bassNotes = [196, 196, 262, 262, 220, 220, 247, 247]; // G3, C4, A3, B3
 
     let beatIndex = 0;
 
@@ -617,30 +614,10 @@ const Game: React.FC<GameProps> = ({ language }) => {
 
       const now = ctx.currentTime;
       const melodyNote = melodyNotes[beatIndex % melodyNotes.length];
-      const bassNote = bassNotes[Math.floor(beatIndex / 4) % bassNotes.length];
 
-      // Melody
-      if (melodyNote) {
-        playNote(melodyNote, beatDuration * 0.8, now, 0.08, 'square');
-      }
-
-      // Bass (every 4 beats)
-      if (beatIndex % 4 === 0 && bassNote) {
-        playNote(bassNote, beatDuration * 2, now, 0.06, 'triangle');
-      }
-
-      // Drum-like percussion (noise burst)
-      if (beatIndex % 2 === 0) {
-        const noise = ctx.createOscillator();
-        const noiseGain = ctx.createGain();
-        noise.type = 'square';
-        noise.frequency.setValueAtTime(100 + Math.random() * 50, now);
-        noiseGain.gain.setValueAtTime(0.03, now);
-        noiseGain.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
-        noise.connect(noiseGain);
-        noiseGain.connect(ctx.destination);
-        noise.start(now);
-        noise.stop(now + 0.05);
+      // Single melody voice only (0 = rest/silence)
+      if (melodyNote && melodyNote > 0) {
+        playNote(melodyNote, beatDuration * 0.7, now, 0.06, 'sine');
       }
 
       beatIndex++;

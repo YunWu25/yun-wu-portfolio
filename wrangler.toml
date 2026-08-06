@@ -16,4 +16,4 @@ binding = "AI"
 # KV namespace for chat logs
 [[kv_namespaces]]
 binding = "CHAT_LOGS"
-id = "2761c52e6ddb4381a6e9f7076e230dd1"
+id = "5548d4d1168b40ea8606515d263233ca"

@@ -79,7 +79,9 @@ function buildPhotoPrompt(photos: PhotoData[], language: 'en' | 'zh'): string {
   };
 
   for (const photo of photos) {
-    categories[photo.category].push(photo);
+    // Handle unknown categories by falling back to 'other'
+    const category = categories[photo.category] ? photo.category : 'other';
+    categories[category].push(photo);
   }
 
   // Shuffle each category so AI sees different photos each conversation
@@ -251,6 +253,10 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 
     // Log conversation to KV - group by IP + date + device (same guest = same conversation)
     // Only get the LAST user message (the new one) - previous messages are already logged
+    // NOTE: Potential Read-Modify-Write race condition exists here. If user sends multiple
+    // messages rapidly, some messages may be lost due to concurrent reads before writes complete.
+    // This only affects analytics logs, not user-facing functionality. Future optimization could
+    // use KV atomic operations or a queue-based approach if log completeness becomes critical.
     const userMessages = messages.filter((m) => m.role === 'user');
     const lastUserMessage = userMessages.length > 0 ? userMessages[userMessages.length - 1] : null;
     if (lastUserMessage && context.env.CHAT_LOGS) {
@@ -317,14 +323,24 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       });
     }
 
-    // Using Llama 3.1 8B for reliable responses
-    const response = await (context.env.AI.run as (model: string, options: { messages: ChatMessage[]; stream: boolean }) => Promise<ReadableStream>)(
-      '@cf/meta/llama-3.1-8b-instruct',
-      {
-        messages: aiMessages,
-        stream: true,
-      }
-    );
+    // Using Llama 3.2 3B for reliable responses
+    // Add 15-second timeout to prevent infinite waiting if AI hangs
+    const AI_TIMEOUT_MS = 15000;
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const ai = context.env.AI as any;
+
+    const aiPromise = ai.run('@cf/meta/llama-3.2-3b-instruct', {
+      messages: aiMessages,
+      stream: true,
+    });
+
+    const timeoutPromise = new Promise((_, reject) => {
+      setTimeout(() => reject(new Error('AI response timeout - please try again')), AI_TIMEOUT_MS);
+    });
+
+    // Race between AI response and timeout
+    const response = await Promise.race([aiPromise, timeoutPromise]);
 
     return new Response(response as ReadableStream, {
       headers: {
@@ -335,7 +351,8 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     });
   } catch (error) {
     console.error('Chat API error:', error);
-    return new Response(JSON.stringify({ error: 'Failed to process chat request' }), {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    return new Response(JSON.stringify({ error: 'Failed to process chat request', details: errorMessage }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
     });
