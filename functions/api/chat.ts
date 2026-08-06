@@ -186,20 +186,18 @@ function detectPhotoCategory(message: string): PhotoCategory | null {
   return null;
 }
 
-// Build prompt for detected photo request
+// Build prompt for detected photo request (AI writes intro only, photos appended separately)
 function buildDetectedPhotoPrompt(
-  photos: PhotoData[],
   category: PhotoCategory,
   language: 'en' | 'zh'
 ): string {
   const label = CATEGORY_LABELS[category];
-  const markdown = buildMarkdownBlock(photos);
 
   if (language === 'zh') {
-    return `\n\n## 用户请求了${label.zh}照片\n用户想看${label.zh}照片。请先写一句友好的介绍（如"这是一些${label.zh}照片！"），然后在下一行直接输出以下内容（必须原样输出，这会显示为图片）：\n\n${markdown}\n\n重要：上面的 ![...](https://...) 文字必须完整输出，它们会变成图片显示。`;
+    return `\n\n## 用户请求了${label.zh}照片\n用户想看${label.zh}照片。请写1-2句简短友好的介绍，如"这是一些${label.zh}照片！希望你喜欢！"。不要输出任何链接或代码，只写文字介绍即可，照片会自动显示。`;
   }
 
-  return `\n\n## User requested ${label.en} photos\nThe user wants to see ${label.en} photos. Write a brief friendly intro (like "Here are some ${label.en} photos!"), then on the next line output the following EXACTLY (this will display as images):\n\n${markdown}\n\nIMPORTANT: Output the ![...](https://...) text exactly as shown - it will render as images.`;
+  return `\n\n## User requested ${label.en} photos\nThe user wants to see ${label.en} photos. Write 1-2 brief, friendly sentences as an intro like "Here are some lovely ${label.en} photos! Hope you enjoy them!" Do NOT output any links or code - just write the text intro. Photos will be displayed automatically.`;
 }
 
 // Build general photo availability prompt (when no specific category detected)
@@ -220,20 +218,25 @@ function buildGeneralPhotoPrompt(
   return `\n\n## Photo Sharing\nYou can share Yun's photography. Available categories: ${catList}. If user wants to see photos, ask which category they'd like to see.`;
 }
 
+interface PhotoPromptResult {
+  prompt: string;
+  photosToAppend: string | null; // Markdown to append after AI response
+}
+
 // Main function: Prepare photo prompt based on user's message
 async function preparePhotoPrompt(
   bucket: R2Bucket | undefined,
   language: 'en' | 'zh',
   userMessage: string
-): Promise<string> {
+): Promise<PhotoPromptResult> {
   if (!bucket) {
-    return '';
+    return { prompt: '', photosToAppend: null };
   }
 
   // Fetch all gallery photos from R2
   const allPhotos = await fetchPhotosFromR2(bucket);
   if (allPhotos.length === 0) {
-    return '';
+    return { prompt: '', photosToAppend: null };
   }
 
   // Group by category
@@ -245,14 +248,18 @@ async function preparePhotoPrompt(
   if (detectedCategory) {
     const photos = categoryGroups.get(detectedCategory);
     if (photos && photos.length > 0) {
-      // User asked for a specific category - inject those photos directly
+      // User asked for a specific category - prepare photos to append after AI response
       const selectedPhotos = pickRandom(photos, Math.min(photos.length, 3));
-      return buildDetectedPhotoPrompt(selectedPhotos, detectedCategory, language);
+      const photosMarkdown = buildMarkdownBlock(selectedPhotos);
+      return {
+        prompt: buildDetectedPhotoPrompt(detectedCategory, language),
+        photosToAppend: '\n\n' + photosMarkdown,
+      };
     }
   }
 
   // No specific category detected - provide general info
-  return buildGeneralPhotoPrompt(categoryGroups, language);
+  return { prompt: buildGeneralPhotoPrompt(categoryGroups, language), photosToAppend: null };
 }
 
 // =============================================================================
@@ -270,14 +277,19 @@ interface ChatRequest {
   username?: string;
 }
 
-const SYSTEM_PROMPT_EN = `You are a helpful AI assistant for Yun Wu's portfolio website at yunwustudio.com.
+const SYSTEM_PROMPT_EN = `You are Yun's friendly AI assistant on yunwustudio.com - a creative portfolio showcasing photography, design, and video work.
+
+## Your Personality
+- Warm, creative, and helpful - like chatting with a friendly artist
+- Enthusiastic about photography and design
+- Concise but engaging - quality over quantity
+- Use natural, conversational language
 
 ## Response Guidelines
-- Give complete, coherent answers. Never cut off mid-sentence.
-- Keep responses concise: 2-4 sentences for simple questions, more for complex ones.
-- Be friendly and professional.
-- If you don't know something, say so honestly.
-- **Formatting**: Avoid long paragraphs. Add line breaks every 1-2 sentences for readability.
+- Keep it short: 1-3 sentences for simple questions
+- Add personality - don't be robotic
+- Use line breaks for readability
+- If unsure, be honest and suggest alternatives
 
 ## Who is Yun Wu?
 Yun Wu (伍芸) is a visual storyteller and designer based in Seattle, WA, USA.
@@ -318,14 +330,19 @@ You can also help visitors with:
 ## Business CTA
 For pricing or availability inquiries, direct visitors to email: Yunwustudio@gmail.com`;
 
-const SYSTEM_PROMPT_ZH = `你是伍芸作品集网站 yunwustudio.com 的AI助手。
+const SYSTEM_PROMPT_ZH = `你是伍芸的AI小助手，在 yunwustudio.com 为访客提供帮助。这是一个展示摄影、设计和视频作品的创意作品集网站。
+
+## 你的个性
+- 温暖、有创意、乐于助人——像和一位友善的艺术家聊天
+- 对摄影和设计充满热情
+- 简洁但有趣——质量重于数量
+- 用自然、轻松的语言交流
 
 ## 回答要求
-- 给出完整、连贯的回答，不要中途截断。
-- 保持简洁：简单问题2-4句话，复杂问题可以更长。
-- 友好专业。
-- 不确定的事情要诚实说明。
-- **排版**：避免输出大段不换行的长文本，每1-2句话换行，保持视觉清晰。
+- 简短为主：简单问题1-3句话
+- 有个性——不要像机器人
+- 适当换行，保持阅读舒适
+- 不确定时诚实说明，并建议其他方向
 
 ## 伍芸是谁？
 伍芸（Yun Wu）是驻美国西雅图的视觉叙事者和设计师。
@@ -386,7 +403,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     const latestUserMsg = userMsgs.length > 0 ? userMsgs[userMsgs.length - 1]?.content ?? '' : '';
 
     // Dynamically fetch photos based on user's request
-    const photoPrompt = await preparePhotoPrompt(context.env.PHOTOGRAPHY, language, latestUserMsg);
+    const { prompt: photoPrompt, photosToAppend } = await preparePhotoPrompt(context.env.PHOTOGRAPHY, language, latestUserMsg);
 
     // Build system prompt
     const basePrompt = language === 'zh' ? SYSTEM_PROMPT_ZH : SYSTEM_PROMPT_EN;
@@ -491,9 +508,30 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       setTimeout(() => reject(new Error('AI response timeout - please try again')), AI_TIMEOUT_MS);
     });
 
-    const response = await Promise.race([aiPromise, timeoutPromise]);
+    const aiResponse = await Promise.race([aiPromise, timeoutPromise]) as ReadableStream;
 
-    return new Response(response as ReadableStream, {
+    // If we have photos to append, create a new stream that appends them
+    if (photosToAppend) {
+      const appendStream = new TransformStream({
+        async flush(controller) {
+          // Append photos at the end of the stream
+          const photoData = `data: {"response":"${photosToAppend.replace(/\n/g, '\\n')}"}\n\n`;
+          controller.enqueue(new TextEncoder().encode(photoData));
+        },
+      });
+
+      const combinedStream = aiResponse.pipeThrough(appendStream);
+
+      return new Response(combinedStream, {
+        headers: {
+          'Content-Type': 'text/event-stream',
+          'Cache-Control': 'no-cache',
+          Connection: 'keep-alive',
+        },
+      });
+    }
+
+    return new Response(aiResponse, {
       headers: {
         'Content-Type': 'text/event-stream',
         'Cache-Control': 'no-cache',
