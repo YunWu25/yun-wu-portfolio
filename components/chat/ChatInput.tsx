@@ -6,11 +6,12 @@ interface ChatInputProps {
   value: string;
   onChange: (value: string) => void;
   onSend: () => void;
+  onFocus?: () => void;
   disabled: boolean;
   language: Language;
 }
 
-const ChatInput: React.FC<ChatInputProps> = ({ value, onChange, onSend, disabled, language }) => {
+const ChatInput: React.FC<ChatInputProps> = ({ value, onChange, onSend, onFocus, disabled, language }) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const placeholder = language === 'zh'
     ? '给 Yun AI 发送消息...'
@@ -40,6 +41,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ value, onChange, onSend, disabled
           value={value}
           onChange={(e) => { onChange(e.target.value); }}
           onKeyDown={handleKeyDown}
+          onFocus={onFocus}
           placeholder={placeholder}
           disabled={disabled}
           rows={1}

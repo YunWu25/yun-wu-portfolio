@@ -14,30 +14,58 @@ interface Message {
 }
 
 const STORAGE_KEY = 'chat_username';
+const MSG_STORAGE_KEY = 'chat_history_messages';
+const MAX_STORED_MESSAGES = 6; // 1 greeting + 5 recent conversation messages
 
 const ChatWidget: React.FC<ChatWidgetProps> = ({ language }) => {
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [inputValue, setInputValue] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [isExpanded, setIsExpanded] = useState(false); // Always start minimized
+  // Lazy initialization for username
   const [username, setUsername] = useState<string>(() => {
-    // Lazy initialization from localStorage
     if (typeof window !== 'undefined') {
       return localStorage.getItem(STORAGE_KEY) ?? '';
     }
     return '';
   });
+
+  // Lazy initialization for messages - restore from localStorage or create greeting
+  const [messages, setMessages] = useState<Message[]>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const stored = localStorage.getItem(MSG_STORAGE_KEY);
+        if (stored) {
+          const parsed = JSON.parse(stored) as Message[];
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            return parsed;
+          }
+        }
+      } catch {
+        // Invalid JSON in storage, ignore and create fresh greeting
+      }
+    }
+    // No stored messages - will be set by greeting effect
+    return [];
+  });
+
+  const [inputValue, setInputValue] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false); // Always start minimized
   const [showNicknameInput, setShowNicknameInput] = useState(false);
   const [nicknameInputValue, setNicknameInputValue] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const widgetRef = useRef<HTMLDivElement>(null);
-  const greetingInitialized = useRef(false);
+  // Session guards - prevent duplicate greetings/welcome backs
+  const hasGreeted = useRef(false);
+  const hasWelcomedBack = useRef(false);
+  // Track if messages were restored from storage (for welcome back logic)
+  const hadRestoredMessages = useRef(messages.length > 0);
 
   const text = {
     en: {
       title: 'Chat with AI Yun',
       greeting: "Hi! I'm Yun's AI assistant. Ask me anything about her work, services, or projects!",
-      greetingWithName: (name: string) => `Hi ${name}! Welcome back. I'm Yun's AI assistant. How can I help you today?`,
+      greetingWithName: (name: string) => `Hi ${name}! I'm Yun's AI assistant. How can I help you today?`,
+      welcomeBack: (name: string) => name
+        ? `Welcome back, ${name}! Great to see you again. We were just talking about the portfolio. Should we continue, or do you have something new in mind?`
+        : `Welcome back! Great to see you again. Should we continue where we left off, or do you have something new in mind?`,
       error: 'Sorry, something went wrong. Please try again.',
       setNickname: 'Set nickname',
       nicknamePlaceholder: 'Enter your name',
@@ -47,7 +75,10 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ language }) => {
     zh: {
       title: '与芸对话',
       greeting: '你好！我是芸的AI助手。问我任何关于她的作品、服务或项目的问题吧！',
-      greetingWithName: (name: string) => `${name}，你好！欢迎回来。我是芸的AI助手，今天有什么可以帮你的吗？`,
+      greetingWithName: (name: string) => `${name}，你好！我是芸的AI助手，今天有什么可以帮你的吗？`,
+      welcomeBack: (name: string) => name
+        ? `欢迎回来，${name}！很高兴再次见到您。我们刚才聊到了一些话题，您想继续聊聊，还是有新的想法呢？`
+        : `欢迎回来！很高兴再次见到您。您想继续之前的话题，还是有新的想法呢？`,
       error: '抱歉，出了点问题。请重试。',
       setNickname: '设置昵称',
       nicknamePlaceholder: '输入你的名字',
@@ -71,17 +102,40 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ language }) => {
     setNicknameInputValue('');
   };
 
-  // Add greeting message on mount (runs once)
-  useEffect(() => {
-    if (!greetingInitialized.current) {
-      greetingInitialized.current = true;
+  // Handle input focus - trigger greeting or welcome back message
+  const handleInputFocus = () => {
+    // Case 1: Fresh session with no messages - show initial greeting
+    if (messages.length === 0 && !hasGreeted.current) {
+      hasGreeted.current = true;
       const greeting = username.trim()
         ? text[language].greetingWithName(username.trim())
         : text[language].greeting;
       setMessages([{ role: 'assistant', content: greeting }]);
+      return;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+
+    // Case 2: Restored session - show welcome back message (once per session)
+    if (hadRestoredMessages.current && !hasWelcomedBack.current) {
+      hasWelcomedBack.current = true;
+      const welcomeBack = text[language].welcomeBack(username.trim());
+      setMessages((prev) => [...prev, { role: 'assistant', content: welcomeBack }]);
+    }
+  };
+
+  // Persist messages to localStorage with rolling window (max 6 messages)
+  useEffect(() => {
+    if (typeof window !== 'undefined' && messages.length > 0) {
+      try {
+        // Keep only the last MAX_STORED_MESSAGES to prevent memory issues
+        const messagesToStore = messages.length > MAX_STORED_MESSAGES
+          ? messages.slice(-MAX_STORED_MESSAGES)
+          : messages;
+        localStorage.setItem(MSG_STORAGE_KEY, JSON.stringify(messagesToStore));
+      } catch {
+        // Storage full or unavailable, silently fail
+      }
+    }
+  }, [messages]);
 
   // Scroll to bottom when messages change
   useEffect(() => {
@@ -308,6 +362,7 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ language }) => {
             value={inputValue}
             onChange={setInputValue}
             onSend={() => void sendMessage()}
+            onFocus={handleInputFocus}
             disabled={isLoading}
             language={language}
           />
