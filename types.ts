@@ -26,7 +26,7 @@ export interface NavItem {
 export type PhotoCategory = 'animal' | 'plant' | 'flower' | 'people' | 'landscape' | 'architecture' | 'food' | 'yun' | 'sky' | 'lake' | 'client' | 'music' | 'museum' | 'dog' | 'cat' | 'christmas' | 'other';
 
 export const PHOTO_CATEGORIES: { value: PhotoCategory; label: string; color: string; bgColor: string }[] = [
-  { value: 'animal', label: 'Animal', color: 'text-orange-600', bgColor: 'bg-orange-100' },
+  { value: 'animal', label: 'Other Animal', color: 'text-orange-600', bgColor: 'bg-orange-100' },
   { value: 'plant', label: 'Plant', color: 'text-green-600', bgColor: 'bg-green-100' },
   { value: 'flower', label: 'Flower', color: 'text-pink-600', bgColor: 'bg-pink-100' },
   { value: 'people', label: 'People', color: 'text-blue-600', bgColor: 'bg-blue-100' },
