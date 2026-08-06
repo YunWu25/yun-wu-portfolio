@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Language } from '../../App';
 import ChatMessage from './ChatMessage';
 import ChatInput from './ChatInput';
+import { User, X } from 'lucide-react';
 
 interface ChatWidgetProps {
   language: Language;
@@ -12,11 +13,22 @@ interface Message {
   content: string;
 }
 
+const STORAGE_KEY = 'chat_username';
+
 const ChatWidget: React.FC<ChatWidgetProps> = ({ language }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false); // Always start minimized
+  const [username, setUsername] = useState<string>(() => {
+    // Lazy initialization from localStorage
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem(STORAGE_KEY) ?? '';
+    }
+    return '';
+  });
+  const [showNicknameInput, setShowNicknameInput] = useState(false);
+  const [nicknameInputValue, setNicknameInputValue] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const widgetRef = useRef<HTMLDivElement>(null);
   const greetingInitialized = useRef(false);
@@ -25,24 +37,51 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ language }) => {
     en: {
       title: 'Chat with AI Yun',
       greeting: "Hi! I'm Yun's AI assistant. Ask me anything about her work, services, or projects!",
+      greetingWithName: (name: string) => `Hi ${name}! Welcome back. I'm Yun's AI assistant. How can I help you today?`,
       error: 'Sorry, something went wrong. Please try again.',
+      setNickname: 'Set nickname',
+      nicknamePlaceholder: 'Enter your name',
+      save: 'Save',
+      cancel: 'Cancel',
     },
     zh: {
       title: '与芸对话',
       greeting: '你好！我是芸的AI助手。问我任何关于她的作品、服务或项目的问题吧！',
+      greetingWithName: (name: string) => `${name}，你好！欢迎回来。我是芸的AI助手，今天有什么可以帮你的吗？`,
       error: '抱歉，出了点问题。请重试。',
+      setNickname: '设置昵称',
+      nicknamePlaceholder: '输入你的名字',
+      save: '保存',
+      cancel: '取消',
     },
   };
 
   const t = text[language];
 
+  // Save username to localStorage
+  const saveNickname = () => {
+    const trimmedName = nicknameInputValue.trim();
+    setUsername(trimmedName);
+    if (trimmedName) {
+      localStorage.setItem(STORAGE_KEY, trimmedName);
+    } else {
+      localStorage.removeItem(STORAGE_KEY);
+    }
+    setShowNicknameInput(false);
+    setNicknameInputValue('');
+  };
+
   // Add greeting message on mount (runs once)
   useEffect(() => {
     if (!greetingInitialized.current) {
       greetingInitialized.current = true;
-      setMessages([{ role: 'assistant', content: t.greeting }]);
+      const greeting = username.trim()
+        ? text[language].greetingWithName(username.trim())
+        : text[language].greeting;
+      setMessages([{ role: 'assistant', content: greeting }]);
     }
-  }, [t.greeting]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Scroll to bottom when messages change
   useEffect(() => {
@@ -84,6 +123,7 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ language }) => {
             content: m.content,
           })),
           language,
+          username: username.trim() || undefined,
         }),
       });
 
@@ -194,6 +234,52 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ language }) => {
         </div>
       ) : (
         <>
+          {/* Nickname Setting Bar */}
+          {showNicknameInput ? (
+            <div className="flex items-center gap-2 px-3 py-2 border-b border-gray-100 bg-gray-50">
+              <input
+                type="text"
+                value={nicknameInputValue}
+                onChange={(e) => { setNicknameInputValue(e.target.value); }}
+                placeholder={t.nicknamePlaceholder}
+                className="flex-1 px-2 py-1 text-sm border border-gray-200 rounded focus:outline-none focus:border-coral"
+                maxLength={20}
+                autoFocus
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    saveNickname();
+                  }
+                }}
+              />
+              <button
+                onClick={saveNickname}
+                className="px-2 py-1 text-xs bg-coral text-white rounded hover:bg-coral/90 transition-colors"
+              >
+                {t.save}
+              </button>
+              <button
+                onClick={() => { setShowNicknameInput(false); setNicknameInputValue(''); }}
+                className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <X size={14} />
+              </button>
+            </div>
+          ) : (
+            <div className="flex items-center justify-between px-3 py-1.5 border-b border-gray-100">
+              <span className="text-xs text-gray-400">
+                {username ? `${language === 'zh' ? '你好' : 'Hi'}, ${username}` : ''}
+              </span>
+              <button
+                onClick={() => { setNicknameInputValue(username); setShowNicknameInput(true); }}
+                className="flex items-center gap-1 text-xs text-gray-400 hover:text-coral transition-colors"
+              >
+                <User size={12} />
+                {t.setNickname}
+              </button>
+            </div>
+          )}
+
           {/* Messages Area */}
           <div className="flex-1 overflow-y-auto">
             {messages.length === 0 ? (

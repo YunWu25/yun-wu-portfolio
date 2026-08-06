@@ -158,6 +158,7 @@ interface ChatMessage {
 interface ChatRequest {
   messages: ChatMessage[];
   language: 'en' | 'zh';
+  username?: string;
 }
 
 const SYSTEM_PROMPT_EN = `You are a helpful AI assistant for Yun Wu's portfolio website at yunwustudio.com.
@@ -266,7 +267,7 @@ const SYSTEM_PROMPT_ZH = `你是伍芸作品集网站 yunwustudio.com 的AI助�
 
 export const onRequestPost: PagesFunction<Env> = async (context) => {
   try {
-    const { messages, language } = (await context.request.json()) as ChatRequest;
+    const { messages, language, username } = (await context.request.json()) as ChatRequest;
 
     if (!messages || !Array.isArray(messages)) {
       return new Response(JSON.stringify({ error: 'Messages array is required' }), {
@@ -279,7 +280,17 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     const photos = context.env.PHOTOGRAPHY ? await getPhotos(context.env.PHOTOGRAPHY) : [];
     const basePrompt = language === 'zh' ? SYSTEM_PROMPT_ZH : SYSTEM_PROMPT_EN;
     const photoPrompt = photos.length > 0 ? buildPhotoPrompt(photos, language) : '';
-    const systemPrompt = basePrompt + photoPrompt;
+
+    // Build personalized username prompt if provided
+    let usernamePrompt = '';
+    const cleanUsername = username?.trim();
+    if (cleanUsername) {
+      usernamePrompt = language === 'zh'
+        ? `\n\n## 当前对话访客\n当前正在和你聊天的访客名字叫「${cleanUsername}」。在对话过程中，请偶尔、自然地称呼他们的名字，让他们感受到个性化与亲切的互动（但切勿每句话都重复，保持自然）。`
+        : `\n\n## Current Visitor\nThe visitor's name is "${cleanUsername}". Please address them by their name occasionally and naturally during the conversation to provide a personalized experience (do not overdo it, keep it natural).`;
+    }
+
+    const systemPrompt = basePrompt + usernamePrompt + photoPrompt;
 
     const aiMessages: ChatMessage[] = [{ role: 'system', content: systemPrompt }, ...messages];
 
@@ -318,6 +329,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
         language: string;
         userAgent: string;
         ipHint: string;
+        username?: string;
         messages: Array<{ time: string; content: string }>;
       }
 
@@ -334,6 +346,8 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
         logEntry = {
           ...existing,
           lastSeen: now,
+          // Update username if provided (user may set it after starting conversation)
+          username: cleanUsername ?? existing.username,
           messages: [...existing.messages, newMessage],
         };
       } else {
@@ -345,6 +359,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
           language,
           userAgent: context.request.headers.get('user-agent') ?? 'unknown',
           ipHint: `***.***${ipHash ? '.' + ipHash : ''}`, // Partial IP for privacy
+          username: cleanUsername,
           messages: [newMessage],
         };
       }
