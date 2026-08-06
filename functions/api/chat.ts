@@ -317,9 +317,9 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       });
     }
 
-    // Using Llama 3.3 70B for better quality responses
+    // Using Llama 3.1 8B for reliable responses
     const response = await (context.env.AI.run as (model: string, options: { messages: ChatMessage[]; stream: boolean }) => Promise<ReadableStream>)(
-      '@cf/meta/llama-3.3-70b-instruct-fp8-fast',
+      '@cf/meta/llama-3.1-8b-instruct',
       {
         messages: aiMessages,
         stream: true,
