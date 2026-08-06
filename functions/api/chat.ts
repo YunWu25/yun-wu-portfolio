@@ -87,12 +87,12 @@ function buildPhotoPrompt(photos: PhotoData[], language: 'en' | 'zh'): string {
     if (categories.architecture.length > 0) prompt += `- 建筑 (${categories.architecture.length}张)\n`;
     if (categories.food.length > 0) prompt += `- 美食 (${categories.food.length}张)\n`;
 
-    prompt += `\n当用户要求看照片时，从列表中随机选择1-2张照片分享。`;
-    prompt += `\n重要：每次都要选择不同的照片！不要重复之前展示过的照片！\n`;
-    prompt += `\n### 照片URLs (已随机排序):\n`;
+    prompt += `\n当用户要求看照片时，分享下面列出的照片。这些是随机选择的照片。\n`;
+    prompt += `\n### 可用照片:\n`;
     for (const [cat, list] of Object.entries(categories)) {
       if (list.length > 0) {
-        prompt += `${cat}: ${list.slice(0, 15).map(p => p.url).join(', ')}\n`;
+        // Only give 3 random photos per category - forces variety
+        prompt += `${cat}: ${list.slice(0, 3).map(p => p.url).join(', ')}\n`;
       }
     }
     return prompt;
@@ -107,12 +107,12 @@ function buildPhotoPrompt(photos: PhotoData[], language: 'en' | 'zh'): string {
   if (categories.architecture.length > 0) prompt += `- Architecture (${categories.architecture.length} photos)\n`;
   if (categories.food.length > 0) prompt += `- Food (${categories.food.length} photos)\n`;
 
-  prompt += `\nWhen users ask for photos, RANDOMLY pick 1-2 different photos from the list.`;
-  prompt += `\nIMPORTANT: Always pick DIFFERENT photos each time! Never repeat the same photo twice!\n`;
-  prompt += `\n### Photo URLs (randomly ordered):\n`;
+  prompt += `\nWhen users ask for photos, share the photos listed below. These are randomly selected for this conversation.\n`;
+  prompt += `\n### Available photos:\n`;
   for (const [cat, list] of Object.entries(categories)) {
     if (list.length > 0) {
-      prompt += `${cat}: ${list.slice(0, 15).map(p => p.url).join(', ')}\n`;
+      // Only give 3 random photos per category - forces variety
+      prompt += `${cat}: ${list.slice(0, 3).map(p => p.url).join(', ')}\n`;
     }
   }
   return prompt;
