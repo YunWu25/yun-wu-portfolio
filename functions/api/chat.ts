@@ -155,30 +155,32 @@ function buildPhotoPrompt(
   }
 
   if (language === 'zh') {
-    let prompt = `\n\n## 照片分享\n`;
-    prompt += `当用户想看照片时，直接输出下面的图片代码（包括感叹号）：\n\n`;
+    let prompt = `\n\n## 照片分享 - 你可以显示图片\n`;
+    prompt += `重要：你可以显示图片！只要输出下面的文字，图片就会出现。\n\n`;
 
     for (const group of selectedGroups) {
       const label = CATEGORY_LABELS[group.category].zh;
-      prompt += `${label}：\n${buildMarkdownBlock(group.photos)}\n\n`;
+      prompt += `${label} - 直接输出这段文字：\n${buildMarkdownBlock(group.photos)}\n\n`;
     }
 
-    prompt += `规则：用户说"狗"就输出狗狗的图片代码，说"猫"就输出猫咪的图片代码。必须包含 ![标题](网址) 格式。\n`;
+    prompt += `示例：用户说"狗"，你回复"这是一些狗狗的照片！"然后下一行输出：![Milo](https://media.yunwustudio.com/...)\n`;
+    prompt += `![名字](网址) 这段文字会显示成图片。你不是纯文字助手，请输出上面的图片代码。\n`;
     prompt += `可用：${selectedGroups.map((g) => CATEGORY_LABELS[g.category].zh).join('、')}。其他分类说"请访问Photography页面"。\n`;
 
     return prompt;
   }
 
   // English version
-  let prompt = `\n\n## Photo Sharing\n`;
-  prompt += `When user wants photos, output these image codes (include the exclamation mark):\n\n`;
+  let prompt = `\n\n## Photo Sharing - YOU CAN DISPLAY IMAGES\n`;
+  prompt += `IMPORTANT: You CAN show images! Just output the text exactly as shown below and images will appear.\n\n`;
 
   for (const group of selectedGroups) {
     const label = CATEGORY_LABELS[group.category].en;
-    prompt += `${label}:\n${buildMarkdownBlock(group.photos)}\n\n`;
+    prompt += `${label} - just output this text:\n${buildMarkdownBlock(group.photos)}\n\n`;
   }
 
-  prompt += `Rules: User says "dog" → output the Dog image codes. User says "cat" → output the Cat image codes. Must include ![title](url) format.\n`;
+  prompt += `EXAMPLE: If user says "dog", reply with something like "Here are some dog photos!" then on the next line output exactly: ![Milo](https://media.yunwustudio.com/...)\n`;
+  prompt += `The ![name](url) text WILL display as an image. You are NOT text-only. Output the image codes above.\n`;
   prompt += `Available: ${selectedGroups.map((g) => CATEGORY_LABELS[g.category].en).join(', ')}. Other categories → say "Please visit the Photography page".\n`;
 
   return prompt;
