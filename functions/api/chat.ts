@@ -103,9 +103,9 @@ function buildPhotoPrompt(photos: PhotoData[], language: 'en' | 'zh'): string {
     if (categories.client.length > 0) prompt += `- 游客 (${categories.client.length}张): 游客人像\n`;
     if (categories.music.length > 0) prompt += `- 音乐 (${categories.music.length}张): 音乐、乐器、演出照片\n`;
     if (categories.museum.length > 0) prompt += `- 博物馆 (${categories.museum.length}张): 博物馆、艺术展览\n`;
-    if (categories.dog.length > 0) prompt += `- 狗狗 (${categories.dog.length}张): 狗狗照片\n`;
-    if (categories.cat.length > 0) prompt += `- 猫咪 (${categories.cat.length}张): 猫咪照片\n`;
-    if (categories.christmas.length > 0) prompt += `- 圣诞 (${categories.christmas.length}张): 圣诞节照片\n`;
+    if (categories.dog.length > 0) prompt += `- 狗狗 (${categories.dog.length}张)\n`;
+    if (categories.cat.length > 0) prompt += `- 猫咪 (${categories.cat.length}张)\n`;
+    if (categories.christmas.length > 0) prompt += `- 圣诞节 (${categories.christmas.length}张)\n`;
 
     prompt += `\n当用户要求看照片时，分享下面列出的照片。这些是随机选择的照片。\n`;
     prompt += `\n### 可用照片:\n`;
