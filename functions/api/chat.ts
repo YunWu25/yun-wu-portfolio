@@ -90,7 +90,7 @@ function buildPhotoPrompt(photos: PhotoData[], language: 'en' | 'zh'): string {
   if (language === 'zh') {
     let prompt = `\n\n## 照片库\n你可以分享伍芸拍摄的照片！当用户询问照片时，用markdown格式回复：![描述](url)\n\n`;
     prompt += `可用照片分类：\n`;
-    if (categories.pet.length > 0) prompt += `- 宠物 (${categories.pet.length}张): 狗、猫等宠物照片\n`;
+    if (categories.pet.length > 0) prompt += `- 宠物 (${categories.pet.length}张): 鸭子等动物\n`;
     if (categories.plant.length > 0) prompt += `- 植物 (${categories.plant.length}张)\n`;
     if (categories.flower.length > 0) prompt += `- 花卉 (${categories.flower.length}张): 花朵、花束照片\n`;
     if (categories.people.length > 0) prompt += `- 人物 (${categories.people.length}张)\n`;
@@ -120,7 +120,7 @@ function buildPhotoPrompt(photos: PhotoData[], language: 'en' | 'zh'): string {
 
   let prompt = `\n\n## Photo Gallery\nYou can share photos taken by Yun! When users ask for photos, respond with markdown: ![description](url)\n\n`;
   prompt += `Available photo categories:\n`;
-  if (categories.pet.length > 0) prompt += `- Pet (${categories.pet.length} photos): dogs, cats, and other pets\n`;
+  if (categories.pet.length > 0) prompt += `- Pet (${categories.pet.length} photos): animals like ducks\n`;
   if (categories.plant.length > 0) prompt += `- Plant (${categories.plant.length} photos)\n`;
   if (categories.flower.length > 0) prompt += `- Flower (${categories.flower.length} photos): flowers and bouquets\n`;
   if (categories.people.length > 0) prompt += `- People (${categories.people.length} photos)\n`;
