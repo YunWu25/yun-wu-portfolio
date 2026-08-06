@@ -16,7 +16,7 @@ interface Project {
 
 const getScreenshotUrl = (title: string, type: string, imageType: 'jpg' | 'gif'): string => {
   const filename = `${title} ${type}.${imageType}`;
-  return `https://media.yunwustudio.com/public/desgin/${encodeURIComponent(filename)}`;
+  return `https://media.yunwustudio.com/public/design/${encodeURIComponent(filename)}`;
 };
 
 const LaptopMockup: React.FC<{ project: Project }> = ({ project }) => {
