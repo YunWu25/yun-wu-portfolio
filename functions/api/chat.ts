@@ -90,7 +90,7 @@ function buildPhotoPrompt(photos: PhotoData[], language: 'en' | 'zh'): string {
   if (language === 'zh') {
     let prompt = `\n\n## 照片库\n你可以分享伍芸拍摄的照片！当用户询问照片时，用markdown格式回复：![描述](url)\n\n`;
     prompt += `可用照片分类：\n`;
-    if (categories.animal.length > 0) prompt += `- 动物 (${categories.animal.length}张): 其他的动物朋友们\n`;
+    if (categories.animal.length > 0) prompt += `- 其他动物 (${categories.animal.length}张): 其他的动物朋友们\n`;
     if (categories.plant.length > 0) prompt += `- 植物 (${categories.plant.length}张)\n`;
     if (categories.flower.length > 0) prompt += `- 花卉 (${categories.flower.length}张): 花朵、花束照片\n`;
     if (categories.people.length > 0) prompt += `- 人物 (${categories.people.length}张)\n`;
