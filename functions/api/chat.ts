@@ -138,58 +138,93 @@ function buildMarkdownBlock(photos: PhotoData[]): string {
 }
 
 // =============================================================================
-// PHOTO PROMPT BUILDER - Dynamic from R2
+// KEYWORD-BASED PHOTO DETECTION
 // =============================================================================
 
-interface SelectedPhotoGroup {
-  category: PhotoCategory;
-  photos: PhotoData[];
+// Keywords that map to photo categories (English and Chinese)
+const CATEGORY_KEYWORDS: Record<PhotoCategory, string[]> = {
+  dog: ['dog', 'dogs', 'puppy', 'puppies', '狗', '狗狗', '小狗', 'milo'],
+  cat: ['cat', 'cats', 'kitten', 'kittens', '猫', '猫咪', '小猫', '喵'],
+  flower: ['flower', 'flowers', 'floral', '花', '花卉', '鲜花'],
+  plant: ['plant', 'plants', '植物', '绿植'],
+  landscape: ['landscape', 'scenery', 'nature', '风景', '景色', '自然'],
+  architecture: ['architecture', 'building', 'buildings', '建筑', '楼'],
+  food: ['food', 'meal', 'dish', '美食', '食物', '吃的'],
+  people: ['people', 'person', 'portrait', '人', '人物'],
+  yun: ['yun', 'yun wu', '伍芸', '芸'],
+  sky: ['sky', 'cloud', 'clouds', 'sunset', 'sunrise', '天空', '云', '日落', '日出'],
+  lake: ['lake', 'water', 'river', '湖', '水', '河'],
+  client: ['client', 'portrait', '客户', '人像'],
+  music: ['music', 'concert', 'instrument', '音乐', '乐器', '演奏'],
+  museum: ['museum', 'art', 'gallery', '博物馆', '艺术', '展览'],
+  christmas: ['christmas', 'xmas', 'holiday', '圣诞', '圣诞节'],
+  animal: ['animal', 'animals', 'pet', 'pets', '动物', '宠物'],
+  other: [],
+};
+
+// Detect which category the user is asking for photos of
+function detectPhotoCategory(message: string): PhotoCategory | null {
+  const lowerMessage = message.toLowerCase();
+
+  // Check for photo-related intent
+  const photoIntentKeywords = ['photo', 'picture', 'image', 'show', 'see', '照片', '图片', '看', '给我看'];
+  const hasPhotoIntent = photoIntentKeywords.some(k => lowerMessage.includes(k));
+
+  // Also trigger if user just types a category name alone
+  for (const [category, keywords] of Object.entries(CATEGORY_KEYWORDS)) {
+    if (keywords.length === 0) continue;
+    for (const keyword of keywords) {
+      if (lowerMessage.includes(keyword.toLowerCase())) {
+        // If it's a single-word message matching a category, or has photo intent
+        if (hasPhotoIntent || message.trim().length < 20) {
+          return category as PhotoCategory;
+        }
+      }
+    }
+  }
+
+  return null;
 }
 
-function buildPhotoPrompt(
-  selectedGroups: SelectedPhotoGroup[],
+// Build prompt for detected photo request
+function buildDetectedPhotoPrompt(
+  photos: PhotoData[],
+  category: PhotoCategory,
   language: 'en' | 'zh'
 ): string {
-  if (selectedGroups.length === 0) {
-    return ''; // No photos available
-  }
+  const label = CATEGORY_LABELS[category];
+  const markdown = buildMarkdownBlock(photos);
 
   if (language === 'zh') {
-    let prompt = `\n\n## 照片分享 - 你可以显示图片\n`;
-    prompt += `重要：你可以显示图片！只要输出下面的文字，图片就会出现。\n\n`;
-
-    for (const group of selectedGroups) {
-      const label = CATEGORY_LABELS[group.category].zh;
-      prompt += `${label} - 直接输出这段文字：\n${buildMarkdownBlock(group.photos)}\n\n`;
-    }
-
-    prompt += `示例：用户说"狗"，你回复"这是一些狗狗的照片！"然后下一行输出：![Milo](https://media.yunwustudio.com/...)\n`;
-    prompt += `![名字](网址) 这段文字会显示成图片。你不是纯文字助手，请输出上面的图片代码。\n`;
-    prompt += `可用：${selectedGroups.map((g) => CATEGORY_LABELS[g.category].zh).join('、')}。其他分类说"请访问Photography页面"。\n`;
-
-    return prompt;
+    return `\n\n## 用户请求了${label.zh}照片\n用户想看${label.zh}照片。请先写一句友好的介绍（如"这是一些${label.zh}照片！"），然后在下一行直接输出以下内容（必须原样输出，这会显示为图片）：\n\n${markdown}\n\n重要：上面的 ![...](https://...) 文字必须完整输出，它们会变成图片显示。`;
   }
 
-  // English version
-  let prompt = `\n\n## Photo Sharing - YOU CAN DISPLAY IMAGES\n`;
-  prompt += `IMPORTANT: You CAN show images! Just output the text exactly as shown below and images will appear.\n\n`;
-
-  for (const group of selectedGroups) {
-    const label = CATEGORY_LABELS[group.category].en;
-    prompt += `${label} - just output this text:\n${buildMarkdownBlock(group.photos)}\n\n`;
-  }
-
-  prompt += `EXAMPLE: If user says "dog", reply with something like "Here are some dog photos!" then on the next line output exactly: ![Milo](https://media.yunwustudio.com/...)\n`;
-  prompt += `The ![name](url) text WILL display as an image. You are NOT text-only. Output the image codes above.\n`;
-  prompt += `Available: ${selectedGroups.map((g) => CATEGORY_LABELS[g.category].en).join(', ')}. Other categories → say "Please visit the Photography page".\n`;
-
-  return prompt;
+  return `\n\n## User requested ${label.en} photos\nThe user wants to see ${label.en} photos. Write a brief friendly intro (like "Here are some ${label.en} photos!"), then on the next line output the following EXACTLY (this will display as images):\n\n${markdown}\n\nIMPORTANT: Output the ![...](https://...) text exactly as shown - it will render as images.`;
 }
 
-// Main function: Fetch photos, sample categories, build prompt
+// Build general photo availability prompt (when no specific category detected)
+function buildGeneralPhotoPrompt(
+  categoryGroups: Map<PhotoCategory, PhotoData[]>,
+  language: 'en' | 'zh'
+): string {
+  const availableCategories = Array.from(categoryGroups.keys())
+    .filter(cat => cat !== 'other')
+    .map(cat => CATEGORY_LABELS[cat]);
+
+  if (language === 'zh') {
+    const catList = availableCategories.map(c => c.zh).join('、');
+    return `\n\n## 照片分享\n你可以分享伍芸的摄影作品。可用分类：${catList}。如果用户想看照片，问他们想看哪类照片。`;
+  }
+
+  const catList = availableCategories.map(c => c.en).join(', ');
+  return `\n\n## Photo Sharing\nYou can share Yun's photography. Available categories: ${catList}. If user wants to see photos, ask which category they'd like to see.`;
+}
+
+// Main function: Prepare photo prompt based on user's message
 async function preparePhotoPrompt(
   bucket: R2Bucket | undefined,
-  language: 'en' | 'zh'
+  language: 'en' | 'zh',
+  userMessage: string
 ): Promise<string> {
   if (!bucket) {
     return '';
@@ -204,37 +239,20 @@ async function preparePhotoPrompt(
   // Group by category
   const categoryGroups = groupByCategory(allPhotos);
 
-  // Filter to categories with at least 1 photo
-  const validCategories = Array.from(categoryGroups.entries())
-    .filter(([_, photos]) => photos.length >= 1)
-    .map(([cat]) => cat);
+  // Detect if user is asking for a specific photo category
+  const detectedCategory = detectPhotoCategory(userMessage);
 
-  if (validCategories.length === 0) {
-    return '';
+  if (detectedCategory) {
+    const photos = categoryGroups.get(detectedCategory);
+    if (photos && photos.length > 0) {
+      // User asked for a specific category - inject those photos directly
+      const selectedPhotos = pickRandom(photos, Math.min(photos.length, 3));
+      return buildDetectedPhotoPrompt(selectedPhotos, detectedCategory, language);
+    }
   }
 
-  // Prioritize popular categories (dog, cat) if available, then fill with random ones
-  const priorityCategories: PhotoCategory[] = ['dog', 'cat'];
-  const guaranteedCategories = priorityCategories.filter((cat) =>
-    validCategories.includes(cat)
-  );
-  const remainingCategories = validCategories.filter(
-    (cat) => !priorityCategories.includes(cat)
-  );
-  const randomFill = pickRandom(remainingCategories, 3 - guaranteedCategories.length);
-  const selectedCategories = [...guaranteedCategories, ...randomFill];
-
-  // From each selected category, pick up to 3 random photos
-  const selectedGroups: SelectedPhotoGroup[] = selectedCategories.map((cat) => {
-    const photos = categoryGroups.get(cat) ?? [];
-    const photosPerCategory = Math.min(photos.length, 3);
-    return {
-      category: cat,
-      photos: pickRandom(photos, photosPerCategory),
-    };
-  });
-
-  return buildPhotoPrompt(selectedGroups, language);
+  // No specific category detected - provide general info
+  return buildGeneralPhotoPrompt(categoryGroups, language);
 }
 
 // =============================================================================
@@ -363,8 +381,12 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       });
     }
 
-    // Dynamically fetch and sample photos from R2
-    const photoPrompt = await preparePhotoPrompt(context.env.PHOTOGRAPHY, language);
+    // Get the latest user message for photo keyword detection
+    const userMsgs = messages.filter((m) => m.role === 'user');
+    const latestUserMsg = userMsgs.length > 0 ? userMsgs[userMsgs.length - 1]?.content ?? '' : '';
+
+    // Dynamically fetch photos based on user's request
+    const photoPrompt = await preparePhotoPrompt(context.env.PHOTOGRAPHY, language, latestUserMsg);
 
     // Build system prompt
     const basePrompt = language === 'zh' ? SYSTEM_PROMPT_ZH : SYSTEM_PROMPT_EN;
@@ -384,9 +406,9 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     const aiMessages: ChatMessage[] = [{ role: 'system', content: systemPrompt }, ...messages];
 
     // Log conversation to KV - group by IP + date + device
-    const userMessages = messages.filter((m) => m.role === 'user');
-    const lastUserMessage = userMessages.length > 0 ? userMessages[userMessages.length - 1] : null;
-    if (lastUserMessage && context.env.CHAT_LOGS) {
+    const userMessagesForLog = messages.filter((m) => m.role === 'user');
+    const lastMsgForLog = userMessagesForLog.length > 0 ? userMessagesForLog[userMessagesForLog.length - 1] : null;
+    if (lastMsgForLog && context.env.CHAT_LOGS) {
       const clientIP =
         context.request.headers.get('cf-connecting-ip') ??
         context.request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
@@ -424,7 +446,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       const now = new Date().toISOString();
       const newMessage = {
         time: now,
-        content: lastUserMessage.content,
+        content: lastMsgForLog.content,
       };
 
       let logEntry: SessionLog;
