@@ -41,7 +41,8 @@ function renderContent(content: string): React.ReactNode[] {
           loading="lazy"
           onError={(e) => {
             // Hide broken images
-            (e.target as HTMLImageElement).parentElement!.style.display = 'none';
+            const parent = (e.target as HTMLImageElement).parentElement;
+            if (parent) parent.style.display = 'none';
           }}
         />
       </a>
