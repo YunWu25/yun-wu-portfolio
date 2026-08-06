@@ -155,43 +155,31 @@ function buildPhotoPrompt(
   }
 
   if (language === 'zh') {
-    let prompt = `\n\n## 照片分享规则（严格遵守）\n`;
-    prompt += `你可以分享伍芸拍摄的照片。以下是本次对话中【唯一可用】的照片：\n\n`;
+    let prompt = `\n\n## 照片分享\n`;
+    prompt += `当用户想看照片时，直接输出下面的图片代码（包括感叹号）：\n\n`;
 
     for (const group of selectedGroups) {
       const label = CATEGORY_LABELS[group.category].zh;
-      prompt += `### ${label}照片（必须整组发送）\n`;
-      prompt += `\`\`\`\n${buildMarkdownBlock(group.photos)}\n\`\`\`\n\n`;
+      prompt += `${label}：\n${buildMarkdownBlock(group.photos)}\n\n`;
     }
 
-    prompt += `## 重要规则\n`;
-    prompt += `1. 当用户要求看某类照片时，必须【原封不动】复制上面对应的整个 Markdown 代码块发送。\n`;
-    prompt += `2. 【严禁】自己编造任何 URL、文件名、或品种名称。只能使用上面列出的链接。\n`;
-    prompt += `3. 【严禁】拆分照片组——必须一次性发送该分类的全部照片。\n`;
-    prompt += `4. 如果用户要求的分类不在上面列表中，请礼貌回复：\n`;
-    prompt += `   "抱歉，这个分类的照片暂时不在本次对话中。您可以前往网站顶部的【Photography】页面浏览完整作品集哦！"\n`;
-    prompt += `5. 本次可用分类：${selectedGroups.map((g) => CATEGORY_LABELS[g.category].zh).join('、')}。其他分类本次不可用。\n`;
+    prompt += `规则：用户说"狗"就输出狗狗的图片代码，说"猫"就输出猫咪的图片代码。必须包含 ![标题](网址) 格式。\n`;
+    prompt += `可用：${selectedGroups.map((g) => CATEGORY_LABELS[g.category].zh).join('、')}。其他分类说"请访问Photography页面"。\n`;
 
     return prompt;
   }
 
   // English version
-  let prompt = `\n\n## Photo Sharing Rules (STRICT)\n`;
-  prompt += `You can share photos taken by Yun. Below are the ONLY photos available in this conversation:\n\n`;
+  let prompt = `\n\n## Photo Sharing\n`;
+  prompt += `When user wants photos, output these image codes (include the exclamation mark):\n\n`;
 
   for (const group of selectedGroups) {
     const label = CATEGORY_LABELS[group.category].en;
-    prompt += `### ${label} Photos (must send as complete group)\n`;
-    prompt += `\`\`\`\n${buildMarkdownBlock(group.photos)}\n\`\`\`\n\n`;
+    prompt += `${label}:\n${buildMarkdownBlock(group.photos)}\n\n`;
   }
 
-  prompt += `## Critical Rules\n`;
-  prompt += `1. When user asks for a photo category, copy-paste the EXACT markdown block above. Do not modify it.\n`;
-  prompt += `2. NEVER invent URLs, filenames, or breed/species names. Only use the links listed above.\n`;
-  prompt += `3. NEVER split photo groups—always send ALL photos in that category together.\n`;
-  prompt += `4. If user asks for a category NOT listed above, politely reply:\n`;
-  prompt += `   "Sorry, that category isn't available in this chat session. Please visit the Photography page at the top of the website to browse the full portfolio!"\n`;
-  prompt += `5. Available categories this session: ${selectedGroups.map((g) => CATEGORY_LABELS[g.category].en).join(', ')}. Other categories are not available.\n`;
+  prompt += `Rules: User says "dog" → output the Dog image codes. User says "cat" → output the Cat image codes. Must include ![title](url) format.\n`;
+  prompt += `Available: ${selectedGroups.map((g) => CATEGORY_LABELS[g.category].en).join(', ')}. Other categories → say "Please visit the Photography page".\n`;
 
   return prompt;
 }
@@ -223,8 +211,16 @@ async function preparePhotoPrompt(
     return '';
   }
 
-  // Pick 3 random categories (or fewer if not enough)
-  const selectedCategories = pickRandom(validCategories, 3);
+  // Prioritize popular categories (dog, cat) if available, then fill with random ones
+  const priorityCategories: PhotoCategory[] = ['dog', 'cat'];
+  const guaranteedCategories = priorityCategories.filter((cat) =>
+    validCategories.includes(cat)
+  );
+  const remainingCategories = validCategories.filter(
+    (cat) => !priorityCategories.includes(cat)
+  );
+  const randomFill = pickRandom(remainingCategories, 3 - guaranteedCategories.length);
+  const selectedCategories = [...guaranteedCategories, ...randomFill];
 
   // From each selected category, pick 2-3 random photos
   const selectedGroups: SelectedPhotoGroup[] = selectedCategories.map((cat) => {
