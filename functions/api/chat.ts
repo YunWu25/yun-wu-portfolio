@@ -235,8 +235,10 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     const aiMessages: ChatMessage[] = [{ role: 'system', content: systemPrompt }, ...messages];
 
     // Log conversation to KV - group by IP + date + device (same guest = same conversation)
+    // Only get the LAST user message (the new one) - previous messages are already logged
     const userMessages = messages.filter((m) => m.role === 'user');
-    if (userMessages.length > 0 && context.env.CHAT_LOGS) {
+    const lastUserMessage = userMessages.length > 0 ? userMessages[userMessages.length - 1] : null;
+    if (lastUserMessage && context.env.CHAT_LOGS) {
       // Get client IP from Cloudflare headers
       const clientIP = context.request.headers.get('cf-connecting-ip') ??
                        context.request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
@@ -267,10 +269,10 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       }
 
       const now = new Date().toISOString();
-      const newMessages = userMessages.map((m) => ({
+      const newMessage = {
         time: now,
-        content: m.content
-      }));
+        content: lastUserMessage.content
+      };
 
       let logEntry: SessionLog;
       if (existingData) {
@@ -279,7 +281,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
         logEntry = {
           ...existing,
           lastSeen: now,
-          messages: [...existing.messages, ...newMessages],
+          messages: [...existing.messages, newMessage],
         };
       } else {
         // Create new conversation
@@ -290,7 +292,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
           language,
           userAgent: context.request.headers.get('user-agent') ?? 'unknown',
           ipHint: `***.***${ipHash ? '.' + ipHash : ''}`, // Partial IP for privacy
-          messages: newMessages,
+          messages: [newMessage],
         };
       }
 
