@@ -85,11 +85,16 @@ async function fetchPhotosFromR2(bucket: R2Bucket): Promise<PhotoData[]> {
       .map((obj) => {
         const meta = obj.customMetadata ?? {};
         const filename = obj.key.split('/').pop() ?? 'Photo';
+        // Normalize category to lowercase to match CATEGORY_LABELS keys
+        const rawCategory = (meta.category ?? '').toLowerCase();
+        const validCategory = Object.keys(CATEGORY_LABELS).includes(rawCategory)
+          ? (rawCategory as PhotoCategory)
+          : 'other';
 
         return {
           url: `https://media.yunwustudio.com/${obj.key}`,
           title: meta.title || filename.replace(/\.[^.]+$/, ''),
-          category: (meta.category as PhotoCategory) || 'other',
+          category: validCategory,
         };
       });
   } catch (error) {
@@ -207,7 +212,12 @@ function buildGeneralPhotoPrompt(
 ): string {
   const availableCategories = Array.from(categoryGroups.keys())
     .filter(cat => cat !== 'other')
-    .map(cat => CATEGORY_LABELS[cat]);
+    .map(cat => CATEGORY_LABELS[cat])
+    .filter((label): label is { en: string; zh: string } => label !== undefined);
+
+  if (availableCategories.length === 0) {
+    return ''; // No valid categories to show
+  }
 
   if (language === 'zh') {
     const catList = availableCategories.map(c => c.zh).join('、');
@@ -272,6 +282,10 @@ async function preparePhotoPrompt(
     } else {
       // Category detected but no photos found - tell user
       const label = CATEGORY_LABELS[detectedCategory];
+      if (!label) {
+        // Unknown category, fall through to general prompt
+        return { prompt: buildGeneralPhotoPrompt(categoryGroups, language), photosToAppend: null };
+      }
       const noPhotosPrompt = language === 'zh'
         ? `\n\n## 用户请求了${label.zh}照片\n用户想看${label.zh}照片，但目前没有${label.zh}类别的照片可以展示。请礼貌地告知用户，并推荐他们看看其他类别的照片。`
         : `\n\n## User requested ${label.en} photos\nThe user wants to see ${label.en} photos, but there are currently no photos in that category. Please politely let them know and suggest they check out other categories.`;
