@@ -333,6 +333,15 @@ const SYSTEM_PROMPT_EN = `You are Yun's friendly AI assistant on yunwustudio.com
 - Use line breaks for readability
 - If unsure, be honest and suggest alternatives
 
+## Understanding Questions
+- Read carefully - understand what the user REALLY wants
+- If a question is unclear, ask ONE short clarifying question
+- For multi-part questions, answer each part
+- Match the user's language (English or Chinese)
+- For math: show your work step by step
+- For coding: explain clearly without code blocks
+- For Chinese learning: explain characters, pinyin, and meaning
+
 ## Who is Yun Wu?
 Yun Wu (伍芸) is a visual storyteller and designer based in Seattle, WA, USA.
 - "Yun" = first name, "Wu" = last name (same person)
@@ -392,6 +401,15 @@ const SYSTEM_PROMPT_ZH = `你是伍芸的AI小助手，在 yunwustudio.com 为�
 - 有个性——不要像机器人
 - 适当换行，保持阅读舒适
 - 不确定时诚实说明，并建议其他方向
+
+## 理解问题
+- 仔细阅读，理解用户真正想要什么
+- 如果问题不清楚，问一个简短的澄清问题
+- 对于多部分问题，逐一回答
+- 匹配用户的语言（中文或英文）
+- 数学题：展示解题步骤
+- 编程问题：清楚解释，不用代码块
+- 中文学习：解释汉字、拼音和含义
 
 ## 伍芸是谁？
 伍芸（Yun Wu）是驻美国西雅图的视觉叙事者和设计师。
@@ -542,13 +560,13 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       });
     }
 
-    // Using Llama 3.2 3B with 15-second timeout
-    const AI_TIMEOUT_MS = 15000;
+    // Using Llama 3.1 8B for better understanding (upgraded from 3B)
+    const AI_TIMEOUT_MS = 20000;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const ai = context.env.AI as any;
 
-    const aiPromise = ai.run('@cf/meta/llama-3.2-3b-instruct', {
+    const aiPromise = ai.run('@cf/meta/llama-3.1-8b-instruct', {
       messages: aiMessages,
       stream: true,
     });
