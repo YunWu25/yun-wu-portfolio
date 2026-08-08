@@ -560,13 +560,13 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       });
     }
 
-    // Using Llama 3.1 8B for better understanding (upgraded from 3B)
-    const AI_TIMEOUT_MS = 20000;
+    // Using Llama 3.2 3B - fast and reliable
+    const AI_TIMEOUT_MS = 15000;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const ai = context.env.AI as any;
 
-    const aiPromise = ai.run('@cf/meta/llama-3.1-8b-instruct', {
+    const aiPromise = ai.run('@cf/meta/llama-3.2-3b-instruct', {
       messages: aiMessages,
       stream: true,
     });
