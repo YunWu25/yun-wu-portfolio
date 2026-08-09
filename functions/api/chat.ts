@@ -400,8 +400,8 @@ function buildWeatherPrompt(weather: WeatherData | null, language: 'en' | 'zh'):
 function sanitizeUsername(username: string | undefined): string | undefined {
   if (!username) return undefined;
 
-  // Trim and limit length
-  let cleaned = username.trim().slice(0, 50);
+  // Trim and limit length (20 chars is enough for most real names)
+  let cleaned = username.trim().slice(0, 20);
 
   // Remove control characters and newlines (prevent prompt structure manipulation)
   cleaned = cleaned.replace(/[\x00-\x1F\x7F]/g, '');
