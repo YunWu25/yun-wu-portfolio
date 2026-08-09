@@ -404,13 +404,14 @@ function sanitizeUsername(username: string | undefined): string | undefined {
   let cleaned = username.trim().slice(0, 20);
 
   // Remove control characters and newlines (prevent prompt structure manipulation)
+  // eslint-disable-next-line no-control-regex
   cleaned = cleaned.replace(/[\x00-\x1F\x7F]/g, '');
 
   // Remove characters that could be used for prompt injection:
   // - Quotes (", ', `, 「, 」) - could break out of quoted context
   // - Hash/pound (#) - could create new markdown headers
   // - Brackets and special punctuation that could manipulate prompt structure
-  cleaned = cleaned.replace(/["""'''`「」【】《》#\[\]{}]/g, '');
+  cleaned = cleaned.replace(/["""'''`「」【】《》#[\]{}]/g, '');
 
   // Remove sequences that look like prompt instructions
   // (patterns like "ignore", "system:", "##", etc.)
