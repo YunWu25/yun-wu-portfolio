@@ -393,6 +393,39 @@ function buildWeatherPrompt(weather: WeatherData | null, language: 'en' | 'zh'):
 }
 
 // =============================================================================
+// INPUT SANITIZATION
+// =============================================================================
+
+// Sanitize username to prevent prompt injection attacks
+function sanitizeUsername(username: string | undefined): string | undefined {
+  if (!username) return undefined;
+
+  // Trim and limit length
+  let cleaned = username.trim().slice(0, 50);
+
+  // Remove control characters and newlines (prevent prompt structure manipulation)
+  cleaned = cleaned.replace(/[\x00-\x1F\x7F]/g, '');
+
+  // Remove characters that could be used for prompt injection:
+  // - Quotes (", ', `, 「, 」) - could break out of quoted context
+  // - Hash/pound (#) - could create new markdown headers
+  // - Brackets and special punctuation that could manipulate prompt structure
+  cleaned = cleaned.replace(/["""'''`「」【】《》#\[\]{}]/g, '');
+
+  // Remove sequences that look like prompt instructions
+  // (patterns like "ignore", "system:", "##", etc.)
+  cleaned = cleaned.replace(/\s*(ignore|system|instruction|prompt|override|forget|disregard)\s*:?\s*/gi, '');
+
+  // Collapse multiple spaces
+  cleaned = cleaned.replace(/\s+/g, ' ').trim();
+
+  // Return undefined if the result is empty or too short
+  if (cleaned.length < 1) return undefined;
+
+  return cleaned;
+}
+
+// =============================================================================
 // CHAT TYPES & SYSTEM PROMPTS
 // =============================================================================
 
@@ -647,9 +680,9 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     // Build system prompt
     const basePrompt = language === 'zh' ? SYSTEM_PROMPT_ZH : SYSTEM_PROMPT_EN;
 
-    // Build personalized username prompt if provided
+    // Build personalized username prompt if provided (sanitized to prevent prompt injection)
     let usernamePrompt = '';
-    const cleanUsername = username?.trim();
+    const cleanUsername = sanitizeUsername(username);
     if (cleanUsername) {
       usernamePrompt =
         language === 'zh'

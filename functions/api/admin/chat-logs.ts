@@ -1,8 +1,11 @@
 // Cloudflare Pages Function: GET /api/admin/chat-logs
 // Retrieve chat conversation logs
 
+import { validateAdminAuth } from './_auth';
+
 interface Env {
   CHAT_LOGS: KVNamespace;
+  ADMIN_API_KEY?: string;
 }
 
 interface ChatLogEntry {
@@ -20,6 +23,12 @@ interface ChatLogEntry {
 }
 
 export const onRequestGet: PagesFunction<Env> = async (context) => {
+  // Validate admin authentication
+  const auth = validateAdminAuth(context.request, context.env);
+  if (!auth.valid) {
+    return auth.error!;
+  }
+
   try {
     if (!context.env.CHAT_LOGS) {
       return new Response(JSON.stringify({ error: 'Chat logs not configured' }), {

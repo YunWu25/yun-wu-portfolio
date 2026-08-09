@@ -2,8 +2,11 @@
 // GET /api/admin/photos - List all photos with metadata
 // PUT /api/admin/photos - Update metadata for a specific photo
 
+import { validateAdminAuth } from './_auth';
+
 interface Env {
   PHOTOGRAPHY: R2Bucket;
+  ADMIN_API_KEY?: string;
 }
 
 type PhotoCategory = 'animal' | 'plant' | 'flower' | 'people' | 'landscape' | 'architecture' | 'food' | 'yun' | 'sky' | 'lake' | 'client' | 'music' | 'museum' | 'dog' | 'cat' | 'christmas' | 'other';
@@ -35,6 +38,12 @@ interface UpdateRequest {
 
 // GET: List all photos with their metadata
 export const onRequestGet: PagesFunction<Env> = async (context) => {
+  // Validate admin authentication
+  const auth = validateAdminAuth(context.request, context.env);
+  if (!auth.valid) {
+    return auth.error!;
+  }
+
   try {
     const listed = await context.env.PHOTOGRAPHY.list({
       prefix: 'public/images/',
@@ -81,6 +90,12 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
 // PUT: Update metadata for a specific photo
 // R2 doesn't support direct metadata updates, so we copy the object with new metadata
 export const onRequestPut: PagesFunction<Env> = async (context) => {
+  // Validate admin authentication
+  const auth = validateAdminAuth(context.request, context.env);
+  if (!auth.valid) {
+    return auth.error!;
+  }
+
   try {
     const body: UpdateRequest = await context.request.json();
 

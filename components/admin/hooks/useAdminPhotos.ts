@@ -6,6 +6,7 @@ import {
   SortField,
   SortDirection,
 } from '../../../types';
+import { adminFetch } from '../utils/adminAuth';
 
 interface AdminPhotosResponse {
   photos: AdminPhoto[];
@@ -47,7 +48,7 @@ export function useAdminPhotos(): UseAdminPhotosReturn {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch('/api/admin/photos');
+      const res = await adminFetch('/api/admin/photos');
       if (!res.ok) throw new Error('Failed to fetch photos');
       const data: AdminPhotosResponse = await res.json();
       setPhotos(data.photos);
@@ -130,7 +131,7 @@ export function useAdminPhotos(): UseAdminPhotosReturn {
   }, []);
 
   const savePhoto = useCallback(async (data: PhotoMetadataUpdate) => {
-    const res = await fetch('/api/admin/photos', {
+    const res = await adminFetch('/api/admin/photos', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),

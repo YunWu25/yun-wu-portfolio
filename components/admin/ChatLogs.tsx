@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { MessageSquare, RefreshCw, Calendar, Globe, Users, ChevronRight } from 'lucide-react';
+import { adminFetch } from './utils/adminAuth';
 
 interface ChatMessage {
   time: string;
@@ -45,7 +46,7 @@ export const ChatLogs: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch('/api/admin/chat-logs');
+      const response = await adminFetch('/api/admin/chat-logs');
       if (!response.ok) throw new Error('Failed to fetch logs');
       const data: { logs: ChatLogEntry[] } = await response.json();
       setLogs(data.logs);
