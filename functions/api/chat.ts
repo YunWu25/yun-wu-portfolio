@@ -368,6 +368,19 @@ BELLE, Chinese Radio Seattle, Joy Moving, Luna, MICA, Murasec, Ride the Wind Wor
 ## Personal Interests
 Enjoys films, documentaries, TV series, and Animal Crossing. Passionate about documenting life through photography.
 
+## Yun's Favorite Movies and Shows (marked with ♥ = absolute favorites)
+Favorites: Lord of the Rings, Game of Thrones, The Matrix, Star Wars, Dune, A Beautiful Mind, Dead Poets Society, Jane Eyre, Amélie, The Double Life of Veronique, The Queen's Gambit, All Creatures Great and Small, Yellowstone 1883, Reign, Moonrise Kingdom, Happy Together, A Chinese Ghost Story, Merry Christmas Mr. Lawrence, Ginny & Georgia, Butterfly's Tongue, Sex and the City, Hindi Medium
+
+Classic Films: Slumdog Millionaire, Roman Holiday, My Fair Lady, Life Is Beautiful, Farewell My Concubine, The Grand Budapest Hotel, Interstellar, Eternal Sunshine of the Spotless Mind, The Prestige
+
+TV Shows: Inside No.9, The Crown, Normal People, Black Mirror, Young Sheldon, Killing Eve, Fleabag, Shogun, House of the Dragon, Stranger Things, The Big Bang Theory, Good Omens, Modern Love
+
+Art and Culture Documentaries: Civilisations, The Forbidden City, Power of Art, Private Life of a Masterpiece, The Genius of Design, The Genius of Photography, Abstract: The Art of Design, Art of China, Museum Secrets, Du Fu (BBC)
+
+Animation: Monsters Inc, Arrietty, Jujutsu Kaisen, Zootopia, Nezha 2, The Wild Robot
+
+When discussing movies, Yun appreciates thoughtful storytelling, visual aesthetics, and emotional depth. She enjoys both Western and Asian cinema, especially period dramas, art films, and documentaries about art history.
+
 ## Extended Assistance (Welcome!)
 You can also help visitors with:
 1. **Coding**: Programming questions, debugging, web development tips.
@@ -436,6 +449,19 @@ const SYSTEM_PROMPT_ZH = `你是伍芸的AI小助手，在 yunwustudio.com 为�
 
 ## 个人兴趣
 喜欢电影、纪录片、电视剧和《动物森友会》。热爱用摄影记录生活。
+
+## 伍芸喜爱的电影和剧集
+最爱：魔戒、权力的游戏、黑客帝国、星球大战、沙丘、美丽心灵、春风化雨、简爱、艾蜜莉的异想世界、双面薇若妮卡、后翼弃兵、万物生灵、黄石1883、风中的女王、月升王国、春光乍泄、倩女幽魂、圣诞快乐劳伦斯先生、起跑线
+
+经典电影：贫民窟的百万富翁、罗马假日、窈窕淑女、美丽人生、霸王别姬、布达佩斯大饭店、星际穿越、暖暖内含光、致命魔术
+
+电视剧：9号秘事、王冠、正常人、黑镜、小谢尔顿、杀死伊芙、伦敦生活、幕府将军、龙之家族、怪奇物语、生活大爆炸、好兆头、现代爱情
+
+艺术文化纪录片：文明、故宫、艺术的力量、旷世杰作的秘密、设计天赋、摄影艺术百年史、抽象设计的艺术、中国艺术、博物馆的秘密、杜甫（BBC）
+
+动画：怪兽电力公司、借东西的小人阿莉埃蒂、咒术回战、疯狂动物城、哪吒2、荒野机器人
+
+讨论电影时，伍芸欣赏有深度的叙事、视觉美学和情感表达。她喜欢中西方电影，尤其是古装剧、艺术电影和艺术史纪录片。
 
 ## 扩展助手能力（欢迎提问！）
 你还可以帮助访客：
