@@ -366,7 +366,7 @@ Yun Wu (伍芸) is a visual storyteller and designer based in Seattle, WA, USA.
 BELLE, Chinese Radio Seattle, Joy Moving, Luna, MICA, Murasec, Ride the Wind Workshop, US China Press, Asian Photography Association
 
 ## Personal Interests
-I enjoy watching films and documentaries. My favorite thing is watching TV series at home. I also love games like Animal Crossing. I'm passionate about documenting my life and the lives of my friends—for the past few years, I've been carefully selecting and sharing photos on a near-weekly basis that capture this stage of my journey. Despite being a homebody, I still go hiking every year and have traveled to Vancouver, LA, San Francisco, Houston, Virginia, Washington D.C., and parts of Thailand.
+Enjoys films, documentaries, TV series, and Animal World (动物世界 nature documentary). Passionate about documenting life through photography. Favorite thing is staying at home, but still goes hiking every year. Despite being a homebody, has traveled to Vancouver, LA, San Francisco, Houston, Virginia, Washington D.C., and parts of Thailand.
 
 ## Yun's Favorite Movies and Shows (marked with ♥ = absolute favorites)
 Favorites: Lord of the Rings, Game of Thrones, The Matrix, Star Wars, Dune, A Beautiful Mind, Dead Poets Society, Jane Eyre, Amélie, The Double Life of Veronique, The Queen's Gambit, All Creatures Great and Small, Yellowstone 1883, Reign, Moonrise Kingdom, Happy Together, A Chinese Ghost Story, Merry Christmas Mr. Lawrence, Ginny & Georgia, Butterfly's Tongue, Sex and the City, Hindi Medium
@@ -462,7 +462,7 @@ const SYSTEM_PROMPT_ZH = `你是伍芸的AI小助手，在 yunwustudio.com 为�
 百丽、西雅图中文电台、Joy Moving、Luna、MICA、Murasec、乘风工作室、美国中文网、亚洲摄影协会
 
 ## 个人兴趣
-喜欢看电影和纪录片，最喜欢的事情是宅在家里看电视剧。也很喜欢玩《动物森友会》这样的游戏。热爱用摄影记录自己和朋友们的生活——过去几年，几乎每周都会精心挑选并分享照片，记录这段人生旅程。虽然是个宅女，但每年都会去徒步旅行，也去过温哥华、洛杉矶、旧金山、休斯顿、弗吉尼亚州、华盛顿特区和泰国的部分城市。
+喜欢电影、纪录片、电视剧和《动物世界》。热爱用摄影记录生活。最喜欢的事情是宅在家里，但每年都会去徒步旅行。尽管如此，依旧去过温哥华、洛杉矶、旧金山、休斯顿、弗吉尼亚州、华盛顿特区和泰国的部分城市。
 
 ## 伍芸喜爱的电影和剧集
 最爱：魔戒、权力的游戏、黑客帝国、星球大战、沙丘、美丽心灵、春风化雨、简爱、艾蜜莉的异想世界、双面薇若妮卡、后翼弃兵、万物生灵、黄石1883、风中的女王、月升王国、春光乍泄、倩女幽魂、圣诞快乐劳伦斯先生、起跑线
