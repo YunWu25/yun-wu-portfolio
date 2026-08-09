@@ -139,7 +139,13 @@ function pickRandom<T>(array: T[], count: number): T[] {
 
 // Build pre-formatted markdown block for photos (ALL photos together, no splitting)
 function buildMarkdownBlock(photos: PhotoData[]): string {
-  return photos.map((p) => `![${p.title}](${p.url})`).join('\n');
+  return photos.map((p) => {
+    // Clean the title: remove file extensions and special characters that break markdown
+    const cleanTitle = p.title
+      .replace(/\.[^.]+$/, '')  // Remove file extension
+      .replace(/[[\]()]/g, ''); // Remove brackets/parens that break markdown
+    return `![${cleanTitle}](${p.url})`;
+  }).join('\n');
 }
 
 // =============================================================================
@@ -742,7 +748,14 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       const appendStream = new TransformStream({
         async flush(controller) {
           // Append photos at the end of the stream
-          const photoData = `data: {"response":"${photosToAppend.replace(/\n/g, '\\n')}"}\n\n`;
+          // Properly escape JSON string (handle quotes, backslashes, newlines)
+          const escapedPhotos = photosToAppend
+            .replace(/\\/g, '\\\\')  // Escape backslashes first
+            .replace(/"/g, '\\"')     // Escape quotes
+            .replace(/\n/g, '\\n')    // Escape newlines
+            .replace(/\r/g, '\\r')    // Escape carriage returns
+            .replace(/\t/g, '\\t');   // Escape tabs
+          const photoData = `data: {"response":"${escapedPhotos}"}\n\n`;
           controller.enqueue(new TextEncoder().encode(photoData));
         },
       });
