@@ -298,6 +298,95 @@ async function preparePhotoPrompt(
 }
 
 // =============================================================================
+// WEATHER FETCHING (Open-Meteo API - Free, no API key needed)
+// =============================================================================
+
+interface WeatherData {
+  city: string;
+  country: string;
+  temperature: number;
+  description: string;
+}
+
+// Weather code to description mapping
+const WEATHER_CODES: Record<number, { en: string; zh: string }> = {
+  0: { en: 'Clear sky', zh: '晴朗' },
+  1: { en: 'Mainly clear', zh: '大部晴朗' },
+  2: { en: 'Partly cloudy', zh: '多云' },
+  3: { en: 'Overcast', zh: '阴天' },
+  45: { en: 'Foggy', zh: '有雾' },
+  48: { en: 'Depositing rime fog', zh: '雾凇' },
+  51: { en: 'Light drizzle', zh: '小毛毛雨' },
+  53: { en: 'Moderate drizzle', zh: '毛毛雨' },
+  55: { en: 'Dense drizzle', zh: '大毛毛雨' },
+  61: { en: 'Slight rain', zh: '小雨' },
+  63: { en: 'Moderate rain', zh: '中雨' },
+  65: { en: 'Heavy rain', zh: '大雨' },
+  71: { en: 'Slight snow', zh: '小雪' },
+  73: { en: 'Moderate snow', zh: '中雪' },
+  75: { en: 'Heavy snow', zh: '大雪' },
+  80: { en: 'Slight rain showers', zh: '阵雨' },
+  81: { en: 'Moderate rain showers', zh: '中阵雨' },
+  82: { en: 'Violent rain showers', zh: '暴雨' },
+  95: { en: 'Thunderstorm', zh: '雷暴' },
+};
+
+async function fetchWeather(
+  latitude: string | null,
+  longitude: string | null,
+  city: string | null,
+  country: string | null,
+  language: 'en' | 'zh'
+): Promise<WeatherData | null> {
+  if (!latitude || !longitude) {
+    return null;
+  }
+
+  try {
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,weather_code&timezone=auto`;
+    const response = await fetch(url, {
+      cf: { cacheTtl: 600 } // Cache for 10 minutes
+    });
+
+    if (!response.ok) {
+      console.log('[Chat] Weather API failed:', response.status);
+      return null;
+    }
+
+    const data = await response.json() as {
+      current?: {
+        temperature_2m?: number;
+        weather_code?: number;
+      };
+    };
+
+    const temp = data.current?.temperature_2m;
+    const code = data.current?.weather_code ?? 0;
+    const weatherInfo = WEATHER_CODES[code] ?? WEATHER_CODES[0]!;
+
+    return {
+      city: city ?? 'Unknown',
+      country: country ?? '',
+      temperature: temp ?? 0,
+      description: language === 'zh' ? weatherInfo.zh : weatherInfo.en,
+    };
+  } catch (error) {
+    console.log('[Chat] Weather fetch error:', error);
+    return null;
+  }
+}
+
+function buildWeatherPrompt(weather: WeatherData | null, language: 'en' | 'zh'): string {
+  if (!weather) return '';
+
+  if (language === 'zh') {
+    return `\n\n## 访客当前位置天气\n访客位于${weather.city}${weather.country ? `（${weather.country}）` : ''}，当前天气：${weather.description}，气温${Math.round(weather.temperature)}°C。如果访客问天气，可以告诉他们这些信息。`;
+  }
+
+  return `\n\n## Visitor's Current Weather\nThe visitor is in ${weather.city}${weather.country ? ` (${weather.country})` : ''}. Current weather: ${weather.description}, ${Math.round(weather.temperature)}°C. If they ask about weather, you can share this info.`;
+}
+
+// =============================================================================
 // CHAT TYPES & SYSTEM PROMPTS
 // =============================================================================
 
@@ -532,6 +621,17 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     // Dynamically fetch photos based on user's request
     const { prompt: photoPrompt, photosToAppend } = await preparePhotoPrompt(context.env.PHOTOGRAPHY, language, latestUserMsg);
 
+    // Fetch weather based on visitor's location (from Cloudflare headers)
+    const cfData = (context.request as Request & { cf?: { latitude?: string; longitude?: string; city?: string; country?: string } }).cf;
+    const weather = await fetchWeather(
+      cfData?.latitude ?? null,
+      cfData?.longitude ?? null,
+      cfData?.city ?? null,
+      cfData?.country ?? null,
+      language
+    );
+    const weatherPrompt = buildWeatherPrompt(weather, language);
+
     // Build system prompt
     const basePrompt = language === 'zh' ? SYSTEM_PROMPT_ZH : SYSTEM_PROMPT_EN;
 
@@ -545,7 +645,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
           : `\n\n## Current Visitor\nThe visitor's name is "${cleanUsername}". Please address them by their name occasionally and naturally during the conversation to provide a personalized experience (do not overdo it, keep it natural).`;
     }
 
-    const systemPrompt = basePrompt + usernamePrompt + photoPrompt;
+    const systemPrompt = basePrompt + usernamePrompt + weatherPrompt + photoPrompt;
 
     const aiMessages: ChatMessage[] = [{ role: 'system', content: systemPrompt }, ...messages];
 
