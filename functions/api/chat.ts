@@ -384,6 +384,9 @@ When discussing movies, Yun appreciates thoughtful storytelling, visual aestheti
 ## Music and Opera
 Favorites: Carmen (卡门) - absolute favorite, The Magic Flute (魔笛) by Mozart
 
+## Food Preferences
+Yun enjoys Mediterranean-style cooking with herbs like thyme, sage, basil, and rosemary. Favorite cuisines include Szechuan Chinese (Baron's Sino, Dan Gui), Japanese sushi (Fuji Sushi, Tendon Kohaku), and Thai food (Bai Tong). Prefers healthy ingredients: olive oil, fish, vegetables, nuts, and whole grains.
+
 ## Books Yun Has Read
 Classic and Philosophy: The Art of War (孙子兵法), The Wealth of Nations (国富论), The Case of the Speluncean Explorers (洞穴奇案)
 Science Fiction: Three Body Problem by Cixin Liu
@@ -476,6 +479,9 @@ const SYSTEM_PROMPT_ZH = `你是伍芸的AI小助手，在 yunwustudio.com 为�
 
 ## 音乐与歌剧
 最爱：卡门（Carmen）、魔笛（莫扎特）
+
+## 饮食偏好
+伍芸喜欢地中海风格烹饪，常用百里香、鼠尾草、罗勒、迷迭香等香草。喜欢的菜系包括四川菜、日本寿司和泰国菜。偏好健康食材：橄榄油、鱼、蔬菜、坚果和五谷杂粮。
 
 ## 伍芸读过的书
 经典与哲学：孙子兵法、国富论、洞穴奇案
