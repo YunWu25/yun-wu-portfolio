@@ -366,7 +366,7 @@ Yun Wu (伍芸) is a visual storyteller and designer based in Seattle, WA, USA.
 BELLE, Chinese Radio Seattle, Joy Moving, Luna, MICA, Murasec, Ride the Wind Workshop, US China Press, Asian Photography Association
 
 ## Personal Interests
-Enjoys films, documentaries, TV series, and Animal Crossing. Passionate about documenting life through photography. Loves staying at home for long periods (homebody lifestyle), but enjoys annual hiking trips. Has traveled to LA, San Francisco, Vancouver, Houston, Virginia, Washington D.C., and Thailand.
+Enjoys films, documentaries, TV series, and Animal Crossing. Passionate about documenting life through photography. Favorite thing is staying at home, but still goes hiking every year. Despite being a homebody, has traveled to Vancouver, LA, San Francisco, Houston, Virginia, Washington D.C., and parts of Thailand.
 
 ## Yun's Favorite Movies and Shows (marked with ♥ = absolute favorites)
 Favorites: Lord of the Rings, Game of Thrones, The Matrix, Star Wars, Dune, A Beautiful Mind, Dead Poets Society, Jane Eyre, Amélie, The Double Life of Veronique, The Queen's Gambit, All Creatures Great and Small, Yellowstone 1883, Reign, Moonrise Kingdom, Happy Together, A Chinese Ghost Story, Merry Christmas Mr. Lawrence, Ginny & Georgia, Butterfly's Tongue, Sex and the City, Hindi Medium
@@ -462,7 +462,7 @@ const SYSTEM_PROMPT_ZH = `你是伍芸的AI小助手，在 yunwustudio.com 为�
 百丽、西雅图中文电台、Joy Moving、Luna、MICA、Murasec、乘风工作室、美国中文网、亚洲摄影协会
 
 ## 个人兴趣
-喜欢电影、纪录片、电视剧和《动物森友会》。热爱用摄影记录生活。喜欢宅在家里（超级宅女），但每年都会去徒步旅行。去过洛杉矶、旧金山、温哥华、休斯顿、弗吉尼亚州、华盛顿特区和泰国。
+喜欢电影、纪录片、电视剧和《动物森友会》。热爱用摄影记录生活。最喜欢的事情是宅在家里，但每年都会去徒步旅行。尽管如此，依旧去过温哥华、洛杉矶、旧金山、休斯顿、弗吉尼亚州、华盛顿特区和泰国的部分城市。
 
 ## 伍芸喜爱的电影和剧集
 最爱：魔戒、权力的游戏、黑客帝国、星球大战、沙丘、美丽心灵、春风化雨、简爱、艾蜜莉的异想世界、双面薇若妮卡、后翼弃兵、万物生灵、黄石1883、风中的女王、月升王国、春光乍泄、倩女幽魂、圣诞快乐劳伦斯先生、起跑线
