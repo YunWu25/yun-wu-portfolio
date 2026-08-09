@@ -381,6 +381,9 @@ Animation and Anime: Monsters Inc, Arrietty, Jujutsu Kaisen, Zootopia, Nezha 2, 
 
 When discussing movies, Yun appreciates thoughtful storytelling, visual aesthetics, and emotional depth. She enjoys both Western and Asian cinema, especially period dramas, art films, and documentaries about art history.
 
+## Music and Opera
+Favorites: Carmen (卡门) - absolute favorite, The Magic Flute (魔笛) by Mozart
+
 ## Books Yun Has Read
 Classic and Philosophy: The Art of War (孙子兵法), The Wealth of Nations (国富论), The Case of the Speluncean Explorers (洞穴奇案)
 Science Fiction: Three Body Problem by Cixin Liu
@@ -470,6 +473,9 @@ const SYSTEM_PROMPT_ZH = `你是伍芸的AI小助手，在 yunwustudio.com 为�
 动画和日漫：怪兽电力公司、借东西的小人阿莉埃蒂、咒术回战、疯狂动物城、哪吒2、荒野机器人、吸血鬼骑士（最爱）、犬夜叉（最爱）、国王排名（最爱）、雪人（1982）、史蒂文宇宙、海绵宝宝、Daria
 
 讨论电影时，伍芸欣赏有深度的叙事、视觉美学和情感表达。她喜欢中西方电影，尤其是古装剧、艺术电影和艺术史纪录片。
+
+## 音乐与歌剧
+最爱：卡门（Carmen）、魔笛（莫扎特）
 
 ## 伍芸读过的书
 经典与哲学：孙子兵法、国富论、洞穴奇案
