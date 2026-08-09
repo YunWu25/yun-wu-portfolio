@@ -42,11 +42,12 @@ export default tseslint.config(
   // Backend/API code (Cloudflare Functions) - stricter security
   {
     files: ['functions/**/*.ts'],
-    extends: [js.configs.recommended, prettierConfig],
+    extends: [js.configs.recommended, ...tseslint.configs.recommended, prettierConfig],
     plugins: {
       security,
     },
     languageOptions: {
+      parser: tseslint.parser,
       globals: {
         console: 'readonly',
         fetch: 'readonly',
