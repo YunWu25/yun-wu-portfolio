@@ -13,15 +13,16 @@ const CORAL_COLOR = '#FF6B6B';
 const INACTIVE_COLOR = '#4a4a4a';
 
 const SPEEDS: Record<Speed, number> = {
-  slow: 1500,
-  medium: 1000,
-  fast: 600,
+  slow: 1000,
+  medium: 600,
+  fast: 350,
 };
 
 const content = {
   en: {
     title: 'Saccades Training',
     instructions: 'Quickly move your eyes to follow the highlighted target.',
+    suggestedTime: 'Suggested: 3 min',
     speed: 'Speed',
     slow: 'Slow',
     medium: 'Medium',
@@ -39,6 +40,7 @@ const content = {
   zh: {
     title: '快速跳跃训练',
     instructions: '快速移动视线追踪高亮的目标。',
+    suggestedTime: '建议时长：3分钟',
     speed: '速度',
     slow: '慢',
     medium: '中',
@@ -72,6 +74,7 @@ const SaccadesTraining: React.FC<SaccadesTrainingProps> = ({ language, onExit })
   const [pattern, setPattern] = useState<Pattern>('random');
   const [activeIndex, setActiveIndex] = useState(0);
   const [targets, setTargets] = useState<Target[]>([]);
+  const [timeRemaining, setTimeRemaining] = useState(180); // 3 minutes in seconds
 
   const t = content[language];
 
@@ -235,6 +238,25 @@ const SaccadesTraining: React.FC<SaccadesTrainingProps> = ({ language, onExit })
     };
   }, [isRunning, targets.length, speed, activeIndex, pattern, getNextIndex]);
 
+  // 3-minute countdown timer
+  useEffect(() => {
+    if (!isRunning || timeRemaining <= 0) return;
+
+    const timer = setInterval(() => {
+      setTimeRemaining(prev => Math.max(0, prev - 1));
+    }, 1000);
+
+    return () => { clearInterval(timer); };
+  }, [isRunning, timeRemaining]);
+
+
+  // Format time as MM:SS
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
   return (
     <div className="fixed inset-0 bg-gray-900 z-50">
       {/* Canvas */}
@@ -254,9 +276,20 @@ const SaccadesTraining: React.FC<SaccadesTrainingProps> = ({ language, onExit })
       <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 to-transparent z-10">
         <div className="max-w-2xl mx-auto">
           {/* Instructions */}
-          <p className="text-white/80 text-center text-sm mb-4">
+          <p className="text-white/80 text-center text-sm mb-2">
             {t.instructions}
           </p>
+
+          {/* Timer */}
+          <div className="text-center mb-4">
+            <span className="text-white/60 text-xs">{t.suggestedTime}</span>
+            <span className={`ml-2 font-mono text-lg ${timeRemaining > 0 ? 'text-coral' : 'text-green-400'}`}>
+              {formatTime(timeRemaining)}
+            </span>
+            {timeRemaining === 0 && (
+              <span className="ml-2 text-green-400 text-sm">✓</span>
+            )}
+          </div>
 
           <div className="flex flex-wrap items-center justify-center gap-4">
             {/* Pause/Resume */}
@@ -310,7 +343,7 @@ const SaccadesTraining: React.FC<SaccadesTrainingProps> = ({ language, onExit })
               {(['random', 'horizontal', 'vertical'] as Pattern[]).map((p) => (
                 <button
                   key={p}
-                  onClick={() => { setPattern(p); }}
+                  onClick={() => { setPattern(p); setTimeRemaining(180); }}
                   className={`px-3 py-1 rounded-full text-sm transition-colors ${
                     pattern === p
                       ? 'bg-coral text-white'

@@ -10,15 +10,16 @@ type Speed = 'slow' | 'medium' | 'fast';
 
 const CORAL_COLOR = '#FF6B6B';
 const SPEEDS: Record<Speed, number> = {
-  slow: 3000,
-  medium: 2000,
-  fast: 1000,
+  slow: 2000,
+  medium: 1000,
+  fast: 500,
 };
 
 const content = {
   en: {
     title: 'Fixation Training',
     instructions: 'Focus your eyes on the target. It will pulse and move to new positions.',
+    suggestedTime: 'Suggested: 3 min',
     speed: 'Speed',
     slow: 'Slow',
     medium: 'Medium',
@@ -30,6 +31,7 @@ const content = {
   zh: {
     title: '定神聚焦训练',
     instructions: '将视线集中在目标上。它会闪烁并移动到新位置。',
+    suggestedTime: '建议时长：3分钟',
     speed: '速度',
     slow: '慢',
     medium: '中',
@@ -48,6 +50,7 @@ const FixationTraining: React.FC<FixationTrainingProps> = ({ language, onExit })
 
   const [isRunning, setIsRunning] = useState(true);
   const [speed, setSpeed] = useState<Speed>('medium');
+  const [timeRemaining, setTimeRemaining] = useState(180); // 3 minutes in seconds
 
   // Target state
   const targetRef = useRef({
@@ -161,6 +164,24 @@ const FixationTraining: React.FC<FixationTrainingProps> = ({ language, onExit })
     };
   }, [isRunning, speed, getRandomPosition]);
 
+  // 3-minute countdown timer
+  useEffect(() => {
+    if (!isRunning || timeRemaining <= 0) return;
+
+    const timer = setInterval(() => {
+      setTimeRemaining(prev => Math.max(0, prev - 1));
+    }, 1000);
+
+    return () => { clearInterval(timer); };
+  }, [isRunning, timeRemaining]);
+
+  // Format time as MM:SS
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
   return (
     <div className="fixed inset-0 bg-gray-900 z-50">
       {/* Canvas */}
@@ -180,9 +201,20 @@ const FixationTraining: React.FC<FixationTrainingProps> = ({ language, onExit })
       <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 to-transparent z-10">
         <div className="max-w-xl mx-auto">
           {/* Instructions */}
-          <p className="text-white/80 text-center text-sm mb-4">
+          <p className="text-white/80 text-center text-sm mb-2">
             {t.instructions}
           </p>
+
+          {/* Timer */}
+          <div className="text-center mb-4">
+            <span className="text-white/60 text-xs">{t.suggestedTime}</span>
+            <span className={`ml-2 font-mono text-lg ${timeRemaining > 0 ? 'text-coral' : 'text-green-400'}`}>
+              {formatTime(timeRemaining)}
+            </span>
+            {timeRemaining === 0 && (
+              <span className="ml-2 text-green-400 text-sm">✓</span>
+            )}
+          </div>
 
           <div className="flex items-center justify-center gap-6">
             {/* Pause/Resume */}
