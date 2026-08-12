@@ -96,10 +96,10 @@ const EyeCare: React.FC<EyeCareProps> = ({ language }) => {
               key={key}
               onClick={() => { setSelectedModule(key); }}
               className={`
-                p-6 rounded-lg border-2 transition-all duration-300 text-left
+                p-6 rounded-xl transition-all duration-300 text-left bg-white
                 ${isSelected
-                  ? 'border-coral bg-coral/5 shadow-lg'
-                  : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-md'
+                  ? 'border-2 border-coral bg-coral/5 shadow-lg'
+                  : 'border border-gray-100 hover:shadow-lg hover:border-gray-200'
                 }
               `}
             >
