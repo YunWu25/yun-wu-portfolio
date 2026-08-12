@@ -82,8 +82,8 @@ const MainContent: React.FC<MainContentProps> = ({
     { label: language === 'en' ? 'Design' : '设计', view: ViewState.DESIGN },
     { label: language === 'en' ? 'Video' : '影片', view: ViewState.VIDEO },
     { label: language === 'en' ? 'Gallery' : '画廊', view: ViewState.PHOTOGRAPHY },
-    { label: language === 'en' ? "Let's Game" : '游戏时间', view: ViewState.GAME },
     { label: language === 'en' ? 'Eye Care' : '护眼训练', view: ViewState.EYE_CARE },
+    { label: language === 'en' ? "Let's Game" : '游戏时间', view: ViewState.GAME },
   ];
 
   const renderBodyContent = () => {
@@ -288,7 +288,7 @@ const MainContent: React.FC<MainContentProps> = ({
                 {item.view === ViewState.HOME && (
                   <div
                     className={`overflow-hidden transition-all duration-300 ${
-                      homeExpanded ? 'max-h-60 opacity-100' : 'max-h-0 opacity-0'
+                      homeExpanded ? 'max-h-80 opacity-100' : 'max-h-0 opacity-0'
                     }`}
                   >
                     <div className="ml-7 mt-4 space-y-4">
