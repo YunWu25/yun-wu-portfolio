@@ -7,6 +7,7 @@ export enum ViewState {
   VIDEO = 'VIDEO',
   TIME = 'TIME',
   GAME = 'GAME',
+  EYE_CARE = 'EYE_CARE',
 }
 
 export interface ProjectTask {

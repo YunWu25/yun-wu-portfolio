@@ -26,6 +26,7 @@ const viewToPath: Record<ViewState, string> = {
   [ViewState.VIDEO]: '/video',
   [ViewState.TIME]: '/time',
   [ViewState.GAME]: '/game',
+  [ViewState.EYE_CARE]: '/eye-care',
 };
 
 const getViewFromPath = (path: string): ViewState => {

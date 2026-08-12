@@ -14,6 +14,7 @@ const Video = lazy(() => import('./Video'));
 const About = lazy(() => import('./About'));
 const Time = lazy(() => import('./Time'));
 const Game = lazy(() => import('./Game'));
+const EyeCare = lazy(() => import('./EyeCare'));
 
 // Loading skeleton component
 const PageLoader: React.FC = () => (
@@ -66,7 +67,8 @@ const MainContent: React.FC<MainContentProps> = ({
       activeView === ViewState.DESIGN ||
       activeView === ViewState.VIDEO ||
       activeView === ViewState.TIME ||
-      activeView === ViewState.GAME
+      activeView === ViewState.GAME ||
+      activeView === ViewState.EYE_CARE
   );
 
   const navItems: NavItem[] = [
@@ -81,6 +83,7 @@ const MainContent: React.FC<MainContentProps> = ({
     { label: language === 'en' ? 'Video' : '影片', view: ViewState.VIDEO },
     { label: language === 'en' ? 'Gallery' : '画廊', view: ViewState.PHOTOGRAPHY },
     { label: language === 'en' ? "Let's Game" : '游戏时间', view: ViewState.GAME },
+    { label: language === 'en' ? 'Eye Care' : '护眼训练', view: ViewState.EYE_CARE },
   ];
 
   const renderBodyContent = () => {
@@ -127,6 +130,12 @@ const MainContent: React.FC<MainContentProps> = ({
             <Game language={language} />
           </Suspense>
         );
+      case ViewState.EYE_CARE:
+        return (
+          <Suspense fallback={<PageLoader />}>
+            <EyeCare language={language} />
+          </Suspense>
+        );
       case ViewState.HOME:
       default:
         return <Home onNavigate={onNavigate} language={language} />;
@@ -151,6 +160,8 @@ const MainContent: React.FC<MainContentProps> = ({
         return language === 'en' ? 'Time' : '时光';
       case ViewState.GAME:
         return language === 'en' ? 'Game' : '游戏';
+      case ViewState.EYE_CARE:
+        return language === 'en' ? 'Eye Care' : '护眼';
       default:
         return language === 'en' ? 'Yun Wu' : '伍芸';
     }
@@ -232,7 +243,8 @@ const MainContent: React.FC<MainContentProps> = ({
                           activeView === ViewState.DESIGN ||
                           activeView === ViewState.VIDEO ||
                           activeView === ViewState.TIME ||
-                          activeView === ViewState.GAME))
+                          activeView === ViewState.GAME ||
+                          activeView === ViewState.EYE_CARE))
                         ? 'opacity-100 scale-100'
                         : 'opacity-0 group-hover:opacity-40 scale-0 group-hover:scale-75'
                     }`}
@@ -246,7 +258,8 @@ const MainContent: React.FC<MainContentProps> = ({
                           activeView === ViewState.DESIGN ||
                           activeView === ViewState.VIDEO ||
                           activeView === ViewState.TIME ||
-                          activeView === ViewState.GAME))
+                          activeView === ViewState.GAME ||
+                          activeView === ViewState.EYE_CARE))
                         ? `${COLORS.gray900} font-medium`
                         : `${COLORS.gray500} group-hover:text-coral`
                     }`}
@@ -263,7 +276,8 @@ const MainContent: React.FC<MainContentProps> = ({
                         activeView === ViewState.PHOTOGRAPHY ||
                         activeView === ViewState.DESIGN ||
                         activeView === ViewState.VIDEO ||
-                        activeView === ViewState.TIME
+                        activeView === ViewState.TIME ||
+                        activeView === ViewState.EYE_CARE
                           ? COLORS.gray900
                           : `${COLORS.gray500} group-hover:text-coral`
                       }`}
