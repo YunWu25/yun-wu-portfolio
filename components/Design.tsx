@@ -12,6 +12,7 @@ interface Project {
   role: string;
   link: string | null;
   imageType: 'jpg' | 'gif';
+  displayText?: string[];
 }
 
 const getScreenshotUrl = (title: string, type: string, imageType: 'jpg' | 'gif'): string => {
@@ -24,30 +25,58 @@ const LaptopMockup: React.FC<{ project: Project }> = ({ project }) => {
   const screenshotUrl = getScreenshotUrl(project.title, project.type, project.imageType);
 
   return (
-    <div className="relative w-48 md:w-56 lg:w-64 shrink-0">
+    <div className="w-48 md:w-56 lg:w-64 shrink-0">
+      {/* Screen with gray frame */}
       <div
-        className="absolute overflow-hidden z-0"
-        style={{
-          top: '3%',
-          left: '11.5%',
-          right: '11.5%',
-          bottom: '15%',
-          borderRadius: '2px',
-        }}
+        className="bg-gray-400 rounded-lg p-1"
+        style={{ boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
       >
-        <img
-          src={screenshotUrl}
-          alt={`${project.title} screenshot`}
-          className={`w-full absolute top-0 left-0 ${project.imageType === 'jpg' ? 'animate-scroll-up' : ''}`}
-          loading="lazy"
+        {/* Screen content */}
+        <div
+          className="relative overflow-hidden bg-white rounded-md flex items-center justify-center"
+          style={{ aspectRatio: '16/10' }}
+        >
+          {project.displayText ? (
+            <div className="flex flex-col items-center justify-center text-center px-2">
+              {project.displayText.map((line, index) => (
+                <span
+                  key={index}
+                  className="font-sans font-bold text-gray-800 leading-tight"
+                  style={{ fontSize: 'clamp(12px, 3vw, 18px)' }}
+                >
+                  {line}
+                </span>
+              ))}
+            </div>
+          ) : (
+            <img
+              src={screenshotUrl}
+              alt={`${project.title} screenshot`}
+              className={`w-full absolute top-0 left-0 ${project.imageType === 'jpg' ? 'animate-scroll-up' : ''}`}
+              loading="lazy"
+            />
+          )}
+        </div>
+      </div>
+      {/* Base/Stand */}
+      <div className="flex justify-center">
+        <div
+          className="h-2 rounded-b-sm"
+          style={{
+            width: '40%',
+            background: 'linear-gradient(180deg, #c0c0c0 0%, #d4d4d4 100%)',
+          }}
         />
       </div>
-
-      <img
-        src="/images/macbook-gold.png"
-        alt="MacBook frame"
-        className="w-full h-auto relative z-10 pointer-events-none"
-      />
+      <div className="flex justify-center">
+        <div
+          className="h-1 rounded-b"
+          style={{
+            width: '55%',
+            background: 'linear-gradient(180deg, #d4d4d4 0%, #e8e8e8 100%)',
+          }}
+        />
+      </div>
     </div>
   );
 };
@@ -160,6 +189,7 @@ const Design: React.FC<DesignProps> = ({ language }) => {
       role: 'Social Media Designer',
       link: null,
       imageType: 'jpg',
+      displayText: ['Luna', 'Seattle'],
     },
     {
       title: 'Hctc China',
