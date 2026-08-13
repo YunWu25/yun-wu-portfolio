@@ -216,24 +216,24 @@ const FixationTraining: React.FC<FixationTrainingProps> = ({ language, onExit })
             )}
           </div>
 
-          <div className="flex items-center justify-center gap-6">
+          <div className="flex flex-col md:flex-row items-center justify-center gap-3 md:gap-6">
             {/* Pause/Resume */}
             <button
               onClick={() => { setIsRunning(!isRunning); }}
-              className="px-6 py-2 rounded-full bg-white/10 hover:bg-white/20
+              className="w-full md:w-auto px-6 py-2 rounded-full bg-white/10 hover:bg-white/20
                          text-white font-medium transition-colors"
             >
               {isRunning ? t.pause : t.resume}
             </button>
 
             {/* Speed Controls */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center justify-center gap-2">
               <span className="text-white/60 text-sm">{t.speed}:</span>
               {(['slow', 'medium', 'fast'] as Speed[]).map((s) => (
                 <button
                   key={s}
                   onClick={() => { setSpeed(s); }}
-                  className={`px-3 py-1 rounded-full text-sm transition-colors ${
+                  className={`px-4 py-2 md:px-3 md:py-1 rounded-full text-sm transition-colors ${
                     speed === s
                       ? 'bg-coral text-white'
                       : 'bg-white/10 text-white/60 hover:bg-white/20'

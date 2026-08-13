@@ -398,24 +398,24 @@ const PursuitsTraining: React.FC<PursuitsTrainingProps> = ({ language, onExit })
             )}
           </div>
 
-          <div className="flex flex-wrap items-center justify-center gap-4">
+          <div className="flex flex-col md:flex-row md:flex-wrap items-center justify-center gap-3 md:gap-4">
             {/* Pause/Resume */}
             <button
               onClick={() => { setIsRunning(!isRunning); }}
-              className="px-6 py-2 rounded-full bg-white/10 hover:bg-white/20
+              className="w-full md:w-auto px-6 py-2 rounded-full bg-white/10 hover:bg-white/20
                          text-white font-medium transition-colors"
             >
               {isRunning ? t.pause : t.resume}
             </button>
 
             {/* Speed Controls */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center justify-center gap-2">
               <span className="text-white/60 text-sm">{t.speed}:</span>
               {(['slow', 'medium', 'fast'] as Speed[]).map((s) => (
                 <button
                   key={s}
                   onClick={() => { setSpeed(s); }}
-                  className={`px-3 py-1 rounded-full text-sm transition-colors ${
+                  className={`px-4 py-2 md:px-3 md:py-1 rounded-full text-sm transition-colors ${
                     speed === s
                       ? 'bg-coral text-white'
                       : 'bg-white/10 text-white/60 hover:bg-white/20'
@@ -427,13 +427,13 @@ const PursuitsTraining: React.FC<PursuitsTrainingProps> = ({ language, onExit })
             </div>
 
             {/* Pattern */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center justify-center flex-wrap gap-2">
               <span className="text-white/60 text-sm">{t.pattern}:</span>
               {(['circle', 'wave', 'figure8', 'spiral', 'bounce'] as Pattern[]).map((p) => (
                 <button
                   key={p}
                   onClick={() => { setPattern(p); setTimeRemaining(180); }}
-                  className={`px-3 py-1 rounded-full text-sm transition-colors ${
+                  className={`px-4 py-2 md:px-3 md:py-1 rounded-full text-sm transition-colors ${
                     pattern === p
                       ? 'bg-coral text-white'
                       : 'bg-white/10 text-white/60 hover:bg-white/20'
@@ -445,13 +445,13 @@ const PursuitsTraining: React.FC<PursuitsTrainingProps> = ({ language, onExit })
             </div>
 
             {/* Direction */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center justify-center gap-2">
               <span className="text-white/60 text-sm">{t.direction}:</span>
               {(['clockwise', 'counterclockwise'] as Direction[]).map((d) => (
                 <button
                   key={d}
                   onClick={() => { setDirection(d); }}
-                  className={`px-3 py-1 rounded-full text-sm transition-colors ${
+                  className={`px-4 py-2 md:px-3 md:py-1 rounded-full text-sm transition-colors ${
                     direction === d
                       ? 'bg-coral text-white'
                       : 'bg-white/10 text-white/60 hover:bg-white/20'

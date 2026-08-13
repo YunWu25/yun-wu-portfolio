@@ -291,24 +291,24 @@ const SaccadesTraining: React.FC<SaccadesTrainingProps> = ({ language, onExit })
             )}
           </div>
 
-          <div className="flex flex-wrap items-center justify-center gap-4">
+          <div className="flex flex-col md:flex-row md:flex-wrap items-center justify-center gap-3 md:gap-4">
             {/* Pause/Resume */}
             <button
               onClick={() => { setIsRunning(!isRunning); }}
-              className="px-6 py-2 rounded-full bg-white/10 hover:bg-white/20
+              className="w-full md:w-auto px-6 py-2 rounded-full bg-white/10 hover:bg-white/20
                          text-white font-medium transition-colors"
             >
               {isRunning ? t.pause : t.resume}
             </button>
 
             {/* Speed Controls */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center justify-center gap-2">
               <span className="text-white/60 text-sm">{t.speed}:</span>
               {(['slow', 'medium', 'fast'] as Speed[]).map((s) => (
                 <button
                   key={s}
                   onClick={() => { setSpeed(s); }}
-                  className={`px-3 py-1 rounded-full text-sm transition-colors ${
+                  className={`px-4 py-2 md:px-3 md:py-1 rounded-full text-sm transition-colors ${
                     speed === s
                       ? 'bg-coral text-white'
                       : 'bg-white/10 text-white/60 hover:bg-white/20'
@@ -320,13 +320,13 @@ const SaccadesTraining: React.FC<SaccadesTrainingProps> = ({ language, onExit })
             </div>
 
             {/* Target Count */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center justify-center gap-2">
               <span className="text-white/60 text-sm">{t.targets}:</span>
               {[3, 4, 5, 6].map((count) => (
                 <button
                   key={count}
                   onClick={() => { setTargetCount(count); }}
-                  className={`w-8 h-8 rounded-full text-sm transition-colors ${
+                  className={`w-10 h-10 md:w-8 md:h-8 rounded-full text-sm transition-colors ${
                     targetCount === count
                       ? 'bg-coral text-white'
                       : 'bg-white/10 text-white/60 hover:bg-white/20'
@@ -338,13 +338,13 @@ const SaccadesTraining: React.FC<SaccadesTrainingProps> = ({ language, onExit })
             </div>
 
             {/* Pattern */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center justify-center gap-2">
               <span className="text-white/60 text-sm">{t.pattern}:</span>
               {(['random', 'horizontal', 'vertical'] as Pattern[]).map((p) => (
                 <button
                   key={p}
                   onClick={() => { setPattern(p); setTimeRemaining(180); }}
-                  className={`px-3 py-1 rounded-full text-sm transition-colors ${
+                  className={`px-4 py-2 md:px-3 md:py-1 rounded-full text-sm transition-colors ${
                     pattern === p
                       ? 'bg-coral text-white'
                       : 'bg-white/10 text-white/60 hover:bg-white/20'
