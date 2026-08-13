@@ -140,6 +140,7 @@ const Design: React.FC<DesignProps> = ({ language }) => {
       role: 'Designer',
       link: 'https://scrm_hc.hctcchina.com/',
       imageType: 'jpg',
+      displayText: ['Hctcchina', 'China'],
     },
     {
       title: 'COC',
