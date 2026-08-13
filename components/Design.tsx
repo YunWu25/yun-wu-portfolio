@@ -28,8 +28,8 @@ const LaptopMockup: React.FC<{ project: Project }> = ({ project }) => {
     <div className="w-48 md:w-56 lg:w-64 shrink-0">
       {/* Screen with gray frame */}
       <div
-        className="bg-gray-400 rounded-lg p-1"
-        style={{ boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+        className="bg-gray-300 rounded-lg"
+        style={{ padding: '3.2px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
       >
         {/* Screen content */}
         <div
