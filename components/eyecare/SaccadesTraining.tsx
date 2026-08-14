@@ -81,8 +81,11 @@ const SaccadesTraining: React.FC<SaccadesTrainingProps> = ({ language, onExit })
   // Generate target positions based on pattern
   const generateTargets = useCallback((canvas: HTMLCanvasElement, count: number, pat: Pattern): Target[] => {
     const paddingTop = 80;
-    const paddingSide = 120;
-    const paddingBottom = 220; // More padding for bottom control panel
+    const paddingSide = Math.min(120, canvas.width * 0.1);
+    // Mobile needs more bottom padding due to stacked controls
+    const isMobile = canvas.width < 768;
+    const isPortrait = canvas.height > canvas.width;
+    const paddingBottom = isMobile ? (isPortrait ? 450 : 280) : 220;
     const centerX = canvas.width / 2;
     const centerY = (canvas.height - paddingBottom + paddingTop) / 2; // Offset center upward
     const maxRadius = Math.min(canvas.width - paddingSide * 2, canvas.height - paddingTop - paddingBottom) / 2;

@@ -155,7 +155,10 @@ const PursuitsTraining: React.FC<PursuitsTrainingProps> = ({ language, onExit })
       if (!ctx) return;
 
       const paddingTop = 80;
-      const paddingBottom = 220; // More padding for bottom control panel
+      // Mobile needs more bottom padding due to stacked controls
+      const isMobile = canvas.width < 768;
+      const isPortrait = canvas.height > canvas.width;
+      const paddingBottom = isMobile ? (isPortrait ? 500 : 320) : 220;
       const centerX = canvas.width / 2;
       const centerY = (canvas.height - paddingBottom + paddingTop) / 2; // Offset center upward
       const maxRadius = Math.min(canvas.width, canvas.height - paddingTop - paddingBottom) * 0.35;
