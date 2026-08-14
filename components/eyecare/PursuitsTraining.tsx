@@ -161,7 +161,7 @@ const PursuitsTraining: React.FC<PursuitsTrainingProps> = ({ language, onExit })
       const paddingBottom = isMobile ? (isPortrait ? 500 : 320) : 220;
       const centerX = canvas.width / 2;
       const centerY = (canvas.height - paddingBottom + paddingTop) / 2; // Offset center upward
-      const maxRadius = Math.min(canvas.width, canvas.height - paddingTop - paddingBottom) * 0.35;
+      const maxRadius = Math.min(canvas.width, canvas.height - paddingTop - paddingBottom) * (isMobile ? 0.35 : 0.42);
       const ballRadius = 20;
       const paddingSide = ballRadius + 10;
 
