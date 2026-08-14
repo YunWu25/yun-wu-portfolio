@@ -80,10 +80,12 @@ const SaccadesTraining: React.FC<SaccadesTrainingProps> = ({ language, onExit })
 
   // Generate target positions based on pattern
   const generateTargets = useCallback((canvas: HTMLCanvasElement, count: number, pat: Pattern): Target[] => {
-    const padding = 120;
+    const paddingTop = 80;
+    const paddingSide = 120;
+    const paddingBottom = 220; // More padding for bottom control panel
     const centerX = canvas.width / 2;
-    const centerY = canvas.height / 2;
-    const maxRadius = Math.min(canvas.width, canvas.height) / 2 - padding;
+    const centerY = (canvas.height - paddingBottom + paddingTop) / 2; // Offset center upward
+    const maxRadius = Math.min(canvas.width - paddingSide * 2, canvas.height - paddingTop - paddingBottom) / 2;
 
     const newTargets: Target[] = [];
 
@@ -91,7 +93,7 @@ const SaccadesTraining: React.FC<SaccadesTrainingProps> = ({ language, onExit })
       case 'horizontal': {
         for (let i = 0; i < count; i++) {
           newTargets.push({
-            x: padding + (i * (canvas.width - padding * 2)) / (count - 1 || 1),
+            x: paddingSide + (i * (canvas.width - paddingSide * 2)) / (count - 1 || 1),
             y: centerY,
           });
         }
@@ -101,7 +103,7 @@ const SaccadesTraining: React.FC<SaccadesTrainingProps> = ({ language, onExit })
         for (let i = 0; i < count; i++) {
           newTargets.push({
             x: centerX,
-            y: padding + (i * (canvas.height - padding * 2)) / (count - 1 || 1),
+            y: paddingTop + (i * (canvas.height - paddingTop - paddingBottom)) / (count - 1 || 1),
           });
         }
         break;
@@ -110,8 +112,8 @@ const SaccadesTraining: React.FC<SaccadesTrainingProps> = ({ language, onExit })
         for (let i = 0; i < count; i++) {
           const progress = i / (count - 1 || 1);
           newTargets.push({
-            x: padding + progress * (canvas.width - padding * 2),
-            y: padding + progress * (canvas.height - padding * 2),
+            x: paddingSide + progress * (canvas.width - paddingSide * 2),
+            y: paddingTop + progress * (canvas.height - paddingTop - paddingBottom),
           });
         }
         break;

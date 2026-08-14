@@ -154,11 +154,13 @@ const PursuitsTraining: React.FC<PursuitsTrainingProps> = ({ language, onExit })
       const ctx = canvas.getContext('2d');
       if (!ctx) return;
 
+      const paddingTop = 80;
+      const paddingBottom = 220; // More padding for bottom control panel
       const centerX = canvas.width / 2;
-      const centerY = canvas.height / 2;
-      const maxRadius = Math.min(canvas.width, canvas.height) * 0.35;
+      const centerY = (canvas.height - paddingBottom + paddingTop) / 2; // Offset center upward
+      const maxRadius = Math.min(canvas.width, canvas.height - paddingTop - paddingBottom) * 0.35;
       const ballRadius = 20;
-      const padding = ballRadius + 10;
+      const paddingSide = ballRadius + 10;
 
       let pos: { x: number; y: number };
 
@@ -198,27 +200,27 @@ const PursuitsTraining: React.FC<PursuitsTrainingProps> = ({ language, onExit })
         bounce.scaleY += (1 - bounce.scaleY) * 0.15;
 
         // Bounce off edges with squash/stretch effect
-        if (bounce.x <= padding) {
-          bounce.x = padding;
+        if (bounce.x <= paddingSide) {
+          bounce.x = paddingSide;
           bounce.vx = Math.abs(bounce.vx);
           // Squash horizontally, stretch vertically
           bounce.scaleX = 0.6;
           bounce.scaleY = 1.4;
-        } else if (bounce.x >= canvas.width - padding) {
-          bounce.x = canvas.width - padding;
+        } else if (bounce.x >= canvas.width - paddingSide) {
+          bounce.x = canvas.width - paddingSide;
           bounce.vx = -Math.abs(bounce.vx);
           bounce.scaleX = 0.6;
           bounce.scaleY = 1.4;
         }
 
-        if (bounce.y <= padding) {
-          bounce.y = padding;
+        if (bounce.y <= paddingTop) {
+          bounce.y = paddingTop;
           bounce.vy = Math.abs(bounce.vy);
           // Squash vertically, stretch horizontally
           bounce.scaleX = 1.4;
           bounce.scaleY = 0.6;
-        } else if (bounce.y >= canvas.height - padding) {
-          bounce.y = canvas.height - padding;
+        } else if (bounce.y >= canvas.height - paddingBottom) {
+          bounce.y = canvas.height - paddingBottom;
           bounce.vy = -Math.abs(bounce.vy);
           bounce.scaleX = 1.4;
           bounce.scaleY = 0.6;
