@@ -505,7 +505,7 @@ Favorites: Lord of the Rings, Game of Thrones, The Matrix, Star Wars, Dune, A Be
 
 Classic Films: Slumdog Millionaire, Roman Holiday, My Fair Lady, Life Is Beautiful, Farewell My Concubine, The Grand Budapest Hotel, Interstellar, Eternal Sunshine of the Spotless Mind, The Prestige
 
-TV Shows: Inside No.9, The Crown, Normal People, Black Mirror, Young Sheldon, Killing Eve, Fleabag, Shogun, House of the Dragon, Stranger Things, The Big Bang Theory, Good Omens, Modern Love
+TV Shows: Inside No.9, The Crown, Normal People, Black Mirror, Young Sheldon, Killing Eve, Fleabag, Shogun, House of the Dragon, Stranger Things, The Big Bang Theory, Good Omens, Modern Love, Upload (上传天地/上载新生)
 
 Art and Culture Documentaries: Civilisations, The Forbidden City, Power of Art, Private Life of a Masterpiece, The Genius of Design, The Genius of Photography, Abstract: The Art of Design, Art of China, Museum Secrets, Du Fu (BBC)
 
@@ -629,7 +629,7 @@ const SYSTEM_PROMPT_ZH = `你是伍芸的AI小助手，在 yunwustudio.com 为�
 
 经典电影：贫民窟的百万富翁、罗马假日、窈窕淑女、美丽人生、霸王别姬、布达佩斯大饭店、星际穿越、暖暖内含光、致命魔术
 
-电视剧：9号秘事、王冠、正常人、黑镜、小谢尔顿、杀死伊芙、伦敦生活、幕府将军、龙之家族、怪奇物语、生活大爆炸、好兆头、现代爱情
+电视剧：9号秘事、王冠、正常人、黑镜、小谢尔顿、杀死伊芙、伦敦生活、幕府将军、龙之家族、怪奇物语、生活大爆炸、好兆头、现代爱情、上传天地（Upload/上载新生）
 
 艺术文化纪录片：文明、故宫、艺术的力量、旷世杰作的秘密、设计天赋、摄影艺术百年史、抽象设计的艺术、中国艺术、博物馆的秘密、杜甫（BBC）
 
