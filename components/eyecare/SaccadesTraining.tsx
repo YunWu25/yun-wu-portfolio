@@ -120,13 +120,12 @@ const SaccadesTraining: React.FC<SaccadesTrainingProps> = ({ language, onExit })
       }
       case 'random':
       default: {
-        // Distribute around a circle with some randomness
+        // Distribute evenly around a circle
         for (let i = 0; i < count; i++) {
-          const angle = (i / count) * Math.PI * 2;
-          const radius = maxRadius * (0.5 + Math.random() * 0.5);
+          const angle = (i / count) * Math.PI * 2 - Math.PI / 2; // Start from top
           newTargets.push({
-            x: centerX + Math.cos(angle) * radius,
-            y: centerY + Math.sin(angle) * radius,
+            x: centerX + Math.cos(angle) * maxRadius,
+            y: centerY + Math.sin(angle) * maxRadius,
           });
         }
       }
