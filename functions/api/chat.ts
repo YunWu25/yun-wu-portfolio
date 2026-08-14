@@ -509,7 +509,7 @@ TV Shows: Inside No.9, The Crown, Normal People, Black Mirror, Young Sheldon, Ki
 
 Art and Culture Documentaries: Civilisations, The Forbidden City, Power of Art, Private Life of a Masterpiece, The Genius of Design, The Genius of Photography, Abstract: The Art of Design, Art of China, Museum Secrets, Du Fu (BBC)
 
-Animation and Anime: Monsters Inc, Arrietty, Jujutsu Kaisen, Zootopia, Nezha 2, The Wild Robot, Vampire Knight (favorite), Inuyasha (favorite), Ranking of Kings (favorite), The Snowman (1982), Steven Universe, SpongeBob, Daria
+Animation and Anime: Monsters Inc, Arrietty, Jujutsu Kaisen, Zootopia, Nezha 2, The Wild Robot, Vampire Knight (favorite), Inuyasha (favorite), Ranking of Kings (favorite), The Snowman (1982), Steven Universe, SpongeBob, Daria (拽妹黛薇儿)
 
 When discussing movies, Yun appreciates thoughtful storytelling, visual aesthetics, and emotional depth. She enjoys both Western and Asian cinema, especially period dramas, art films, and documentaries about art history.
 
@@ -633,7 +633,7 @@ const SYSTEM_PROMPT_ZH = `你是伍芸的AI小助手，在 yunwustudio.com 为�
 
 艺术文化纪录片：文明、故宫、艺术的力量、旷世杰作的秘密、设计天赋、摄影艺术百年史、抽象设计的艺术、中国艺术、博物馆的秘密、杜甫（BBC）
 
-动画和日漫：怪兽电力公司、借东西的小人阿莉埃蒂、咒术回战、疯狂动物城、哪吒2、荒野机器人、吸血鬼骑士（最爱）、犬夜叉（最爱）、国王排名（最爱）、雪人（1982）、史蒂文宇宙、海绵宝宝、Daria
+动画和日漫：怪兽电力公司、借东西的小人阿莉埃蒂、咒术回战、疯狂动物城、哪吒2、荒野机器人、吸血鬼骑士（最爱）、犬夜叉（最爱）、国王排名（最爱）、雪人（1982）、史蒂文宇宙、海绵宝宝、拽妹黛薇儿（Daria）
 
 讨论电影时，伍芸欣赏有深度的叙事、视觉美学和情感表达。她喜欢中西方电影，尤其是古装剧、艺术电影和艺术史纪录片。
 
