@@ -14,6 +14,8 @@ const Video = lazy(() => import('./Video'));
 const About = lazy(() => import('./About'));
 const Time = lazy(() => import('./Time'));
 
+import EyeCare from './EyeCare';
+import Game from './Game';
 // Loading skeleton component
 const PageLoader: React.FC = () => (
   <div className="flex items-center justify-center min-h-[200px]">
@@ -63,6 +65,8 @@ const MainContent: React.FC<MainContentProps> = ({
   const [homeExpanded, setHomeExpanded] = useState(
     activeView === ViewState.PHOTOGRAPHY ||
       activeView === ViewState.DESIGN ||
+      activeView === ViewState.EYE_CARE ||
+      activeView === ViewState.GAME ||
       activeView === ViewState.VIDEO ||
       activeView === ViewState.TIME
   );
@@ -78,8 +82,8 @@ const MainContent: React.FC<MainContentProps> = ({
     { label: language === 'en' ? 'Design' : '设计', view: ViewState.DESIGN },
     { label: language === 'en' ? 'Video' : '影片', view: ViewState.VIDEO },
     { label: language === 'en' ? 'Gallery' : '画廊', view: ViewState.PHOTOGRAPHY },
-    // { label: language === 'en' ? 'Eye Care' : '护眼训练', view: ViewState.EYE_CARE },
-    // { label: language === 'en' ? "Let's Game" : '游戏时间', view: ViewState.GAME },
+    { label: language === 'en' ? 'Eye Care' : '护眼训练', view: ViewState.EYE_CARE },
+    { label: language === 'en' ? "Let's Game" : '游戏时间', view: ViewState.GAME },
   ];
 
   const renderBodyContent = () => {
@@ -113,6 +117,10 @@ const MainContent: React.FC<MainContentProps> = ({
           <Suspense fallback={<PageLoader />}>
             <Video language={language} />
           </Suspense>
+      case ViewState.EYE_CARE:
+        return <EyeCare language={language} />;
+      case ViewState.GAME:
+        return <Game language={language} />;
         );
       case ViewState.TIME:
         return (
