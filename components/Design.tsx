@@ -135,17 +135,16 @@ const Design: React.FC<DesignProps> = ({ language }) => {
       title: 'Eye Care',
       type: 'Web',
       role: 'Designer',
-      link: null,
+      link: '/eye-care',
       imageType: 'jpg',
     },
     {
       title: 'Let\'s Game',
       type: 'Web',
       role: 'Designer',
-      link: null,
+      link: '/game',
       imageType: 'jpg',
     },
-
     {
       title: 'HUADI',
       type: 'Web',
