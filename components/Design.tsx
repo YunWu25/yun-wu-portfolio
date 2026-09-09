@@ -16,6 +16,10 @@ interface Project {
 }
 
 const getScreenshotUrl = (title: string, type: string, imageType: 'jpg' | 'gif'): string => {
+  // Special case for custom screenshots
+  if (title === 'Eye Care' || title === 'Let\'s Game') {
+    return `/images/screenshots/${title.toLowerCase().replace('\'', '').replace(' ', '-')}.jpg`;
+  }
   // Handle empty type (e.g., "Luna Kitchen and Bath" with no type suffix)
   const filename = type ? `${title} ${type}.${imageType}` : `${title}.${imageType}`;
   return `https://media.yunwustudio.com/public/design/${encodeURIComponent(filename)}`;
@@ -128,6 +132,21 @@ const Design: React.FC<DesignProps> = ({ language }) => {
   // Project data
   const projects: Project[] = [
     {
+      title: 'Eye Care',
+      type: 'Web',
+      role: 'Designer',
+      link: null,
+      imageType: 'jpg',
+    },
+    {
+      title: 'Let\'s Game',
+      type: 'Web',
+      role: 'Designer',
+      link: null,
+      imageType: 'jpg',
+    },
+
+    {
       title: 'HUADI',
       type: 'Web',
       role: 'Designer',
@@ -135,13 +154,14 @@ const Design: React.FC<DesignProps> = ({ language }) => {
       imageType: 'jpg',
     },
     {
-      title: '创智集客SCRM',
+      title: 'Hctcchina',
       type: 'Web',
       role: 'Designer',
       link: 'https://scrm_hc.hctcchina.com/',
       imageType: 'jpg',
       displayText: ['Hctcchina', 'China'],
     },
+
     {
       title: 'COC',
       type: 'Web',

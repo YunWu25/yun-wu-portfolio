@@ -96,7 +96,6 @@ const Home: React.FC<HomeProps> = ({ onNavigate, language }) => {
       design: 'Design',
       video: 'Video',
       photography: 'Gallery',
-      game: "Let's Game",
       sendEmail: 'Send Email',
       call: 'Call, text, WhatsApp',
       location: 'Currently based in Seattle, WA',
@@ -106,7 +105,6 @@ const Home: React.FC<HomeProps> = ({ onNavigate, language }) => {
       design: '设计',
       video: '影片',
       photography: '画廊',
-      game: '游戏时间',
       sendEmail: '发送邮件',
       call: '电话、短信、WhatsApp',
       location: '目前在西雅图',
@@ -162,13 +160,6 @@ const Home: React.FC<HomeProps> = ({ onNavigate, language }) => {
           label={t.photography}
           onClick={() => {
             onNavigate(ViewState.PHOTOGRAPHY);
-          }}
-          viewText={viewText}
-        />
-        <NavRow
-          label={t.game}
-          onClick={() => {
-            onNavigate(ViewState.GAME);
           }}
           viewText={viewText}
         />

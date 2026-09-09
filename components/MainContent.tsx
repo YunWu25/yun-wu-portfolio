@@ -13,8 +13,6 @@ const Design = lazy(() => import('./Design'));
 const Video = lazy(() => import('./Video'));
 const About = lazy(() => import('./About'));
 const Time = lazy(() => import('./Time'));
-const Game = lazy(() => import('./Game'));
-const EyeCare = lazy(() => import('./EyeCare'));
 
 // Loading skeleton component
 const PageLoader: React.FC = () => (
@@ -66,9 +64,7 @@ const MainContent: React.FC<MainContentProps> = ({
     activeView === ViewState.PHOTOGRAPHY ||
       activeView === ViewState.DESIGN ||
       activeView === ViewState.VIDEO ||
-      activeView === ViewState.TIME ||
-      activeView === ViewState.GAME ||
-      activeView === ViewState.EYE_CARE
+      activeView === ViewState.TIME
   );
 
   const navItems: NavItem[] = [
@@ -82,8 +78,8 @@ const MainContent: React.FC<MainContentProps> = ({
     { label: language === 'en' ? 'Design' : '设计', view: ViewState.DESIGN },
     { label: language === 'en' ? 'Video' : '影片', view: ViewState.VIDEO },
     { label: language === 'en' ? 'Gallery' : '画廊', view: ViewState.PHOTOGRAPHY },
-    { label: language === 'en' ? 'Eye Care' : '护眼训练', view: ViewState.EYE_CARE },
-    { label: language === 'en' ? "Let's Game" : '游戏时间', view: ViewState.GAME },
+    // { label: language === 'en' ? 'Eye Care' : '护眼训练', view: ViewState.EYE_CARE },
+    // { label: language === 'en' ? "Let's Game" : '游戏时间', view: ViewState.GAME },
   ];
 
   const renderBodyContent = () => {
@@ -124,6 +120,7 @@ const MainContent: React.FC<MainContentProps> = ({
             <Time language={language} />
           </Suspense>
         );
+      /*
       case ViewState.GAME:
         return (
           <Suspense fallback={<PageLoader />}>
@@ -136,6 +133,7 @@ const MainContent: React.FC<MainContentProps> = ({
             <EyeCare language={language} />
           </Suspense>
         );
+      */
       case ViewState.HOME:
       default:
         return <Home onNavigate={onNavigate} language={language} />;
@@ -158,10 +156,12 @@ const MainContent: React.FC<MainContentProps> = ({
         return language === 'en' ? 'Design' : '设计';
       case ViewState.TIME:
         return language === 'en' ? 'Time' : '时光';
+      /*
       case ViewState.GAME:
         return language === 'en' ? 'Game' : '游戏';
       case ViewState.EYE_CARE:
         return language === 'en' ? 'Eye Care' : '护眼';
+      */
       default:
         return language === 'en' ? 'Yun Wu' : '伍芸';
     }
