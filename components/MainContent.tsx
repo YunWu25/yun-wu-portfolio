@@ -117,11 +117,11 @@ const MainContent: React.FC<MainContentProps> = ({
           <Suspense fallback={<PageLoader />}>
             <Video language={language} />
           </Suspense>
+        );
       case ViewState.EYE_CARE:
         return <EyeCare language={language} />;
       case ViewState.GAME:
         return <Game language={language} />;
-        );
       case ViewState.TIME:
         return (
           <Suspense fallback={<PageLoader />}>
