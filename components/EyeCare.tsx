@@ -75,6 +75,18 @@ const EyeCare: React.FC<EyeCareProps> = ({ language }) => {
   return (
     <div className="w-full max-w-4xl mx-auto px-6 py-8">
       {/* Header */}
+      {/* Hero Image */}
+      {/* 
+      <div className="mb-12 flex justify-center">
+        <img
+          src="/images/screenshots/eye-care-backup.png"
+          alt="Eye Care Training Preview"
+          className="w-full max-w-2xl rounded-xl shadow-lg border border-gray-100"
+        />
+      </div> 
+      */}
+
+
       <div className="mb-12 text-center">
         <h1 className={`${TYPOGRAPHY.navItem} ${COLORS.gray900} mb-4`}>
           {t.title}
