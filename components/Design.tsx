@@ -11,15 +11,11 @@ interface Project {
   type: string;
   role: string;
   link: string | null;
-  imageType: 'jpg' | 'gif';
+  imageType: 'jpg' | 'gif' | 'png';
   displayText?: string[];
 }
 
-const getScreenshotUrl = (title: string, type: string, imageType: 'jpg' | 'gif'): string => {
-  // Special case for custom screenshots
-  if (title === 'Eye Care' || title === 'Let\'s Game') {
-    return `/images/screenshots/${title.toLowerCase().replace('\'', '').replace(' ', '-')}.jpg`;
-  }
+const getScreenshotUrl = (title: string, type: string, imageType: 'jpg' | 'gif' | 'png'): string => {
   // Handle empty type (e.g., "Luna Kitchen and Bath" with no type suffix)
   const filename = type ? `${title} ${type}.${imageType}` : `${title}.${imageType}`;
   return `https://media.yunwustudio.com/public/design/${encodeURIComponent(filename)}`;
@@ -105,7 +101,10 @@ const ProjectCard: React.FC<{ project: Project; language: Language }> = ({ proje
         </div>
       </div>
 
-      <LaptopMockup project={project} />
+      {/* Laptop Mockup */}
+      <div className="shrink-0">
+        <LaptopMockup project={project} />
+      </div>
     </div>
   );
 
@@ -136,14 +135,14 @@ const Design: React.FC<DesignProps> = ({ language }) => {
       type: 'Web',
       role: 'Designer',
       link: '/eye-care',
-      imageType: 'jpg',
+      imageType: 'png',
     },
     {
       title: 'Let\'s Game',
       type: 'Web',
       role: 'Designer',
       link: '/game',
-      imageType: 'jpg',
+      imageType: 'png',
     },
     {
       title: 'HUADI',
