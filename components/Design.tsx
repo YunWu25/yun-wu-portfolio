@@ -52,7 +52,7 @@ const LaptopMockup: React.FC<{ project: Project }> = ({ project }) => {
             <img
               src={screenshotUrl}
               alt={`${project.title} screenshot`}
-              className={`w-full absolute top-0 left-0 ${project.imageType === 'jpg' ? 'animate-scroll-up' : ''}`}
+              className={`w-full absolute top-0 left-0 ${project.imageType !== 'gif' ? 'animate-scroll-up' : ''}`}
               loading="lazy"
             />
           )}
