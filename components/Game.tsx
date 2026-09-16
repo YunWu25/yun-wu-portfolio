@@ -1330,16 +1330,16 @@ const Game: React.FC<GameProps> = ({ language }) => {
           ctx.fillRect(0, groundY - 25, canvas.width, 8);
 
           // Some kitchen items
-          // Cabinet — shifted right of x=50 and dropped below the score UI
-          // (⭐/🏆/❤️, drawn around x:8-118, y:20-95 in the top-left) so it
-          // clears both instead of overlapping.
+          // Cabinet — sits behind the score UI (⭐/🏆/❤️, drawn around
+          // x:8-118, y:20-95). drawBackground() runs before the HUD text
+          // is drawn, so the numbers/icons always paint on top of it.
           ctx.fillStyle = '#c9a87c';
-          ctx.fillRect(150, 110, 80, 100);
+          ctx.fillRect(30, 20, 80, 100);
           ctx.strokeStyle = '#8b7355';
           ctx.lineWidth = 2;
-          ctx.strokeRect(150, 110, 80, 100);
+          ctx.strokeRect(30, 20, 80, 100);
           ctx.beginPath();
-          ctx.arc(220, 160, 5, 0, Math.PI * 2);
+          ctx.arc(100, 70, 5, 0, Math.PI * 2);
           ctx.stroke();
 
           // Window
