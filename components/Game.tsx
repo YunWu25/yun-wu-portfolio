@@ -1334,12 +1334,12 @@ const Game: React.FC<GameProps> = ({ language }) => {
           // x:8-118, y:20-95). drawBackground() runs before the HUD text
           // is drawn, so the numbers/icons always paint on top of it.
           ctx.fillStyle = '#c9a87c';
-          ctx.fillRect(30, 20, 80, 100);
+          ctx.fillRect(0, 20, 80, 100);
           ctx.strokeStyle = '#8b7355';
           ctx.lineWidth = 2;
-          ctx.strokeRect(30, 20, 80, 100);
+          ctx.strokeRect(0, 20, 80, 100);
           ctx.beginPath();
-          ctx.arc(100, 70, 5, 0, Math.PI * 2);
+          ctx.arc(70, 70, 5, 0, Math.PI * 2);
           ctx.stroke();
 
           // Window
