@@ -31,7 +31,8 @@ const LaptopMockup: React.FC<{ project: Project }> = ({ project }) => {
         className="bg-gray-300 rounded-lg"
         style={{ padding: '3.2px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
       >
-        {/* Screen content */}
+        {/* Screen content — stays light on purpose: mimics a physical laptop
+            display, which doesn't switch color scheme with the page */}
         <div
           className="relative overflow-hidden bg-white rounded-md flex items-center justify-center"
           style={{ aspectRatio: '16/10' }}
@@ -83,7 +84,7 @@ const LaptopMockup: React.FC<{ project: Project }> = ({ project }) => {
 
 const ProjectCard: React.FC<{ project: Project; language: Language }> = ({ project, language }) => {
   const cardContent = (
-    <div className="bg-white border border-gray-100 rounded-xl p-6 md:p-8 flex items-center gap-4 hover:shadow-lg hover:border-gray-200 transition-all duration-300 group">
+    <div className="bg-white dark:bg-dark-surface border border-gray-100 dark:border-dark-border rounded-xl p-6 md:p-8 flex items-center gap-4 hover:shadow-lg hover:border-gray-200 dark:hover:border-dark-muted transition-all duration-300 group">
       <div className="flex-1 min-w-0">
         <h3
           className={`font-sans text-xl md:text-2xl ${COLORS.gray400} mb-1 group-hover:text-coral transition-colors truncate`}

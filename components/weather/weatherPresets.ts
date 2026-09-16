@@ -1,6 +1,6 @@
 import { WeatherType, WeatherPreset } from './types';
 
-export const WEATHER_PRESETS: Record<WeatherType, WeatherPreset> = {
+const WEATHER_PRESETS: Record<WeatherType, WeatherPreset> = {
   [WeatherType.CLEAR]: {
     particleCount: 15,
     wind: { x: 0.05, y: 0, gustStrength: 0.02, gustFrequency: 0.001 },

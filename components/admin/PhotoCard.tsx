@@ -76,21 +76,21 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({ photo, onSave }) => {
   const isModified = (field: keyof typeof formData) => formData[field] !== originalData[field];
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden grid grid-cols-1 md:grid-cols-[200px_1fr]">
+    <div className="bg-white dark:bg-dark-surface rounded-xl shadow-sm border border-gray-200 dark:border-dark-border overflow-hidden grid grid-cols-1 md:grid-cols-[200px_1fr]">
       {/* Thumbnail */}
       <img
         src={photo.url}
         alt={photo.alt}
         loading="lazy"
-        className="w-full h-48 md:h-full object-cover bg-gray-100"
+        className="w-full h-48 md:h-full object-cover bg-gray-100 dark:bg-dark-border"
       />
 
       {/* Details */}
       <div className="p-5 flex flex-col gap-4">
         {/* Key and metadata */}
-        <div className="text-xs font-mono text-gray-400 break-all">
+        <div className="text-xs font-mono text-gray-400 dark:text-dark-muted break-all">
           {photo.key}
-          <span className="text-gray-500 block mt-1">
+          <span className="text-gray-500 dark:text-dark-muted block mt-1">
             {formatSize(photo.size)} • Uploaded {formatDate(photo.uploaded)}
           </span>
         </div>
@@ -139,7 +139,7 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({ photo, onSave }) => {
           />
           {/* Category Dropdown */}
           <div className="flex flex-col gap-1">
-            <label htmlFor="category" className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+            <label htmlFor="category" className="text-xs font-semibold text-gray-500 dark:text-dark-muted uppercase tracking-wide">
               Category
             </label>
             <select
@@ -150,8 +150,9 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({ photo, onSave }) => {
               }}
               className={`
                 px-3 py-2 border rounded-lg text-sm transition-colors cursor-pointer
-                focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent
-                ${formData.category !== originalData.category ? 'border-amber-400 bg-amber-50' : 'border-gray-200'}
+                bg-white dark:bg-dark-bg dark:text-dark-text
+                focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-dark-muted focus:border-transparent
+                ${formData.category !== originalData.category ? 'border-amber-400 bg-amber-50 dark:bg-amber-950/30' : 'border-gray-200 dark:border-dark-border'}
               `}
             >
               {PHOTO_CATEGORIES.map((cat) => (
@@ -174,7 +175,7 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({ photo, onSave }) => {
               }}
               className={`
                 relative inline-flex h-6 w-11 items-center rounded-full transition-colors cursor-pointer
-                ${formData.showInGallery ? 'bg-green-500' : 'bg-gray-300'}
+                ${formData.showInGallery ? 'bg-green-500' : 'bg-gray-300 dark:bg-dark-border'}
                 ${formData.showInGallery !== originalData.showInGallery ? 'ring-2 ring-amber-400' : ''}
               `}
             >
@@ -185,7 +186,7 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({ photo, onSave }) => {
                 `}
               />
             </button>
-            <span className="text-sm font-medium text-gray-700">
+            <span className="text-sm font-medium text-gray-700 dark:text-dark-text">
               {formData.showInGallery ? '🖼️ In Gallery' : 'Hidden'}
             </span>
             {formData.showInGallery !== originalData.showInGallery && (
@@ -202,7 +203,7 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({ photo, onSave }) => {
               }}
               className={`
                 relative inline-flex h-6 w-11 items-center rounded-full transition-colors cursor-pointer
-                ${formData.forSale ? 'bg-coral' : 'bg-gray-300'}
+                ${formData.forSale ? 'bg-coral' : 'bg-gray-300 dark:bg-dark-border'}
                 ${formData.forSale !== originalData.forSale ? 'ring-2 ring-amber-400' : ''}
               `}
             >
@@ -213,7 +214,7 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({ photo, onSave }) => {
                 `}
               />
             </button>
-            <span className="text-sm font-medium text-gray-700">
+            <span className="text-sm font-medium text-gray-700 dark:text-dark-text">
               {formData.forSale ? '🛒 For Sale' : 'Not for sale'}
             </span>
             {formData.forSale !== originalData.forSale && (
@@ -233,14 +234,14 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({ photo, onSave }) => {
               px-4 py-2 rounded-lg text-sm font-medium transition-all
               ${
                 saveStatus === 'idle' && hasChanges
-                  ? 'bg-gray-900 text-white hover:bg-black'
+                  ? 'bg-gray-900 text-white hover:bg-black dark:hover:bg-gray-700'
                   : saveStatus === 'saving'
                     ? 'bg-gray-400 text-white cursor-wait'
                     : saveStatus === 'success'
                       ? 'bg-green-500 text-white'
                       : saveStatus === 'error'
                         ? 'bg-red-500 text-white'
-                        : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                        : 'bg-gray-200 dark:bg-dark-border text-gray-400 dark:text-dark-muted cursor-not-allowed'
               }
             `}
           >
@@ -271,7 +272,7 @@ interface FieldProps {
 
 const Field: React.FC<FieldProps> = ({ label, name, value, placeholder, modified, onChange }) => (
   <div className="flex flex-col gap-1">
-    <label htmlFor={name} className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+    <label htmlFor={name} className="text-xs font-semibold text-gray-500 dark:text-dark-muted uppercase tracking-wide">
       {label}
     </label>
     <input
@@ -284,8 +285,9 @@ const Field: React.FC<FieldProps> = ({ label, name, value, placeholder, modified
       }}
       className={`
         px-3 py-2 border rounded-lg text-sm transition-colors
-        focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent
-        ${modified ? 'border-amber-400 bg-amber-50' : 'border-gray-200'}
+        bg-white dark:bg-dark-bg dark:text-dark-text
+        focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-dark-muted focus:border-transparent
+        ${modified ? 'border-amber-400 bg-amber-50 dark:bg-amber-950/30' : 'border-gray-200 dark:border-dark-border'}
       `}
     />
   </div>

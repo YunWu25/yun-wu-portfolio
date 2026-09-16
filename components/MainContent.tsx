@@ -13,9 +13,8 @@ const Design = lazy(() => import('./Design'));
 const Video = lazy(() => import('./Video'));
 const About = lazy(() => import('./About'));
 const Time = lazy(() => import('./Time'));
-
-import EyeCare from './EyeCare';
-import Game from './Game';
+const EyeCare = lazy(() => import('./EyeCare'));
+const Game = lazy(() => import('./Game'));
 // Loading skeleton component
 const PageLoader: React.FC = () => (
   <div className="flex items-center justify-center min-h-[200px]">
@@ -119,29 +118,23 @@ const MainContent: React.FC<MainContentProps> = ({
           </Suspense>
         );
       case ViewState.EYE_CARE:
-        return <EyeCare language={language} />;
-      case ViewState.GAME:
-        return <Game language={language} />;
-      case ViewState.TIME:
         return (
           <Suspense fallback={<PageLoader />}>
-            <Time language={language} />
+            <EyeCare language={language} />
           </Suspense>
         );
-      /*
       case ViewState.GAME:
         return (
           <Suspense fallback={<PageLoader />}>
             <Game language={language} />
           </Suspense>
         );
-      case ViewState.EYE_CARE:
+      case ViewState.TIME:
         return (
           <Suspense fallback={<PageLoader />}>
-            <EyeCare language={language} />
+            <Time language={language} />
           </Suspense>
         );
-      */
       case ViewState.HOME:
       default:
         return <Home onNavigate={onNavigate} language={language} />;
@@ -176,11 +169,11 @@ const MainContent: React.FC<MainContentProps> = ({
   };
 
   return (
-    <div id="container-card" className="w-screen h-screen bg-white">
+    <div id="container-card" className="w-screen h-screen bg-white dark:bg-dark-bg">
       {/* MAIN CONTAINER */}
       <div
         id="main-card"
-        className="bg-white w-screen h-screen flex flex-col overflow-hidden relative overflow-y-auto custom-scrollbar"
+        className="bg-white dark:bg-dark-bg w-screen h-screen flex flex-col overflow-hidden relative overflow-y-auto custom-scrollbar"
       >
         {/* === LANGUAGE SWITCHER === */}
         <div className="absolute md:top-4 top-8 md:right-4 right-8 z-20">
@@ -189,14 +182,14 @@ const MainContent: React.FC<MainContentProps> = ({
             onClick={() => {
               setLanguage(language === 'en' ? 'zh' : 'en');
             }}
-            className={`md:hidden bg-white px-3 py-1.5 ${BORDERS.radius.sm} border ${COLORS.borderGray200} ${SHADOWS.sm} text-sm font-medium ${COLORS.coral} hover:bg-coral hover:text-white transition-colors`}
+            className={`md:hidden bg-white dark:bg-dark-surface px-3 py-1.5 ${BORDERS.radius.sm} border ${COLORS.borderGray200} ${SHADOWS.sm} text-sm font-medium ${COLORS.coral} hover:bg-coral hover:text-white transition-colors`}
           >
             {language === 'en' ? '中文' : 'EN'}
           </button>
 
           {/* Desktop: Full switcher */}
           <div
-            className={`hidden md:flex bg-white px-3 py-1.5 ${BORDERS.radius.sm} border ${COLORS.borderGray200} ${SHADOWS.sm} items-center gap-2`}
+            className={`hidden md:flex bg-white dark:bg-dark-surface px-3 py-1.5 ${BORDERS.radius.sm} border ${COLORS.borderGray200} ${SHADOWS.sm} items-center gap-2`}
           >
             <button
               onClick={() => {
@@ -214,7 +207,7 @@ const MainContent: React.FC<MainContentProps> = ({
                 setLanguage('zh');
               }}
               className={`px-2 py-1 rounded transition-colors text-sm ${
-                language === 'zh' ? 'bg-coral text-white' : 'text-gray-500 hover:text-coral'
+                language === 'zh' ? 'bg-coral text-white' : `${COLORS.gray500} hover:text-coral`
               }`}
             >
               中文
@@ -400,7 +393,7 @@ const MainContent: React.FC<MainContentProps> = ({
 
         {/* === MOBILE NAV OVERLAY === */}
         {isMobileMenuOpen && (
-          <div className="absolute inset-0 bg-white z-50 flex flex-col items-center justify-center space-y-8 md:hidden">
+          <div className="absolute inset-0 bg-white dark:bg-dark-bg z-50 flex flex-col items-center justify-center space-y-8 md:hidden">
             <button
               onClick={() => {
                 setIsMobileMenuOpen(false);
@@ -437,11 +430,11 @@ const MainContent: React.FC<MainContentProps> = ({
           {/* === FOOTER (Outside content container to align with header) === */}
           <footer
             id="main-card-footer"
-            className="px-8 md:px-16 md:py-12 mb-24 flex flex-col md:flex-row justify-between items-center text-gray-300 font-light mt-16"
+            className={`px-8 md:px-16 md:py-12 mb-24 flex flex-col md:flex-row justify-between items-center ${COLORS.gray300} font-light mt-16`}
           >
             <div
               data-wobble-target
-              className={`${TYPOGRAPHY.body} text-lg tracking-wide text-gray-300`}
+              className={`${TYPOGRAPHY.body} text-lg tracking-wide ${COLORS.gray300}`}
             >
               2026 Yun Wu
             </div>
@@ -464,7 +457,7 @@ const MainContent: React.FC<MainContentProps> = ({
                   EMAIL
                 </span>
               </a>
-              <span className="hidden md:inline text-gray-200 self-center">|</span>
+              <span className={`hidden md:inline ${COLORS.gray200} self-center`}>|</span>
               {/* Instagram */}
               <a
                 data-wobble-target
@@ -483,7 +476,7 @@ const MainContent: React.FC<MainContentProps> = ({
                   INSTAGRAM
                 </span>
               </a>
-              <span className="hidden md:inline text-gray-200 self-center">|</span>
+              <span className={`hidden md:inline ${COLORS.gray200} self-center`}>|</span>
               {/* LinkedIn */}
               <a
                 data-wobble-target

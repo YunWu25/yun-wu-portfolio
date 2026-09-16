@@ -171,7 +171,7 @@ const ProjectFlow: React.FC<ProjectFlowProps> = ({ language }) => {
         <h2 className={`text-3xl md:text-4xl font-serif ${COLORS.coral} mb-8 text-center`}>FAQ</h2>
         <div className="space-y-6 max-w-3xl mx-auto">
           {t.faqs.map((faq, index) => (
-            <div key={index} className="border-b border-gray-200 pb-6 last:border-b-0">
+            <div key={index} className="border-b border-gray-200 dark:border-dark-border pb-6 last:border-b-0">
               <h3 className={`font-sans text-xl md:text-2xl font-medium ${COLORS.gray900} mb-3`}>
                 {faq.question}
               </h3>

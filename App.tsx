@@ -12,6 +12,7 @@ import { PhotoManager } from './components/admin/PhotoManager';
 import { ChatLogs } from './components/admin/ChatLogs';
 import { WeatherProvider } from './components/weather/WeatherContext';
 import WeatherSystem from './components/weather/WeatherSystem';
+import NightCloudCanvas from './components/weather/NightCloudCanvas';
 import { ViewState } from './types';
 import { SCROLL_THRESHOLDS } from './constants';
 
@@ -123,9 +124,12 @@ const AppContent: React.FC = () => {
     <BubbleCollisionProvider>
       <WobbleCollisionDetector />
       <WeatherProvider>
-        <div className="relative w-full min-h-screen bg-offwhite text-darkgray font-sans selection:bg-coral selection:text-white overflow-hidden">
+        <div className="relative w-full min-h-screen bg-offwhite dark:bg-dark-bg text-darkgray dark:text-dark-text font-sans selection:bg-coral selection:text-white overflow-hidden">
           {/* Weather canvas overlay — z-30, pointer-events: none */}
           <WeatherSystem />
+
+          {/* Night dark-cloud atmosphere overlay — z-40, pointer-events: none */}
+          <NightCloudCanvas />
 
           {/* Overlay Splash Screen — z-50 */}
           <Splash

@@ -203,7 +203,7 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
         {columnPhotos.map((photo, index) => (
           <div
             key={`col${columnIndex}-${photo.key}-${index}`}
-            className="rounded-lg overflow-hidden shadow-sm transition-all duration-300 group relative cursor-pointer border border-transparent hover:border-gray-300 bg-gray-100"
+            className="rounded-lg overflow-hidden shadow-sm transition-all duration-300 group relative cursor-pointer border border-transparent hover:border-gray-300 dark:hover:border-dark-border bg-gray-100 dark:bg-dark-surface"
             onClick={() => {
               openLightbox(photo.key);
             }}
@@ -310,7 +310,7 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
               {[height, height + 40, height - 20].map((h, j) => (
                 <div
                   key={j}
-                  className="bg-gray-100 rounded-lg animate-pulse"
+                  className="bg-gray-100 dark:bg-dark-surface rounded-lg animate-pulse"
                   style={{ height: `${h}px` }}
                 />
               ))}
@@ -329,7 +329,7 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
           <p className={`${TYPOGRAPHY.body} ${COLORS.gray500}`}>{intro}</p>
         </div>
         <div className="flex flex-col justify-center items-center h-[50vh] text-center">
-          <p className="text-gray-500 mb-4">
+          <p className="text-gray-500 dark:text-dark-muted mb-4">
             {language === 'en'
               ? (error ?? 'No photos available at the moment.')
               : (error ?? '暂时没有可用的照片。')}
@@ -338,7 +338,7 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
             onClick={() => {
               window.location.reload();
             }}
-            className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm transition-colors"
+            className="px-4 py-2 bg-gray-100 dark:bg-dark-surface hover:bg-gray-200 dark:hover:bg-dark-border rounded-lg text-sm transition-colors"
           >
             {language === 'en' ? 'Try Again' : '重试'}
           </button>
@@ -365,7 +365,7 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
               className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
                 selectedYear === year
                   ? 'bg-coral text-white'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  : 'bg-gray-100 dark:bg-dark-surface text-gray-600 dark:text-dark-muted hover:bg-gray-200 dark:hover:bg-dark-border'
               }`}
             >
               {year === 'all' ? (language === 'en' ? 'All' : '全部') : year}
@@ -409,13 +409,13 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
       {/* Shop Modal */}
       {showShop && (
         <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
+          <div className="bg-white dark:bg-dark-surface rounded-xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
             {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b border-gray-200">
+            <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-dark-border">
               {showCheckout ? (
                 <button
                   onClick={backToShop}
-                  className="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors"
+                  className="flex items-center gap-2 text-gray-600 dark:text-dark-muted hover:text-gray-800 dark:hover:text-dark-text transition-colors"
                 >
                   <ChevronLeft size={20} />
                   {t.backToShop}
@@ -425,7 +425,7 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
               )}
               <button
                 onClick={closeShop}
-                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                className="p-2 hover:bg-gray-100 dark:hover:bg-dark-border rounded-full transition-colors"
               >
                 <X size={24} className={COLORS.gray500} />
               </button>
@@ -441,7 +441,7 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
                     {t.paymentInstructions}
                   </p>
 
-                  <div className="bg-gray-50 rounded-lg p-4 mb-6">
+                  <div className="bg-gray-50 dark:bg-dark-bg rounded-lg p-4 mb-6">
                     <div className="flex justify-between items-center mb-3">
                       <p className={`${TYPOGRAPHY.body} ${COLORS.gray600}`}>
                         {selectedForPurchase.size} {t.photosSelected}
@@ -496,7 +496,7 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
                         className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-1 ${
                           selectedPayment === method
                             ? 'bg-coral text-white'
-                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                            : 'bg-gray-100 dark:bg-dark-surface text-gray-700 dark:text-dark-text hover:bg-gray-200 dark:hover:bg-dark-border'
                         }`}
                       >
                         {method}
@@ -505,7 +505,8 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
                     ))}
                   </div>
 
-                  {/* QR Code Display */}
+                  {/* QR Code Display — stays light on purpose: the QR image needs a
+                      light background to stay scannable regardless of site theme */}
                   {selectedPayment && selectedPayment !== 'eBay' && (
                     <div className="bg-gray-50 rounded-lg p-6 mb-6 text-center">
                       <p className="font-semibold text-gray-700 mb-3">{selectedPayment}</p>
@@ -577,8 +578,8 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
                           <div
                             key={photo.key}
                             onClick={() => { togglePhotoForPurchase(photo.key); }}
-                            className={`group relative cursor-pointer rounded-lg overflow-hidden border-2 transition-all bg-gray-100 ${
-                              isSelected ? 'border-coral' : 'border-transparent hover:border-gray-300'
+                            className={`group relative cursor-pointer rounded-lg overflow-hidden border-2 transition-all bg-gray-100 dark:bg-dark-surface ${
+                              isSelected ? 'border-coral' : 'border-transparent hover:border-gray-300 dark:hover:border-dark-border'
                             }`}
                           >
                             <img
@@ -620,7 +621,7 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
 
             {/* Footer */}
             {showCheckout ? (
-              <div className="p-4 border-t border-gray-200 flex justify-center">
+              <div className="p-4 border-t border-gray-200 dark:border-dark-border flex justify-center">
                 <button
                   onClick={backToShop}
                   className="px-6 py-3 bg-coral text-white font-semibold rounded-lg hover:bg-coral/90 transition-colors"
@@ -629,7 +630,7 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
                 </button>
               </div>
             ) : selectedForPurchase.size > 0 ? (
-              <div className="p-4 border-t border-gray-200 flex items-center justify-between">
+              <div className="p-4 border-t border-gray-200 dark:border-dark-border flex items-center justify-between">
                 <div>
                   <p className={`${TYPOGRAPHY.body} ${COLORS.gray600}`}>
                     {selectedForPurchase.size} {t.selected}

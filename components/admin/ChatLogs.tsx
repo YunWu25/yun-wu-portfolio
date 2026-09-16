@@ -123,12 +123,12 @@ export const ChatLogs: React.FC = () => {
   };
 
   return (
-    <div className="h-screen bg-gray-50 flex flex-col">
+    <div className="h-screen bg-gray-50 dark:bg-dark-bg flex flex-col">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 shrink-0">
+      <header className="bg-white dark:bg-dark-surface border-b border-gray-200 dark:border-dark-border shrink-0">
         <div className="px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <h1 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+            <h1 className="text-lg font-semibold text-gray-900 dark:text-dark-text flex items-center gap-2">
               <MessageSquare className="w-5 h-5" />
               Chat Logs
             </h1>
@@ -136,14 +136,14 @@ export const ChatLogs: React.FC = () => {
               <button
                 onClick={() => void fetchLogs()}
                 disabled={loading}
-                className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-900 transition-colors disabled:opacity-50"
+                className="flex items-center gap-2 text-sm text-gray-500 dark:text-dark-muted hover:text-gray-900 dark:hover:text-dark-text transition-colors disabled:opacity-50"
               >
                 <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
                 Refresh
               </button>
               <a
                 href="/admin"
-                className="text-sm text-gray-500 hover:text-gray-900 transition-colors"
+                className="text-sm text-gray-500 dark:text-dark-muted hover:text-gray-900 dark:hover:text-dark-text transition-colors"
               >
                 Photos
               </a>
@@ -151,7 +151,7 @@ export const ChatLogs: React.FC = () => {
                 href="/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sm text-gray-500 hover:text-gray-900 transition-colors"
+                className="text-sm text-gray-500 dark:text-dark-muted hover:text-gray-900 dark:hover:text-dark-text transition-colors"
               >
                 ← Back to Site
               </a>
@@ -168,7 +168,7 @@ export const ChatLogs: React.FC = () => {
       ) : error ? (
         <div className="flex justify-center items-center flex-1">
           <div className="text-center">
-            <p className="text-red-500 mb-4">{error}</p>
+            <p className="text-red-500 dark:text-red-400 mb-4">{error}</p>
             <button
               onClick={() => void fetchLogs()}
               className="px-4 py-2 bg-coral text-white rounded-lg hover:bg-coral/90"
@@ -180,9 +180,9 @@ export const ChatLogs: React.FC = () => {
       ) : logs.length === 0 ? (
         <div className="flex justify-center items-center flex-1">
           <div className="text-center">
-            <MessageSquare className="w-12 h-12 mx-auto text-gray-300 mb-4" />
-            <p className="text-gray-500">No chat logs yet.</p>
-            <p className="text-gray-400 text-sm mt-2">
+            <MessageSquare className="w-12 h-12 mx-auto text-gray-300 dark:text-dark-border mb-4" />
+            <p className="text-gray-500 dark:text-dark-muted">No chat logs yet.</p>
+            <p className="text-gray-400 dark:text-dark-muted text-sm mt-2">
               Conversations will appear here when visitors use the AI chat.
             </p>
           </div>
@@ -190,12 +190,12 @@ export const ChatLogs: React.FC = () => {
       ) : (
         <div className="flex flex-1 overflow-hidden">
           {/* Left sidebar - User list */}
-          <aside className="w-72 bg-white border-r border-gray-200 flex flex-col shrink-0">
-            <div className="p-4 border-b border-gray-100">
-              <div className="flex items-center gap-2 text-sm text-gray-500">
+          <aside className="w-72 bg-white dark:bg-dark-surface border-r border-gray-200 dark:border-dark-border flex flex-col shrink-0">
+            <div className="p-4 border-b border-gray-100 dark:border-dark-border">
+              <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-dark-muted">
                 <Users className="w-4 h-4" />
                 <span>{userGroups.length} users</span>
-                <span className="text-gray-300">|</span>
+                <span className="text-gray-300 dark:text-dark-border">|</span>
                 <span>{logs.length} sessions</span>
               </div>
             </div>
@@ -204,23 +204,23 @@ export const ChatLogs: React.FC = () => {
                 <button
                   key={group.ipHint}
                   onClick={() => { setSelectedUser(group.ipHint); }}
-                  className={`w-full text-left px-4 py-3 border-b border-gray-50 transition-colors ${
+                  className={`w-full text-left px-4 py-3 border-b border-gray-50 dark:border-dark-border transition-colors ${
                     selectedUser === group.ipHint
                       ? 'bg-coral/5 border-l-2 border-l-coral'
-                      : 'hover:bg-gray-50'
+                      : 'hover:bg-gray-50 dark:hover:bg-dark-border'
                   }`}
                 >
                   <div className="flex items-center justify-between">
                     <span className={`font-medium text-sm ${
-                      selectedUser === group.ipHint ? 'text-coral' : 'text-gray-700'
+                      selectedUser === group.ipHint ? 'text-coral' : 'text-gray-700 dark:text-dark-text'
                     }`}>
                       {group.ipHint === 'unknown' ? 'Unknown' : group.ipHint}
                     </span>
                     <ChevronRight className={`w-4 h-4 ${
-                      selectedUser === group.ipHint ? 'text-coral' : 'text-gray-300'
+                      selectedUser === group.ipHint ? 'text-coral' : 'text-gray-300 dark:text-dark-border'
                     }`} />
                   </div>
-                  <div className="flex items-center gap-3 mt-1 text-xs text-gray-400">
+                  <div className="flex items-center gap-3 mt-1 text-xs text-gray-400 dark:text-dark-muted">
                     <span>{group.logs.length} session{group.logs.length !== 1 ? 's' : ''}</span>
                     <span>{group.totalMessages} msg{group.totalMessages !== 1 ? 's' : ''}</span>
                     <span>{formatShortDate(group.lastActive)}</span>
@@ -235,10 +235,10 @@ export const ChatLogs: React.FC = () => {
             {selectedUser ? (
               <div className="max-w-3xl mx-auto space-y-4">
                 <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-lg font-medium text-gray-900">
+                  <h2 className="text-lg font-medium text-gray-900 dark:text-dark-text">
                     {selectedUser === 'unknown' ? 'Unknown User' : `User ${selectedUser}`}
                   </h2>
-                  <span className="text-sm text-gray-500">
+                  <span className="text-sm text-gray-500 dark:text-dark-muted">
                     {selectedUserLogs.length} conversation{selectedUserLogs.length !== 1 ? 's' : ''}
                   </span>
                 </div>
@@ -250,9 +250,9 @@ export const ChatLogs: React.FC = () => {
                   return (
                     <div
                       key={log.id}
-                      className="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-sm transition-shadow"
+                      className="bg-white dark:bg-dark-surface rounded-lg border border-gray-200 dark:border-dark-border p-4 hover:shadow-sm transition-shadow"
                     >
-                      <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500 mb-3">
+                      <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500 dark:text-dark-muted mb-3">
                         <span className="flex items-center gap-1">
                           <Calendar className="w-4 h-4" />
                           {formatDate(timestamp)}
@@ -277,9 +277,9 @@ export const ChatLogs: React.FC = () => {
                           return (
                             <div
                               key={idx}
-                              className="bg-gray-50 rounded-lg px-4 py-3 text-gray-700"
+                              className="bg-gray-50 dark:bg-dark-bg rounded-lg px-4 py-3 text-gray-700 dark:text-dark-text"
                             >
-                              <span className="text-xs text-gray-400 block mb-1">
+                              <span className="text-xs text-gray-400 dark:text-dark-muted block mb-1">
                                 {time ? formatDate(time) : `Question ${idx + 1}`}
                               </span>
                               {content}
@@ -292,7 +292,7 @@ export const ChatLogs: React.FC = () => {
                 })}
               </div>
             ) : (
-              <div className="flex items-center justify-center h-full text-gray-400">
+              <div className="flex items-center justify-center h-full text-gray-400 dark:text-dark-muted">
                 Select a user to view their conversations
               </div>
             )}

@@ -35,7 +35,7 @@ const Splash: React.FC<SplashProps> = ({ isVisible, onDismiss, language }) => {
 
   return (
     <div
-      className={`fixed inset-0 z-50 bg-white flex flex-col items-center justify-between py-16 md:py-24 transition-transform duration-800 cubic-bezier(0.77, 0, 0.175, 1) ${
+      className={`fixed inset-0 z-50 bg-white dark:bg-dark-bg flex flex-col items-center justify-between py-16 md:py-24 transition-transform duration-800 cubic-bezier(0.77, 0, 0.175, 1) ${
         isVisible ? 'translate-y-0' : '-translate-y-full'
       }`}
     >
@@ -53,7 +53,7 @@ const Splash: React.FC<SplashProps> = ({ isVisible, onDismiss, language }) => {
       <div className="w-full max-w-6xl px-6 flex flex-col items-center mb-12 md:mb-20">
         <div
           data-wobble-target
-          className="text-lg md:text-2xl text-darkgray tracking-wide text-center min-h-12"
+          className="text-lg md:text-2xl text-darkgray dark:text-dark-text tracking-wide text-center min-h-12"
         >
           <Typewriter
             key={typewriterKey}

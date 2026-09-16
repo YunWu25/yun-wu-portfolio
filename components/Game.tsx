@@ -1330,14 +1330,16 @@ const Game: React.FC<GameProps> = ({ language }) => {
           ctx.fillRect(0, groundY - 25, canvas.width, 8);
 
           // Some kitchen items
-          // Cabinet
+          // Cabinet — shifted right of x=50 and dropped below the score UI
+          // (⭐/🏆/❤️, drawn around x:8-118, y:20-95 in the top-left) so it
+          // clears both instead of overlapping.
           ctx.fillStyle = '#c9a87c';
-          ctx.fillRect(50, 20, 80, 100);
+          ctx.fillRect(150, 110, 80, 100);
           ctx.strokeStyle = '#8b7355';
           ctx.lineWidth = 2;
-          ctx.strokeRect(50, 20, 80, 100);
+          ctx.strokeRect(150, 110, 80, 100);
           ctx.beginPath();
-          ctx.arc(120, 70, 5, 0, Math.PI * 2);
+          ctx.arc(220, 160, 5, 0, Math.PI * 2);
           ctx.stroke();
 
           // Window
@@ -2407,12 +2409,12 @@ const Game: React.FC<GameProps> = ({ language }) => {
         const rainbowColors = ['#ff6b6b', '#feca57', '#48dbfb', '#ff9ff3', '#54a0ff', '#5f27cd'];
 
         // Party emoji row
-        ctx.font = '32px sans-serif';
+        ctx.font = '32px "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", sans-serif';
         ctx.textAlign = 'center';
         ctx.fillText('🎉🎂🎈🎁🎊', canvas.width / 2, canvas.height / 2 - 120);
 
         // Happy Birthday message with rainbow effect
-        ctx.font = 'bold 28px sans-serif';
+        ctx.font = 'bold 28px "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", sans-serif';
         const bday = currentBirthdayRef.current;
         const birthdayText = bday
           ? (language === 'en' ? bday.message : bday.messageCn)
@@ -2429,12 +2431,12 @@ const Game: React.FC<GameProps> = ({ language }) => {
         // Year display
         const year = new Date().getFullYear();
         ctx.fillStyle = '#ffd93d';
-        ctx.font = 'bold 18px sans-serif';
+        ctx.font = 'bold 18px "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", sans-serif';
         ctx.fillText(`🌟 ${year} 🌟`, canvas.width / 2, canvas.height / 2 - 35);
 
         // Game title below birthday message
         ctx.fillStyle = '#fff';
-        ctx.font = 'bold 24px sans-serif';
+        ctx.font = 'bold 24px "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", sans-serif';
         ctx.fillText(title, canvas.width / 2, canvas.height / 2);
       } else if (isHolidayModeRef.current && currentHolidayRef.current && showDifficulty) {
         // Holiday special display
@@ -2442,24 +2444,24 @@ const Game: React.FC<GameProps> = ({ language }) => {
         const holidayText = language === 'en' ? holiday.message : holiday.messageCn;
 
         // Holiday emoji/message
-        ctx.font = 'bold 28px sans-serif';
+        ctx.font = 'bold 28px "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", sans-serif';
         ctx.textAlign = 'center';
         ctx.fillStyle = '#fff';
         ctx.fillText(holidayText, canvas.width / 2, canvas.height / 2 - 80);
 
         // Game title
         ctx.fillStyle = '#ffd93d';
-        ctx.font = 'bold 32px sans-serif';
+        ctx.font = 'bold 32px "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", sans-serif';
         ctx.fillText(title, canvas.width / 2, canvas.height / 2 - 30);
       } else {
         // Normal display
         // Show cat emoji
-        ctx.font = '48px sans-serif';
+        ctx.font = '48px "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", sans-serif';
         ctx.textAlign = 'center';
         ctx.fillText(catEmoji, canvas.width / 2, canvas.height / 2 - 80);
 
         ctx.fillStyle = '#e07a5f';
-        ctx.font = 'bold 36px sans-serif';
+        ctx.font = 'bold 36px "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", sans-serif';
         ctx.fillText(title, canvas.width / 2, canvas.height / 2 - 30);
       }
 
@@ -2501,13 +2503,13 @@ const Game: React.FC<GameProps> = ({ language }) => {
 
           // Draw button text
           ctx.fillStyle = isHover || isSelected ? '#000' : '#fff';
-          ctx.font = 'bold 16px sans-serif';
+          ctx.font = 'bold 16px "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", sans-serif';
           ctx.fillText(language === 'en' ? config.label : config.labelCn, bx + buttonWidth / 2, by + buttonHeight / 2 + 6);
         });
 
         // Draw prompt below buttons
         ctx.fillStyle = '#fff';
-        ctx.font = '14px sans-serif';
+        ctx.font = '14px "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", sans-serif';
         ctx.fillText(
           language === 'en' ? 'Let\'s grow!' : '开始游戏！',
           canvas.width / 2,
@@ -2516,7 +2518,7 @@ const Game: React.FC<GameProps> = ({ language }) => {
       } else {
         // Just show subtitle (for game over)
         ctx.fillStyle = '#fff';
-        ctx.font = '16px sans-serif';
+        ctx.font = '16px "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", sans-serif';
         ctx.fillText(subtitle, canvas.width / 2, canvas.height / 2 + 25);
       }
     };
@@ -2548,7 +2550,7 @@ const Game: React.FC<GameProps> = ({ language }) => {
 
         // Arrow
         ctx.fillStyle = '#fff';
-        ctx.font = 'bold 32px sans-serif';
+        ctx.font = 'bold 32px "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", sans-serif';
         ctx.textAlign = 'center';
         ctx.fillText(arrow === 'left' ? '◀' : '▶', x + touchButtonSize / 2, y + touchButtonSize / 2 + 10);
 
@@ -2568,10 +2570,10 @@ const Game: React.FC<GameProps> = ({ language }) => {
       ctx.lineWidth = 3;
       ctx.stroke();
       ctx.fillStyle = '#fff';
-      ctx.font = 'bold 24px sans-serif';
+      ctx.font = 'bold 24px "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", sans-serif';
       ctx.textAlign = 'center';
       ctx.fillText('⬆', canvas.width - 100 + touchButtonSize / 2, touchButtonY + touchButtonSize / 2 + 8);
-      ctx.font = 'bold 10px sans-serif';
+      ctx.font = 'bold 10px "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", sans-serif';
       ctx.fillText('TAP', canvas.width - 100 + touchButtonSize / 2, touchButtonY + touchButtonSize - 8);
       ctx.globalAlpha = 1;
     };
@@ -2614,7 +2616,7 @@ const Game: React.FC<GameProps> = ({ language }) => {
 
           // Question mark or dot
           ctx.fillStyle = '#8b4513';
-          ctx.font = 'bold 14px sans-serif';
+          ctx.font = 'bold 14px "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", sans-serif';
           ctx.textAlign = 'center';
           ctx.fillText('?', x + width / 2, y + height - 4);
         } else {
@@ -2647,7 +2649,7 @@ const Game: React.FC<GameProps> = ({ language }) => {
 
       // Draw obstacles (emoji only, no block)
       obstaclesRef.current.forEach((obs) => {
-        ctx.font = '40px sans-serif';
+        ctx.font = '40px "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", sans-serif';
         ctx.textAlign = 'center';
         ctx.fillText(obs.emoji, obs.x + obs.width / 2, obs.y + obs.height - 5);
       });
@@ -2673,7 +2675,7 @@ const Game: React.FC<GameProps> = ({ language }) => {
           ctx.fill();
 
           // Food emoji (larger)
-          ctx.font = '32px sans-serif';
+          ctx.font = '32px "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", sans-serif';
           ctx.textAlign = 'center';
           ctx.fillText(c.emoji, cx, cy + 10 + floatY);
 
@@ -2693,22 +2695,33 @@ const Game: React.FC<GameProps> = ({ language }) => {
 
           // Points badge
           ctx.fillStyle = '#ffd700';
-          ctx.font = 'bold 11px sans-serif';
+          ctx.font = 'bold 11px "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", sans-serif';
           ctx.fillText(`+${c.points}`, cx, cy + c.size + 8 + floatY);
         }
       });
 
       // Draw score UI
+      // Emoji and numbers are drawn as separate fillText calls — putting
+      // them in one string with an emoji-font-first stack made the browser
+      // render the digits with the emoji font's (much wider, uneven) glyph
+      // metrics too, showing as odd gaps between digits. Drawing the number
+      // with a plain font right after the measured emoji width keeps both
+      // on the same baseline, tightly spaced, with normal digit spacing.
+      const scoreEmojiFont = '18px "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", sans-serif';
+      const scoreNumberFont = 'bold 18px sans-serif';
       ctx.fillStyle = '#fff';
-      ctx.font = 'bold 18px monospace';
-      ctx.textAlign = 'left';
-      ctx.fillText(`⭐ ${scoreRef.current}`, 20, 35);
+      const drawIconStat = (icon: string, value: string | number, y: number) => {
+        ctx.textAlign = 'left';
+        ctx.font = scoreEmojiFont;
+        ctx.fillText(icon, 20, y);
+        const iconWidth = ctx.measureText(icon).width;
+        ctx.font = scoreNumberFont;
+        ctx.fillText(`${value}`, 20 + iconWidth + 4, y);
+      };
 
-      // High score with trophy
-      ctx.fillText(`🏆 ${highScoreRef.current}`, 20, 60);
-
-      // Draw lives with number
-      ctx.fillText(`❤️ ${livesRef.current}`, 20, 85);
+      drawIconStat('⭐', scoreRef.current, 35);
+      drawIconStat('🏆', highScoreRef.current, 60);
+      drawIconStat('❤️', livesRef.current, 85);
 
       // Draw hit effects (floating -points when hit)
       const now = Date.now();
@@ -2719,25 +2732,65 @@ const Game: React.FC<GameProps> = ({ language }) => {
         const yOffset = (age / 1000) * 40;
 
         ctx.globalAlpha = alpha;
-        ctx.font = 'bold 20px sans-serif';
+        ctx.font = 'bold 20px "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", sans-serif';
         ctx.fillStyle = '#ff6b6b';
         ctx.textAlign = 'center';
         ctx.fillText(`${effect.points}`, effect.x, effect.y - yOffset);
         ctx.globalAlpha = 1;
       });
 
-      // Show food counts in a single line at top right
+      // Show food counts — a single right-aligned row sitting just to the
+      // left of the mute button, vertically centered on it. Font size
+      // shrinks to fit as more distinct foods get collected, so everything
+      // the cat has eaten stays on one row instead of wrapping or
+      // overflowing past the score UI on the left. Each emoji and its count
+      // are drawn as separate fillText calls (emoji font vs. plain sans) —
+      // combining them in one string made the digits render with odd gaps,
+      // since the emoji-first font stack's much wider glyph metrics carried
+      // over into the following number.
       const counts = Array.from(foodCountsRef.current.values());
       if (counts.length > 0) {
-        ctx.font = 'bold 14px sans-serif';
-        ctx.textAlign = 'right';
+        const emojiFontStack = '"Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", sans-serif';
+        const muteButtonSize = 40;
+        const muteButtonMargin = 12; // matches the DOM button's `top-3 right-3`
+        const rightX = canvas.width - muteButtonMargin - muteButtonSize - 10;
+        const y = muteButtonMargin + muteButtonSize / 2 + 5; // vertically centered on the mute button
+        const leftBound = 130; // clears the score UI in the top-left
+        const availableWidth = rightX - leftBound;
+        const baseFontSize = 13;
+        const minFontSize = 7;
+        const itemGap = 3; // between an emoji and its own count
+        const groupGap = 8; // between different food items
+
+        const measureAt = (fontSize: number) => {
+          ctx.font = `${fontSize}px ${emojiFontStack}`;
+          const emojiWidths = counts.map((f) => ctx.measureText(f.emoji).width);
+          ctx.font = `bold ${fontSize}px sans-serif`;
+          const countWidths = counts.map((f) => ctx.measureText(`×${f.count}`).width);
+          const total =
+            emojiWidths.reduce((sum, w, i) => sum + w + itemGap + (countWidths[i] ?? 0), 0) +
+            groupGap * Math.max(0, counts.length - 1);
+          return { emojiWidths, countWidths, total };
+        };
+
+        let fontSize = baseFontSize;
+        let { emojiWidths, countWidths, total } = measureAt(fontSize);
+        if (total > availableWidth) {
+          fontSize = Math.max(minFontSize, baseFontSize * (availableWidth / total));
+          ({ emojiWidths, countWidths, total } = measureAt(fontSize));
+        }
+
+        ctx.textAlign = 'left';
         ctx.fillStyle = '#fff';
-        // Build a single line string with all food items
-        const foodLine = counts
-          .slice(0, 10)
-          .map((food) => `${food.emoji}x${food.count}`)
-          .join('  ');
-        ctx.fillText(foodLine, canvas.width - 20, 30);
+        let cursorX = rightX - total;
+        counts.forEach((food, i) => {
+          ctx.font = `${fontSize}px ${emojiFontStack}`;
+          ctx.fillText(food.emoji, cursorX, y);
+          cursorX += (emojiWidths[i] ?? 0) + itemGap;
+          ctx.font = `bold ${fontSize}px sans-serif`;
+          ctx.fillText(`×${food.count}`, cursorX, y);
+          cursorX += (countWidths[i] ?? 0) + groupGap;
+        });
       }
 
       // Show recently collected items (floating text effect)
@@ -2747,16 +2800,28 @@ const Game: React.FC<GameProps> = ({ language }) => {
         const age = now - item.timestamp;
         const alpha = Math.max(0, 1 - age / 1500);
         const yOffset = (age / 1500) * 30;
+        const y = 100 + index * 25 - yOffset;
+        const label = `+${item.points}`;
+        const emojiFont = '16px "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", sans-serif';
+        const labelFont = 'bold 16px sans-serif';
+        const gap = 4;
+
+        // Emoji and the "+points" label are drawn separately (emoji font vs.
+        // plain sans) — combining them in one string made the digits render
+        // with odd gaps, same issue as the score UI above.
+        ctx.font = emojiFont;
+        const emojiWidth = ctx.measureText(item.emoji).width;
+        ctx.font = labelFont;
+        const labelWidth = ctx.measureText(label).width;
+        const startX = canvas.width / 2 - (emojiWidth + gap + labelWidth) / 2;
 
         ctx.globalAlpha = alpha;
-        ctx.font = 'bold 16px sans-serif';
         ctx.fillStyle = '#ffd700';
-        ctx.textAlign = 'center';
-        ctx.fillText(
-          `${item.emoji} +${item.points}`,
-          canvas.width / 2,
-          100 + index * 25 - yOffset
-        );
+        ctx.textAlign = 'left';
+        ctx.font = emojiFont;
+        ctx.fillText(item.emoji, startX, y);
+        ctx.font = labelFont;
+        ctx.fillText(label, startX + emojiWidth + gap, y);
         ctx.globalAlpha = 1;
       });
 

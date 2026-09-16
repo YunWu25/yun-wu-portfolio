@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Moon } from 'lucide-react';
 import { ViewState } from '../types';
 import { TYPOGRAPHY, COLORS } from '../styles';
 import { Language } from '../App';
+import { useWeather } from './weather/WeatherContext';
 
 interface NavRowProps {
   label: string;
@@ -89,6 +90,7 @@ interface HomeProps {
 }
 
 const Home: React.FC<HomeProps> = ({ onNavigate, language }) => {
+  const { weather } = useWeather();
   const [currentTime, setCurrentTime] = useState('');
 
   const text = {
@@ -179,9 +181,10 @@ const Home: React.FC<HomeProps> = ({ onNavigate, language }) => {
           </span>
           <span
             data-wobble-target
-            className={`inline-block ${TYPOGRAPHY.navSubItem} ${COLORS.coral} font-mono mt-2 md:mt-0`}
+            className={`inline-flex items-center gap-1.5 ${TYPOGRAPHY.navSubItem} ${COLORS.coral} font-mono mt-2 md:mt-0`}
           >
             {currentTime}
+            {!weather.isDay && <Moon size={16} strokeWidth={2} aria-hidden="true" />}
           </span>
         </div>
       </div>

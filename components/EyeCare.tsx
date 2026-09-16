@@ -75,18 +75,6 @@ const EyeCare: React.FC<EyeCareProps> = ({ language }) => {
   return (
     <div className="w-full max-w-4xl mx-auto px-6 py-8">
       {/* Header */}
-      {/* Hero Image */}
-      {/* 
-      <div className="mb-12 flex justify-center">
-        <img
-          src="/images/screenshots/eye-care-backup.png"
-          alt="Eye Care Training Preview"
-          className="w-full max-w-2xl rounded-xl shadow-lg border border-gray-100"
-        />
-      </div> 
-      */}
-
-
       <div className="mb-12 text-center">
         <h1 className={`${TYPOGRAPHY.navItem} ${COLORS.gray900} mb-4`}>
           {t.title}
@@ -108,10 +96,10 @@ const EyeCare: React.FC<EyeCareProps> = ({ language }) => {
               key={key}
               onClick={() => { setSelectedModule(key); }}
               className={`
-                p-6 rounded-xl transition-all duration-300 text-left bg-white
+                p-6 rounded-xl transition-all duration-300 text-left bg-white dark:bg-dark-surface
                 ${isSelected
                   ? 'border-2 border-coral bg-coral/5 shadow-lg'
-                  : 'border border-gray-100 hover:shadow-lg hover:border-gray-200'
+                  : 'border border-gray-100 dark:border-dark-border hover:shadow-lg hover:border-gray-200 dark:hover:border-dark-muted'
                 }
               `}
             >

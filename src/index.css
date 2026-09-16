@@ -5,6 +5,12 @@
   --color-offwhite: #f9f9f9;
   --color-darkgray: #333333;
 
+  --color-dark-bg: #18181a;
+  --color-dark-surface: #221f21;
+  --color-dark-border: #333033;
+  --color-dark-text: #f2f0f1;
+  --color-dark-muted: #a8a3a5;
+
   --font-sans: 'Inter', sans-serif;
   --font-serif: 'Playfair Display', serif;
   --font-mono: 'JetBrains Mono', monospace;
@@ -14,6 +20,12 @@
 body {
   background-color: #ffffff;
   overflow: hidden;
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #18181a;
+  }
 }
 
 /* Custom scrollbar */

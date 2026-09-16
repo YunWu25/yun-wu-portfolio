@@ -63,7 +63,7 @@ const Video: React.FC<VideoProps> = ({ language }) => {
           <p className={`${TYPOGRAPHY.body} ${COLORS.gray500}`}>{intro}</p>
         </div>
         <div className="flex justify-center items-center h-[50vh]">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 dark:border-dark-text"></div>
         </div>
       </div>
     );
@@ -76,7 +76,7 @@ const Video: React.FC<VideoProps> = ({ language }) => {
           <p className={`${TYPOGRAPHY.body} ${COLORS.gray500}`}>{intro}</p>
         </div>
         <div className="flex flex-col justify-center items-center h-[50vh] text-center">
-          <p className="text-gray-500 mb-4">
+          <p className="text-gray-500 dark:text-dark-muted mb-4">
             {language === 'en'
               ? (error ?? 'No videos available at the moment.')
               : (error ?? '暂时没有可用的视频。')}
@@ -85,7 +85,7 @@ const Video: React.FC<VideoProps> = ({ language }) => {
             onClick={() => {
               window.location.reload();
             }}
-            className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm transition-colors"
+            className="px-4 py-2 bg-gray-100 dark:bg-dark-surface hover:bg-gray-200 dark:hover:bg-dark-border rounded-lg text-sm transition-colors"
           >
             {language === 'en' ? 'Try Again' : '重试'}
           </button>
@@ -109,7 +109,7 @@ const Video: React.FC<VideoProps> = ({ language }) => {
             href={video.videoUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="group relative overflow-hidden rounded-lg cursor-pointer bg-gray-100 aspect-video"
+            className="group relative overflow-hidden rounded-lg cursor-pointer bg-gray-100 dark:bg-dark-surface aspect-video"
           >
             {/* Thumbnail */}
             <img
@@ -119,7 +119,9 @@ const Video: React.FC<VideoProps> = ({ language }) => {
               loading="lazy"
             />
 
-            {/* Play button overlay */}
+            {/* Play button overlay — stays light on purpose: sits over an
+                arbitrary video thumbnail, so it needs guaranteed contrast
+                regardless of site theme */}
             <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
               <div className="w-16 h-16 bg-white/90 rounded-full flex items-center justify-center shadow-lg">
                 <svg className="w-8 h-8 text-gray-900 ml-1" fill="currentColor" viewBox="0 0 24 24">

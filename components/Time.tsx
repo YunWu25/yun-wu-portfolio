@@ -179,9 +179,9 @@ const Time: React.FC<TimeProps> = ({ language }) => {
 
         <div className="flex justify-center items-center min-h-[40vh]">
           <form onSubmit={(e) => void handleSubmitCode(e)} className="w-full max-w-md">
-            <div className="bg-white border border-gray-200 rounded-xl p-8 shadow-sm">
+            <div className="bg-white dark:bg-dark-surface border border-gray-200 dark:border-dark-border rounded-xl p-8 shadow-sm">
               <div className="flex justify-center mb-6">
-                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
+                <div className="w-16 h-16 bg-gray-100 dark:bg-dark-border rounded-full flex items-center justify-center">
                   <Lock size={32} className={COLORS.gray400} />
                 </div>
               </div>
@@ -195,7 +195,7 @@ const Time: React.FC<TimeProps> = ({ language }) => {
                 value={accessCode}
                 onChange={(e) => { setAccessCode(e.target.value); }}
                 placeholder={t.placeholder}
-                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-coral transition-colors text-center text-lg tracking-widest"
+                className="w-full px-4 py-3 bg-white dark:bg-dark-bg border border-gray-200 dark:border-dark-border rounded-lg focus:outline-none focus:border-coral transition-colors text-center text-lg tracking-widest"
                 autoComplete="off"
               />
 
@@ -234,7 +234,7 @@ const Time: React.FC<TimeProps> = ({ language }) => {
           <div className="flex flex-wrap gap-3">
             <button
               onClick={selectedPhotos.size === photos.length ? deselectAll : selectAll}
-              className="px-4 py-2 text-sm border border-gray-200 rounded-lg hover:border-gray-300 transition-colors"
+              className="px-4 py-2 text-sm border border-gray-200 dark:border-dark-border rounded-lg hover:border-gray-300 dark:hover:border-dark-muted transition-colors"
             >
               {selectedPhotos.size === photos.length ? t.deselectAll : t.selectAll}
             </button>
@@ -281,8 +281,8 @@ const Time: React.FC<TimeProps> = ({ language }) => {
             return (
               <div
                 key={photo.key}
-                className={`group relative overflow-hidden rounded-lg cursor-pointer bg-gray-100 aspect-square border-2 transition-all ${
-                  isSelected ? 'border-coral' : 'border-transparent hover:border-gray-300'
+                className={`group relative overflow-hidden rounded-lg cursor-pointer bg-gray-100 dark:bg-dark-surface aspect-square border-2 transition-all ${
+                  isSelected ? 'border-coral' : 'border-transparent hover:border-gray-300 dark:hover:border-dark-border'
                 }`}
                 onClick={() => { togglePhotoSelection(photo.key); }}
               >

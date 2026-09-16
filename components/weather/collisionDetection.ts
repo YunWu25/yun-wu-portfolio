@@ -26,7 +26,6 @@ export const getCollisionRects = (): CollisionRect[] => {
       rects.push({
         id: selector,
         top: r.top,
-        bottom: r.bottom,
         left: r.left,
         right: r.right,
         width: r.width,

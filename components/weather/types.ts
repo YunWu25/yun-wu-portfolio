@@ -13,6 +13,7 @@ export interface WeatherState {
   type: WeatherType;
   intensity: number; // 1-10
   enabled: boolean;
+  isDay: boolean;
 }
 
 export interface WindVector {
@@ -31,7 +32,6 @@ export interface Particle {
   opacity: number;
   depth: number; // 0-1: parallax depth
   life: number; // 0-1: remaining life
-  maxLife: number;
   type: 'rain' | 'snow' | 'splash' | 'mist' | 'dust' | 'debris';
   length?: number;
   wobblePhase?: number;
@@ -51,7 +51,6 @@ export interface LightningBolt {
 export interface CollisionRect {
   id: string;
   top: number;
-  bottom: number;
   left: number;
   right: number;
   width: number;

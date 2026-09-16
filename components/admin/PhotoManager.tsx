@@ -27,19 +27,19 @@ export const PhotoManager: React.FC = () => {
   } = useAdminPhotos();
 
   return (
-    <div className="h-screen bg-gray-50 overflow-y-auto">
+    <div className="h-screen bg-gray-50 dark:bg-dark-bg overflow-y-auto">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
+      <header className="bg-white dark:bg-dark-surface border-b border-gray-200 dark:border-dark-border sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <h1 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+            <h1 className="text-lg font-semibold text-gray-900 dark:text-dark-text flex items-center gap-2">
               <span className="text-xl">📷</span>
               Photo Metadata Admin
             </h1>
             <div className="flex items-center gap-4">
               <a
                 href="/admin/chat-logs"
-                className="text-sm text-gray-500 hover:text-gray-900 transition-colors"
+                className="text-sm text-gray-500 dark:text-dark-muted hover:text-gray-900 dark:hover:text-dark-text transition-colors"
               >
                 Chat Logs
               </a>
@@ -47,7 +47,7 @@ export const PhotoManager: React.FC = () => {
                 href="/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sm text-gray-500 hover:text-gray-900 transition-colors"
+                className="text-sm text-gray-500 dark:text-dark-muted hover:text-gray-900 dark:hover:text-dark-text transition-colors"
               >
                 ← Back to Site
               </a>
@@ -74,22 +74,22 @@ export const PhotoManager: React.FC = () => {
 
         {/* Loading state */}
         {loading && (
-          <div className="text-center py-16 text-gray-500">
-            <div className="animate-spin inline-block w-8 h-8 border-2 border-gray-300 border-t-gray-600 rounded-full mb-4" />
+          <div className="text-center py-16 text-gray-500 dark:text-dark-muted">
+            <div className="animate-spin inline-block w-8 h-8 border-2 border-gray-300 dark:border-dark-border border-t-gray-600 dark:border-t-dark-muted rounded-full mb-4" />
             <p>Loading photos...</p>
           </div>
         )}
 
         {/* Error state */}
         {error && !loading && (
-          <div className="bg-red-50 border border-red-200 text-red-700 rounded-lg p-4 text-center">
+          <div className="bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900 text-red-700 dark:text-red-400 rounded-lg p-4 text-center">
             <p className="font-medium">Failed to load photos</p>
             <p className="text-sm mt-1">{error}</p>
             <button
               onClick={() => {
                 void refreshPhotos();
               }}
-              className="mt-3 px-4 py-2 bg-red-100 hover:bg-red-200 rounded-lg text-sm transition-colors"
+              className="mt-3 px-4 py-2 bg-red-100 dark:bg-red-900/40 hover:bg-red-200 dark:hover:bg-red-900/60 rounded-lg text-sm transition-colors"
             >
               Try again
             </button>
@@ -98,7 +98,7 @@ export const PhotoManager: React.FC = () => {
 
         {/* Empty state */}
         {!loading && !error && filteredPhotos.length === 0 && (
-          <div className="text-center py-16 text-gray-500">
+          <div className="text-center py-16 text-gray-500 dark:text-dark-muted">
             {photos.length === 0 ? (
               <>
                 <p className="text-lg">No photos found in R2 bucket</p>
@@ -112,7 +112,7 @@ export const PhotoManager: React.FC = () => {
                     updateSearch('');
                     updateSeason('');
                   }}
-                  className="mt-3 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm transition-colors"
+                  className="mt-3 px-4 py-2 bg-gray-100 dark:bg-dark-surface hover:bg-gray-200 dark:hover:bg-dark-border rounded-lg text-sm transition-colors"
                 >
                   Clear filters
                 </button>

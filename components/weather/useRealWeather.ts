@@ -1,5 +1,7 @@
 import { useEffect, useCallback, useRef } from 'react';
 import { WeatherType } from './types';
+import { isFullMoon } from './moonPhase';
+import { weatherEmoji } from './weatherIcons';
 
 const POLL_INTERVAL_MS = 15 * 60 * 1000;
 const FALLBACK_LAT = 47.6062;
@@ -24,8 +26,8 @@ interface WeatherApiResponse {
     precipitation: number;
     rain: number;
     snowfall: number;
-    cloud_cover: number;
     wind_gusts_10m: number;
+    is_day: number;
   };
 }
 
@@ -142,7 +144,7 @@ async function getLocationByIp(): Promise<{ lat: number; lon: number }> {
 }
 
 export function useRealWeather(
-  onUpdate: (type: WeatherType, intensity: number) => void,
+  onUpdate: (type: WeatherType, intensity: number, isDay: boolean) => void,
 ) {
   const intervalRef = useRef<ReturnType<typeof setInterval> | undefined>(undefined);
   const locationRef = useRef<{ lat: number; lon: number } | null>(null);
@@ -154,7 +156,7 @@ export function useRealWeather(
 
   const fetchWeather = useCallback(async (lat: number, lon: number) => {
     try {
-      const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=weather_code,temperature_2m,wind_speed_10m,precipitation,rain,snowfall,cloud_cover,wind_gusts_10m&timezone=auto`;
+      const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=weather_code,temperature_2m,wind_speed_10m,precipitation,rain,snowfall,wind_gusts_10m,is_day&timezone=auto`;
       const res = await fetch(url);
       if (!res.ok) throw new Error(`Weather API: ${res.status}`);
 
@@ -164,13 +166,16 @@ export function useRealWeather(
       let mapped = mapWeather(c.weather_code, c.precipitation, c.rain, c.snowfall, c.wind_speed_10m, c.wind_gusts_10m);
       mapped = applyWindOverride(mapped, c.wind_speed_10m);
 
+      const isDay = c.is_day === 1;
+      const emoji = weatherEmoji(mapped.type, isDay, isFullMoon(new Date()));
+
       console.debug(
-        `[weather] ${mapped.description} | type=${mapped.type} intensity=${mapped.intensity} | ` +
+        `[weather] ${emoji} ${mapped.description} | type=${mapped.type} intensity=${mapped.intensity} ${isDay ? 'day' : 'night'} | ` +
         `wmo=${c.weather_code} temp=${c.temperature_2m}°C wind=${c.wind_speed_10m}km/h ` +
         `rain=${c.rain}mm snow=${c.snowfall}cm | poll=${POLL_INTERVAL_MS / 60000}min`
       );
 
-      onUpdateRef.current(mapped.type, mapped.intensity);
+      onUpdateRef.current(mapped.type, mapped.intensity, isDay);
     } catch (e) {
       console.debug('[weather] fetch failed:', e instanceof Error ? e.message : e);
     }

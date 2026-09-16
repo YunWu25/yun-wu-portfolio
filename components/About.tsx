@@ -109,21 +109,21 @@ const About: React.FC<AboutProps> = ({ language }) => {
             {t.services}
           </h2>
           <div className="space-y-6 max-w-3xl mx-auto">
-            <div className="border-b border-gray-200 pb-6">
+            <div className="border-b border-gray-200 dark:border-dark-border pb-6">
               <h3 className={`font-sans text-xl md:text-2xl font-medium ${COLORS.gray900} mb-3`}>
                 {t.brandAmbassador}
               </h3>
               <p className={`${TYPOGRAPHY.bodySmall} ${COLORS.gray600}`}>{t.brandAmbassadorDesc}</p>
             </div>
 
-            <div className="border-b border-gray-200 pb-6">
+            <div className="border-b border-gray-200 dark:border-dark-border pb-6">
               <h3 className={`font-sans text-xl md:text-2xl font-medium ${COLORS.gray900} mb-3`}>
                 {t.video}
               </h3>
               <p className={`${TYPOGRAPHY.bodySmall} ${COLORS.gray600}`}>{t.servicesDesc}</p>
             </div>
 
-            <div className="border-b border-gray-200 pb-6 last:border-b-0">
+            <div className="border-b border-gray-200 dark:border-dark-border pb-6 last:border-b-0">
               <h3 className={`font-sans text-xl md:text-2xl font-medium ${COLORS.gray900} mb-3`}>
                 {t.photography}
               </h3>

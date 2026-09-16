@@ -4,6 +4,7 @@
  */
 import { Particle, WeatherPreset, WindVector, CollisionRect, LightningBolt } from './types';
 import { checkCollision, getCollisionRects } from './collisionDetection';
+import { isFullMoon } from './moonPhase';
 
 const MAX_PARTICLES = 4000;
 const MAX_SPLASHES = 400;
@@ -31,6 +32,19 @@ interface SnowPile {
   maxHeight: number;
 }
 
+/** Soft decorative cloud/mist puff drifting near the night moon */
+/** Soft ambient glow patch for calm full-moon nights (see NightCloudCanvas
+ * for the "dark cloud" atmosphere used on regular nights) */
+interface NightCloud {
+  x: number;
+  y: number;
+  r: number;
+  driftPhase: number;
+  driftSpeed: number;
+  baseOpacity: number;
+}
+
+
 export class ParticleEngine {
   private particles: Particle[] = [];
   private splashes: Particle[] = [];
@@ -41,6 +55,9 @@ export class ParticleEngine {
   private lightningTimer = 0;
   private time = 0;
   private sunRayAngle = 0;
+  private nightClouds: NightCloud[] = [];
+  private isFullMoonNight = isFullMoon(new Date());
+  private moonCanvas: HTMLCanvasElement | null = null;
   private currentWind: WindVector = { x: 0, y: 0, gustStrength: 0, gustFrequency: 0 };
   private targetWind: WindVector = { x: 0, y: 0, gustStrength: 0, gustFrequency: 0 };
 
@@ -60,7 +77,7 @@ export class ParticleEngine {
   private deadParticle(): Particle {
     return {
       x: 0, y: 0, vx: 0, vy: 0, size: 0, opacity: 0,
-      depth: 0, life: 0, maxLife: 1, type: 'rain',
+      depth: 0, life: 0, type: 'rain',
     };
   }
 
@@ -69,10 +86,41 @@ export class ParticleEngine {
     this.h = h;
     // Reset snow piles on resize
     this.snowPiles.clear();
+    this.initNightClouds();
+  }
+
+  private initNightClouds() {
+    // Only needed for the calm full-moon ambient wash — regular nights get
+    // their "dark cloud" atmosphere from the separate NightCloudCanvas layer.
+    if (!this.isFullMoonNight) {
+      this.nightClouds = [];
+      return;
+    }
+
+    // Anchored around the moon's corner (same spot as the sun) so the night
+    // accent stays a decorative corner detail rather than covering the page.
+    const cx = this.w * 0.85;
+    const cy = this.h * 0.15;
+    const spread = Math.min(this.w, this.h) * 0.5;
+    const count = 5;
+
+    this.nightClouds = [];
+    for (let i = 0; i < count; i++) {
+      const angle = rand(0, Math.PI * 2);
+      const dist = rand(0.15, 1) * spread;
+      this.nightClouds.push({
+        x: cx + Math.cos(angle) * dist,
+        y: Math.max(-20, cy + Math.sin(angle) * dist * 0.6),
+        r: rand(60, 140),
+        driftPhase: rand(0, Math.PI * 2),
+        driftSpeed: rand(0.05, 0.15),
+        baseOpacity: rand(0.06, 0.14),
+      });
+    }
   }
 
   /** Update preset — wind transitions smoothly */
-  applyPreset(preset: WeatherPreset) {
+  private applyPreset(preset: WeatherPreset) {
     this.targetWind = { ...preset.wind };
 
     // Activate correct number of particles
@@ -104,7 +152,6 @@ export class ParticleEngine {
     p.size = rand(preset.size.min, preset.size.max) * p.depth;
     p.opacity = rand(0.3, 0.8) * p.depth;
     p.life = 1;
-    p.maxLife = 1;
 
     const speed = rand(preset.speed.min, preset.speed.max) * p.depth;
 
@@ -172,7 +219,6 @@ export class ParticleEngine {
         s.size = rand(1, 2.5);
         s.opacity = rand(0.4, 0.7);
         s.life = 1;
-        s.maxLife = 1;
         s.depth = 1;
         spawned++;
       }
@@ -258,7 +304,7 @@ export class ParticleEngine {
   }
 
   /** Main update tick */
-  update(dt: number, preset: WeatherPreset) {
+  update(dt: number, preset: WeatherPreset, isNight: boolean) {
     this.time += dt;
 
     // Smooth wind transition (frame-rate independent: scale lerp factor by dt)
@@ -404,8 +450,8 @@ export class ParticleEngine {
       this.lightningFlash = 0;
     }
 
-    // Sun ray animation
-    if (preset.hasSunRays) {
+    // Sun ray animation (daytime only — the moon stays still at night)
+    if (preset.hasSunRays && !isNight) {
       this.sunRayAngle = (this.sunRayAngle + dt * 0.3) % (Math.PI * 2);
     }
 
@@ -462,8 +508,11 @@ export class ParticleEngine {
     }
   }
 
-  /** Render everything to canvas */
-  render(ctx: CanvasRenderingContext2D, preset: WeatherPreset) {
+  /** Render everything to canvas. `scrollOffset` is the content scroll
+   * container's scrollTop — the sun/moon/night-clouds are anchored to the
+   * page's hero area, not the viewport, so they scroll away with the page
+   * instead of staying pinned on screen. */
+  render(ctx: CanvasRenderingContext2D, preset: WeatherPreset, isNight: boolean, scrollOffset = 0) {
     ctx.clearRect(0, 0, this.w, this.h);
 
     // Lightning flash (full-screen white flash)
@@ -472,15 +521,20 @@ export class ParticleEngine {
       ctx.fillRect(0, 0, this.w, this.h);
     }
 
-    // Sun rays
+    // Celestial backdrop
     if (preset.hasSunRays) {
-      this.renderSunRays(ctx);
+      if (isNight) {
+        this.renderNightClouds(ctx, scrollOffset);
+        this.renderMoon(ctx, scrollOffset);
+      } else {
+        this.renderSunRays(ctx, scrollOffset);
+      }
     }
 
     // Particles
     for (const p of this.particles) {
       if (p.life <= 0) continue;
-      this.renderParticle(ctx, p);
+      this.renderParticle(ctx, p, isNight);
     }
 
     // Splashes
@@ -529,7 +583,7 @@ export class ParticleEngine {
     }
   }
 
-  private renderParticle(ctx: CanvasRenderingContext2D, p: Particle) {
+  private renderParticle(ctx: CanvasRenderingContext2D, p: Particle, isNight: boolean) {
     switch (p.type) {
       case 'rain': {
         // Render as a teardrop/elongated droplet falling at an angle
@@ -553,18 +607,27 @@ export class ParticleEngine {
         ctx.quadraticCurveTo(r * 1.2, -len * 0.3, 0, -len);
         ctx.closePath();
 
-        // Semi-transparent water color with slight highlight
+        // Semi-transparent water color with slight highlight — dusky rose
+        // under moonlight, to stay in the same warm family as the night moon
         const dropGrad = ctx.createLinearGradient(0, -len, 0, r);
-        dropGrad.addColorStop(0, `rgba(140, 180, 220, ${p.opacity * 0.3})`);
-        dropGrad.addColorStop(0.5, `rgba(160, 200, 235, ${p.opacity * 0.6})`);
-        dropGrad.addColorStop(1, `rgba(180, 215, 245, ${p.opacity})`);
+        if (isNight) {
+          dropGrad.addColorStop(0, `rgba(95, 78, 108, ${p.opacity * 0.3})`);
+          dropGrad.addColorStop(0.5, `rgba(120, 98, 135, ${p.opacity * 0.55})`);
+          dropGrad.addColorStop(1, `rgba(145, 120, 155, ${p.opacity * 0.9})`);
+        } else {
+          dropGrad.addColorStop(0, `rgba(140, 180, 220, ${p.opacity * 0.3})`);
+          dropGrad.addColorStop(0.5, `rgba(160, 200, 235, ${p.opacity * 0.6})`);
+          dropGrad.addColorStop(1, `rgba(180, 215, 245, ${p.opacity})`);
+        }
         ctx.fillStyle = dropGrad;
         ctx.fill();
 
         // Subtle highlight on the left side of the drop
         ctx.beginPath();
         ctx.arc(-r * 0.3, 0, r * 0.35, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(220, 240, 255, ${p.opacity * 0.4})`;
+        ctx.fillStyle = isNight
+          ? `rgba(195, 165, 195, ${p.opacity * 0.3})`
+          : `rgba(220, 240, 255, ${p.opacity * 0.4})`;
         ctx.fill();
 
         ctx.restore();
@@ -576,11 +639,17 @@ export class ParticleEngine {
         ctx.rotate(p.rotation ?? 0);
         ctx.beginPath();
         ctx.arc(0, 0, p.size, 0, Math.PI * 2);
-        // Radial gradient for soft snowflake
+        // Radial gradient for soft snowflake — blush-white under moonlight
         const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, p.size);
-        grad.addColorStop(0, `rgba(255, 255, 255, ${p.opacity})`);
-        grad.addColorStop(0.6, `rgba(230, 235, 245, ${p.opacity * 0.6})`);
-        grad.addColorStop(1, `rgba(220, 225, 240, 0)`);
+        if (isNight) {
+          grad.addColorStop(0, `rgba(250, 230, 238, ${p.opacity})`);
+          grad.addColorStop(0.6, `rgba(222, 185, 205, ${p.opacity * 0.6})`);
+          grad.addColorStop(1, `rgba(205, 165, 190, 0)`);
+        } else {
+          grad.addColorStop(0, `rgba(255, 255, 255, ${p.opacity})`);
+          grad.addColorStop(0.6, `rgba(230, 235, 245, ${p.opacity * 0.6})`);
+          grad.addColorStop(1, `rgba(220, 225, 240, 0)`);
+        }
         ctx.fillStyle = grad;
         ctx.fill();
         ctx.restore();
@@ -599,7 +668,9 @@ export class ParticleEngine {
       case 'dust': {
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255, 220, 150, ${p.opacity})`;
+        ctx.fillStyle = isNight
+          ? `rgba(210, 175, 195, ${p.opacity * 0.7})`
+          : `rgba(255, 220, 150, ${p.opacity})`;
         ctx.fill();
         break;
       }
@@ -615,9 +686,9 @@ export class ParticleEngine {
     }
   }
 
-  private renderSunRays(ctx: CanvasRenderingContext2D) {
+  private renderSunRays(ctx: CanvasRenderingContext2D, scrollOffset: number) {
     const cx = this.w * 0.85;
-    const cy = -20;
+    const cy = -20 - scrollOffset;
     const rayCount = 12;
     const maxLen = Math.max(this.w, this.h) * 0.8;
 
@@ -653,6 +724,113 @@ export class ParticleEngine {
     ctx.fill();
 
     ctx.restore();
+  }
+
+  /** Calm full-moon night: soft pink ambient wash (dark-cloud nights are
+   * rendered by the separate NightCloudCanvas layer instead) */
+  private renderNightClouds(ctx: CanvasRenderingContext2D, scrollOffset: number) {
+    if (this.nightClouds.length === 0) return;
+    ctx.save();
+    for (const c of this.nightClouds) {
+      const pulse = 0.7 + 0.3 * Math.sin(this.time * c.driftSpeed + c.driftPhase);
+      const drift = Math.sin(this.time * c.driftSpeed * 0.5 + c.driftPhase) * 10;
+      const x = c.x + drift;
+      const y = c.y - scrollOffset;
+      const opacity = c.baseOpacity * pulse;
+
+      const grad = ctx.createRadialGradient(x, y, 0, x, y, c.r);
+      grad.addColorStop(0, `rgba(255, 205, 215, ${opacity})`);
+      grad.addColorStop(1, 'rgba(255, 205, 215, 0)');
+      ctx.beginPath();
+      ctx.arc(x, y, c.r, 0, Math.PI * 2);
+      ctx.fillStyle = grad;
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  private renderMoon(ctx: CanvasRenderingContext2D, scrollOffset: number) {
+    const cx = this.w * 0.85;
+    const cy = this.h * 0.15 - scrollOffset;
+    const r = 34;
+    const isFull = this.isFullMoonNight;
+
+    ctx.save();
+
+    // Soft ambient glow — warm rose to match the coral brand accent.
+    // Kept tight (2.6x the moon radius) so it doesn't wash into the icon
+    // column or the content card below. Eased falloff (extra middle stops
+    // instead of a straight two-stop fade) so the outer edge dissolves
+    // gradually rather than reading as a visible ring.
+    const glowRadius = r * 2.6;
+    const glow = ctx.createRadialGradient(cx, cy, 0, cx, cy, glowRadius);
+    glow.addColorStop(0, 'rgba(255, 200, 210, 0.22)');
+    glow.addColorStop(0.4, 'rgba(255, 200, 210, 0.12)');
+    glow.addColorStop(0.7, 'rgba(255, 200, 210, 0.04)');
+    glow.addColorStop(1, 'rgba(255, 200, 210, 0)');
+    ctx.fillStyle = glow;
+    ctx.beginPath();
+    ctx.arc(cx, cy, glowRadius, 0, Math.PI * 2);
+    ctx.fill();
+
+    if (isFull) {
+      this.renderFullMoon(ctx, cx, cy, r);
+    } else {
+      this.renderCrescentMoon(ctx, cx, cy, r);
+    }
+
+    ctx.restore();
+  }
+
+  private renderFullMoon(ctx: CanvasRenderingContext2D, cx: number, cy: number, r: number) {
+    const moonGrad = ctx.createRadialGradient(cx - r * 0.3, cy - r * 0.3, r * 0.1, cx, cy, r);
+    moonGrad.addColorStop(0, 'rgba(255, 250, 248, 0.97)');
+    moonGrad.addColorStop(1, 'rgba(250, 220, 225, 0.88)');
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, Math.PI * 2);
+    ctx.fillStyle = moonGrad;
+    ctx.fill();
+
+    // Craters
+    ctx.fillStyle = 'rgba(235, 195, 205, 0.4)';
+    ctx.beginPath(); ctx.arc(cx - r * 0.35, cy - r * 0.25, r * 0.16, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(cx + r * 0.3, cy + r * 0.15, r * 0.11, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(cx - r * 0.05, cy + r * 0.4, r * 0.13, 0, Math.PI * 2); ctx.fill();
+  }
+
+  private renderCrescentMoon(ctx: CanvasRenderingContext2D, cx: number, cy: number, r: number) {
+    // Rendered on an offscreen canvas so the destination-out cut only
+    // carves the moon disc, instead of erasing whatever else is on the
+    // main canvas underneath it.
+    const pad = 6;
+    const size = Math.ceil((r + pad) * 2);
+    if (!this.moonCanvas?.width || this.moonCanvas.width !== size) {
+      this.moonCanvas = document.createElement('canvas');
+      this.moonCanvas.width = size;
+      this.moonCanvas.height = size;
+    }
+    const octx = this.moonCanvas.getContext('2d');
+    if (!octx) return;
+    octx.clearRect(0, 0, size, size);
+
+    const ox = size / 2;
+    const oy = size / 2;
+
+    const moonGrad = octx.createRadialGradient(ox - r * 0.3, oy - r * 0.3, r * 0.1, ox, oy, r);
+    moonGrad.addColorStop(0, 'rgba(255, 250, 248, 0.97)');
+    moonGrad.addColorStop(1, 'rgba(250, 220, 225, 0.88)');
+    octx.beginPath();
+    octx.arc(ox, oy, r, 0, Math.PI * 2);
+    octx.fillStyle = moonGrad;
+    octx.fill();
+
+    octx.globalCompositeOperation = 'destination-out';
+    octx.beginPath();
+    octx.arc(ox + r * 0.55, oy - r * 0.15, r * 0.92, 0, Math.PI * 2);
+    octx.fill();
+    octx.globalCompositeOperation = 'source-over';
+
+    ctx.drawImage(this.moonCanvas, cx - ox, cy - oy);
   }
 
   private renderSnowPiles(ctx: CanvasRenderingContext2D) {

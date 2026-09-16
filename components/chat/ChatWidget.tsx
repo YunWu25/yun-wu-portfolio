@@ -278,11 +278,11 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ language }) => {
     <div
       ref={widgetRef}
       onClick={() => { if (!isExpanded) setIsExpanded(true); }}
-      className={`fixed z-50 bottom-4 right-4 md:bottom-6 md:right-6 ${getWidth()} ${getHeight()} bg-white rounded-xl border border-gray-200 shadow-lg hover:shadow-xl hover:border-gray-300 transition-all duration-300 flex flex-col overflow-hidden ${!isExpanded ? 'cursor-pointer' : ''}`}>
+      className={`fixed z-50 bottom-4 right-4 md:bottom-6 md:right-6 ${getWidth()} ${getHeight()} bg-white dark:bg-dark-surface rounded-xl border border-gray-200 dark:border-dark-border shadow-lg hover:shadow-xl hover:border-gray-300 dark:hover:border-dark-muted transition-all duration-300 flex flex-col overflow-hidden ${!isExpanded ? 'cursor-pointer' : ''}`}>
       {/* Minimized View */}
       {!isExpanded ? (
         <div className="h-full flex items-center justify-center px-4">
-          <p className="font-sans text-sm text-gray-500">
+          <p className="font-sans text-sm text-gray-500 dark:text-dark-muted">
             {language === 'zh' ? '💬 点击展开对话' : '💬 Click to chat'}
           </p>
         </div>
@@ -290,13 +290,13 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ language }) => {
         <>
           {/* Nickname Setting Bar */}
           {showNicknameInput ? (
-            <div className="flex items-center gap-2 px-3 py-2 border-b border-gray-100 bg-gray-50">
+            <div className="flex items-center gap-2 px-3 py-2 border-b border-gray-100 dark:border-dark-border bg-gray-50 dark:bg-dark-bg">
               <input
                 type="text"
                 value={nicknameInputValue}
                 onChange={(e) => { setNicknameInputValue(e.target.value); }}
                 placeholder={t.nicknamePlaceholder}
-                className="flex-1 px-2 py-1 text-sm border border-gray-200 rounded focus:outline-none focus:border-coral"
+                className="flex-1 px-2 py-1 text-sm bg-white dark:bg-dark-surface dark:text-dark-text border border-gray-200 dark:border-dark-border rounded focus:outline-none focus:border-coral"
                 maxLength={20}
                 autoFocus
                 onKeyDown={(e) => {
@@ -314,19 +314,19 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ language }) => {
               </button>
               <button
                 onClick={() => { setShowNicknameInput(false); setNicknameInputValue(''); }}
-                className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
+                className="p-1 text-gray-400 dark:text-dark-muted hover:text-gray-600 dark:hover:text-dark-text transition-colors"
               >
                 <X size={14} />
               </button>
             </div>
           ) : (
-            <div className="flex items-center justify-between px-3 py-1.5 border-b border-gray-100">
-              <span className="text-xs text-gray-400">
+            <div className="flex items-center justify-between px-3 py-1.5 border-b border-gray-100 dark:border-dark-border">
+              <span className="text-xs text-gray-400 dark:text-dark-muted">
                 {username ? `${language === 'zh' ? '你好' : 'Hi'}, ${username}` : ''}
               </span>
               <button
                 onClick={() => { setNicknameInputValue(username); setShowNicknameInput(true); }}
-                className="flex items-center gap-1 text-xs text-gray-400 hover:text-coral transition-colors"
+                className="flex items-center gap-1 text-xs text-gray-400 dark:text-dark-muted hover:text-coral transition-colors"
               >
                 <User size={12} />
                 {t.setNickname}
@@ -338,7 +338,7 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ language }) => {
           <div className="flex-1 overflow-y-auto">
             {messages.length === 0 ? (
               <div className="h-full flex flex-col items-center justify-center px-4 text-center">
-                <p className="font-sans text-sm text-gray-400">
+                <p className="font-sans text-sm text-gray-400 dark:text-dark-muted">
                   {language === 'zh' ? '问我任何问题...' : 'Ask me anything...'}
                 </p>
               </div>
