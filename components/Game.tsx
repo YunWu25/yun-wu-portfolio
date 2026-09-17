@@ -369,7 +369,7 @@ const CAT_TYPES = [
 
 const Game: React.FC<GameProps> = ({ language }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const gameStateRef = useRef<'START' | 'PLAYING' | 'GAMEOVER'>('START');
+  const gameStateRef = useRef<'START' | 'PLAYING' | 'PAUSED' | 'GAMEOVER'>('START');
   const difficultyRef = useRef<Difficulty>('medium');
   const scoreRef = useRef(0);
   const highScoreRef = useRef(0);
@@ -411,6 +411,10 @@ const Game: React.FC<GameProps> = ({ language }) => {
 
   // State for UI re-rendering
   const [isMuted, setIsMuted] = useState(false);
+  // Mirrors gameStateRef's PAUSED/PLAYING split just for the pause button's
+  // icon — the canvas itself reads gameStateRef directly every frame and
+  // doesn't need this, but a DOM button's label only updates on re-render.
+  const [isPaused, setIsPaused] = useState(false);
 
   const playerRef = useRef({
     x: 80,
@@ -448,6 +452,8 @@ const Game: React.FC<GameProps> = ({ language }) => {
       retry: 'Press SPACE to Retry',
       score: 'SCORE',
       collected: 'COLLECTED',
+      paused: 'PAUSED',
+      resume: 'Press ESC or tap ⏸ to Resume',
     },
     zh: {
       description: '帮助小猫收集零食并躲避障碍物！用 ← → 或 A/D 移动，空格/↑/点击跳跃。手机：使用屏幕箭头！',
@@ -457,6 +463,8 @@ const Game: React.FC<GameProps> = ({ language }) => {
       retry: '按空格键重试',
       score: '得分',
       collected: '收集',
+      paused: '已暂停',
+      resume: '按 ESC 或点击 ⏸ 继续',
     },
   };
 
@@ -914,7 +922,26 @@ const Game: React.FC<GameProps> = ({ language }) => {
     }
   }, [getRandomCollectible]);
 
+  // Pause/resume — Esc on desktop, a dedicated button (mobile has no Esc
+  // key) elsewhere. Arcade music's own beat-loop already no-ops whenever
+  // gameState isn't 'PLAYING', so stopping/restarting it here just keeps
+  // the interval itself from ticking uselessly while paused.
+  const togglePause = useCallback(() => {
+    if (gameStateRef.current === 'PLAYING') {
+      gameStateRef.current = 'PAUSED';
+      setIsPaused(true);
+      stopMusic();
+    } else if (gameStateRef.current === 'PAUSED') {
+      gameStateRef.current = 'PLAYING';
+      setIsPaused(false);
+      if (!isMutedRef.current && !isBirthdayModeRef.current) {
+        playArcadeMusic();
+      }
+    }
+  }, [stopMusic, playArcadeMusic]);
+
   const handleAction = useCallback(() => {
+    if (gameStateRef.current === 'PAUSED') return;
     if (gameStateRef.current === 'START' || gameStateRef.current === 'GAMEOVER') {
       resetGame();
       gameStateRef.current = 'PLAYING';
@@ -2870,6 +2897,8 @@ const Game: React.FC<GameProps> = ({ language }) => {
         drawOverlay(t.title, t.startPrompt, '😺', true); // Happy cat + difficulty selection
       } else if (gameStateRef.current === 'GAMEOVER') {
         drawOverlay(t.gameOver, `${t.score}: ${scoreRef.current} | ${t.retry}`, '😿', false); // Sad cat, no difficulty
+      } else if (gameStateRef.current === 'PAUSED') {
+        drawOverlay(t.paused, t.resume, '⏸️', false); // Frame stays frozen underneath (update() already skips non-PLAYING states)
       }
     };
 
@@ -2884,6 +2913,11 @@ const Game: React.FC<GameProps> = ({ language }) => {
 
     // Event listeners
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.code === 'Escape') {
+        e.preventDefault();
+        togglePause();
+        return;
+      }
       if (e.code === 'Space' || e.code === 'ArrowUp') {
         e.preventDefault();
         handleAction();
@@ -2969,7 +3003,7 @@ const Game: React.FC<GameProps> = ({ language }) => {
       canvas.removeEventListener('pointermove', handlePointerMove);
       canvas.removeEventListener('pointerdown', handlePointerDown);
     };
-  }, [handleAction, resetGame, spawnObstacle, spawnCollectible, spawnPlatform, t, language, playMoveSound, playCollectSound, playHitSound, stopMusic]);
+  }, [handleAction, resetGame, spawnObstacle, spawnCollectible, spawnPlatform, t, language, playMoveSound, playCollectSound, playHitSound, stopMusic, togglePause]);
 
   return (
     <div id="game-root" className="w-full">
@@ -2993,6 +3027,16 @@ const Game: React.FC<GameProps> = ({ language }) => {
             title={isMuted ? (language === 'en' ? 'Unmute' : '取消静音') : (language === 'en' ? 'Mute' : '静音')}
           >
             <span className="text-xl">{isMuted ? '🔇' : '🔊'}</span>
+          </button>
+          {/* Pause button — stacked directly below the mute button, same
+              size, since there's no keyboard Esc key on mobile. */}
+          <button
+            onClick={togglePause}
+            aria-label={isPaused ? (language === 'en' ? 'Resume' : '继续') : (language === 'en' ? 'Pause' : '暂停')}
+            className="absolute top-16 right-3 w-10 h-10 rounded-full bg-black/50 hover:bg-black/70 flex items-center justify-center transition-colors"
+            title={isPaused ? (language === 'en' ? 'Resume' : '继续') : (language === 'en' ? 'Pause' : '暂停')}
+          >
+            <span className="text-xl">{isPaused ? '▶️' : '⏸️'}</span>
           </button>
           {/* Birthday indicator */}
           {isBirthdayModeRef.current && currentBirthdayRef.current && (
