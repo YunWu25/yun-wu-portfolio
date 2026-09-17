@@ -453,7 +453,7 @@ const Game: React.FC<GameProps> = ({ language }) => {
       score: 'SCORE',
       collected: 'COLLECTED',
       paused: 'PAUSED',
-      resume: 'Press ESC or tap ⏸ to Resume',
+      resume: 'Press ESC or tap the pause button to Resume',
     },
     zh: {
       description: '帮助小猫收集零食并躲避障碍物！用 ← → 或 A/D 移动，空格/↑/点击跳跃。手机：使用屏幕箭头！',
@@ -464,7 +464,7 @@ const Game: React.FC<GameProps> = ({ language }) => {
       score: '得分',
       collected: '收集',
       paused: '已暂停',
-      resume: '按 ESC 或点击 ⏸ 继续',
+      resume: '按 ESC 或点击暂停按钮继续',
     },
   };
 
@@ -2898,7 +2898,10 @@ const Game: React.FC<GameProps> = ({ language }) => {
       } else if (gameStateRef.current === 'GAMEOVER') {
         drawOverlay(t.gameOver, `${t.score}: ${scoreRef.current} | ${t.retry}`, '😿', false); // Sad cat, no difficulty
       } else if (gameStateRef.current === 'PAUSED') {
-        drawOverlay(t.paused, t.resume, '⏸️', false); // Frame stays frozen underneath (update() already skips non-PLAYING states)
+        // A regular face emoji instead of the ⏸️ control symbol — the latter
+        // renders as a colored rounded-square icon on Android's emoji font,
+        // same issue as the pause button below.
+        drawOverlay(t.paused, t.resume, '😴', false); // Frame stays frozen underneath (update() already skips non-PLAYING states)
       }
     };
 
@@ -3037,7 +3040,24 @@ const Game: React.FC<GameProps> = ({ language }) => {
             style={{ WebkitTapHighlightColor: 'transparent', WebkitAppearance: 'none', appearance: 'none' }}
             title={isPaused ? (language === 'en' ? 'Resume' : '继续') : (language === 'en' ? 'Pause' : '暂停')}
           >
-            <span className="text-xl">{isPaused ? '▶️' : '⏸️'}</span>
+            {/* Plain CSS shapes instead of the ⏸️/▶️ emoji — Android's
+                color emoji font draws those as a solid orange/amber
+                rounded-square icon that visually swallows the button's own
+                black circle, making the whole button look orange/yellow.
+                A hand-drawn bar pair / triangle renders identically (plain
+                white) on every platform, matching how it already looks on
+                desktop. */}
+            {isPaused ? (
+              <span
+                aria-hidden="true"
+                style={{ width: 0, height: 0, borderTop: '7px solid transparent', borderBottom: '7px solid transparent', borderLeft: '11px solid white' }}
+              />
+            ) : (
+              <span className="flex gap-1" aria-hidden="true">
+                <span className="w-1 h-3.5 bg-white rounded-[1px]" />
+                <span className="w-1 h-3.5 bg-white rounded-[1px]" />
+              </span>
+            )}
           </button>
           {/* Birthday indicator */}
           {isBirthdayModeRef.current && currentBirthdayRef.current && (
@@ -3168,8 +3188,16 @@ const Game: React.FC<GameProps> = ({ language }) => {
               }}
               className="group -m-4 p-4 flex items-center justify-center active:scale-95 transition-transform"
             >
-              <span className="w-16 h-16 rounded-full bg-[#3d405b] border-2 border-[#81b29a] text-white text-2xl flex items-center justify-center group-active:bg-[#e07a5f] transition-colors">
-                ◀
+              {/* A CSS border-triangle instead of a "◀" text glyph — Unicode
+                  triangle characters don't have a consistent visual size
+                  across platforms/fonts (this is also why the jump button's
+                  "▲" looked bigger than these), so all three arrows are
+                  drawn the same way for a guaranteed identical size. */}
+              <span className="w-16 h-16 rounded-full bg-[#3d405b] border-2 border-[#81b29a] flex items-center justify-center group-active:bg-[#e07a5f] transition-colors">
+                <span
+                  aria-hidden="true"
+                  style={{ width: 0, height: 0, borderTop: '9px solid transparent', borderBottom: '9px solid transparent', borderRight: '14px solid white' }}
+                />
               </span>
             </button>
             <button
@@ -3194,8 +3222,11 @@ const Game: React.FC<GameProps> = ({ language }) => {
               }}
               className="group -m-4 p-4 flex items-center justify-center active:scale-95 transition-transform"
             >
-              <span className="w-16 h-16 rounded-full bg-[#3d405b] border-2 border-[#81b29a] text-white text-2xl flex items-center justify-center group-active:bg-[#e07a5f] transition-colors">
-                ▶
+              <span className="w-16 h-16 rounded-full bg-[#3d405b] border-2 border-[#81b29a] flex items-center justify-center group-active:bg-[#e07a5f] transition-colors">
+                <span
+                  aria-hidden="true"
+                  style={{ width: 0, height: 0, borderTop: '9px solid transparent', borderBottom: '9px solid transparent', borderLeft: '14px solid white' }}
+                />
               </span>
             </button>
           </div>
@@ -3208,8 +3239,11 @@ const Game: React.FC<GameProps> = ({ language }) => {
             }}
             className="-m-4 p-4 flex items-center justify-center active:scale-95 transition-transform"
           >
-            <span className="w-16 h-16 rounded-full bg-[#e07a5f] border-2 border-[#81b29a] text-white text-2xl flex items-center justify-center">
-              ▲
+            <span className="w-16 h-16 rounded-full bg-[#e07a5f] border-2 border-[#81b29a] flex items-center justify-center">
+              <span
+                aria-hidden="true"
+                style={{ width: 0, height: 0, borderLeft: '9px solid transparent', borderRight: '9px solid transparent', borderBottom: '14px solid white' }}
+              />
             </span>
           </button>
         </div>
