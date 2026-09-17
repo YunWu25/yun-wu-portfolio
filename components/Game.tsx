@@ -2992,7 +2992,7 @@ const Game: React.FC<GameProps> = ({ language }) => {
           support, detected once on mount. */}
       {isTouchDevice && (
         <div
-          className="mt-2 flex items-center justify-between gap-6 max-w-[420px] mx-auto select-none"
+          className="mt-1 flex items-center justify-between gap-6 max-w-[420px] mx-auto select-none"
           style={{ touchAction: 'none' }}
         >
           <div className="flex gap-3">
