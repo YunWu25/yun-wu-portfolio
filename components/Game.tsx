@@ -3034,6 +3034,7 @@ const Game: React.FC<GameProps> = ({ language }) => {
             onClick={togglePause}
             aria-label={isPaused ? (language === 'en' ? 'Resume' : '继续') : (language === 'en' ? 'Pause' : '暂停')}
             className="absolute top-16 right-3 w-10 h-10 rounded-full bg-black/50 hover:bg-black/70 flex items-center justify-center transition-colors outline-none focus:outline-none"
+            style={{ WebkitTapHighlightColor: 'transparent' }}
             title={isPaused ? (language === 'en' ? 'Resume' : '继续') : (language === 'en' ? 'Pause' : '暂停')}
           >
             <span className="text-xl">{isPaused ? '▶️' : '⏸️'}</span>

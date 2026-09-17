@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowRight, Moon } from 'lucide-react';
+import { ArrowRight, Moon, Sun } from 'lucide-react';
 import { ViewState } from '../types';
 import { TYPOGRAPHY, COLORS } from '../styles';
 import { Language } from '../App';
@@ -184,7 +184,11 @@ const Home: React.FC<HomeProps> = ({ onNavigate, language }) => {
             className={`inline-flex items-center gap-1.5 ${TYPOGRAPHY.navSubItem} ${COLORS.coral} font-mono mt-2 md:mt-0`}
           >
             {currentTime}
-            {!weather.isDay && <Moon size={16} strokeWidth={2} aria-hidden="true" />}
+            {weather.isDay ? (
+              <Sun size={16} strokeWidth={2} aria-hidden="true" />
+            ) : (
+              <Moon size={16} strokeWidth={2} aria-hidden="true" />
+            )}
           </span>
         </div>
       </div>
