@@ -2436,7 +2436,7 @@ const Game: React.FC<GameProps> = ({ language }) => {
 
         // Game title below birthday message
         ctx.fillStyle = '#fff';
-        ctx.font = 'bold 24px "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", sans-serif';
+        ctx.font = 'bold 24px sans-serif';
         ctx.fillText(title, canvas.width / 2, canvas.height / 2);
       } else if (isHolidayModeRef.current && currentHolidayRef.current && showDifficulty) {
         // Holiday special display
@@ -2451,7 +2451,7 @@ const Game: React.FC<GameProps> = ({ language }) => {
 
         // Game title
         ctx.fillStyle = '#ffd93d';
-        ctx.font = 'bold 32px "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", sans-serif';
+        ctx.font = 'bold 32px sans-serif';
         ctx.fillText(title, canvas.width / 2, canvas.height / 2 - 30);
       } else {
         // Normal display
@@ -2461,7 +2461,7 @@ const Game: React.FC<GameProps> = ({ language }) => {
         ctx.fillText(catEmoji, canvas.width / 2, canvas.height / 2 - 80);
 
         ctx.fillStyle = '#e07a5f';
-        ctx.font = 'bold 36px "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", sans-serif';
+        ctx.font = 'bold 36px sans-serif';
         ctx.fillText(title, canvas.width / 2, canvas.height / 2 - 30);
       }
 
@@ -2503,13 +2503,13 @@ const Game: React.FC<GameProps> = ({ language }) => {
 
           // Draw button text
           ctx.fillStyle = isHover || isSelected ? '#000' : '#fff';
-          ctx.font = 'bold 16px "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", sans-serif';
+          ctx.font = 'bold 16px sans-serif';
           ctx.fillText(language === 'en' ? config.label : config.labelCn, bx + buttonWidth / 2, by + buttonHeight / 2 + 6);
         });
 
         // Draw prompt below buttons
         ctx.fillStyle = '#fff';
-        ctx.font = '14px "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", sans-serif';
+        ctx.font = '14px sans-serif';
         ctx.fillText(
           language === 'en' ? 'Let\'s grow!' : '开始游戏！',
           canvas.width / 2,
@@ -2518,7 +2518,7 @@ const Game: React.FC<GameProps> = ({ language }) => {
       } else {
         // Just show subtitle (for game over)
         ctx.fillStyle = '#fff';
-        ctx.font = '16px "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", sans-serif';
+        ctx.font = '16px sans-serif';
         ctx.fillText(subtitle, canvas.width / 2, canvas.height / 2 + 25);
       }
     };
@@ -2573,7 +2573,7 @@ const Game: React.FC<GameProps> = ({ language }) => {
       ctx.font = 'bold 24px "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", sans-serif';
       ctx.textAlign = 'center';
       ctx.fillText('⬆', canvas.width - 100 + touchButtonSize / 2, touchButtonY + touchButtonSize / 2 + 8);
-      ctx.font = 'bold 10px "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", sans-serif';
+      ctx.font = 'bold 10px sans-serif';
       ctx.fillText('TAP', canvas.width - 100 + touchButtonSize / 2, touchButtonY + touchButtonSize - 8);
       ctx.globalAlpha = 1;
     };
@@ -2674,7 +2674,11 @@ const Game: React.FC<GameProps> = ({ language }) => {
           ctx.arc(cx, cy + floatY, 25, 0, Math.PI * 2);
           ctx.fill();
 
-          // Food emoji (larger)
+          // Food emoji (larger). fillStyle must be reset here — it was left
+          // as the glow's radial gradient above, which is nearly transparent
+          // at the center and made the emoji invisible on platforms/fonts
+          // that fall back to a monochrome glyph instead of a true color one.
+          ctx.fillStyle = '#000';
           ctx.font = '32px "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", sans-serif';
           ctx.textAlign = 'center';
           ctx.fillText(c.emoji, cx, cy + 10 + floatY);
@@ -2695,7 +2699,7 @@ const Game: React.FC<GameProps> = ({ language }) => {
 
           // Points badge
           ctx.fillStyle = '#ffd700';
-          ctx.font = 'bold 11px "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", sans-serif';
+          ctx.font = 'bold 11px sans-serif';
           ctx.fillText(`+${c.points}`, cx, cy + c.size + 8 + floatY);
         }
       });
@@ -2732,7 +2736,7 @@ const Game: React.FC<GameProps> = ({ language }) => {
         const yOffset = (age / 1000) * 40;
 
         ctx.globalAlpha = alpha;
-        ctx.font = 'bold 20px "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", sans-serif';
+        ctx.font = 'bold 20px sans-serif';
         ctx.fillStyle = '#ff6b6b';
         ctx.textAlign = 'center';
         ctx.fillText(`${effect.points}`, effect.x, effect.y - yOffset);
