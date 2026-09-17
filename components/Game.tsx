@@ -2527,15 +2527,6 @@ const Game: React.FC<GameProps> = ({ language }) => {
           ctx.font = 'bold 16px sans-serif';
           ctx.fillText(language === 'en' ? config.label : config.labelCn, bx + buttonWidth / 2, by + buttonHeight / 2 + 6);
         });
-
-        // Draw prompt below buttons
-        ctx.fillStyle = '#fff';
-        ctx.font = '14px sans-serif';
-        ctx.fillText(
-          language === 'en' ? 'Let\'s grow!' : '开始游戏！',
-          canvas.width / 2,
-          buttonY + buttonHeight + 30
-        );
       } else {
         // Just show subtitle (for game over)
         ctx.fillStyle = '#fff';
