@@ -2745,7 +2745,10 @@ const Game: React.FC<GameProps> = ({ language }) => {
         const muteButtonSize = 40;
         const muteButtonMargin = 12; // matches the DOM button's `top-3 right-3`
         const rightX = canvas.width - muteButtonMargin - muteButtonSize - 10;
-        const topY = muteButtonMargin + muteButtonSize / 2 + 5; // vertically centered on the mute button
+        // Anchors the FIRST row's baseline — same height as the score UI's
+        // top line and the mute button's vertical center — so the block
+        // stays level with them regardless of how many rows it grows to.
+        const topY = muteButtonMargin + muteButtonSize / 2 + 5;
         const leftBound = 130; // clears the score UI in the top-left
         const availableWidth = rightX - leftBound;
         const baseFontSize = 13;
@@ -2811,14 +2814,14 @@ const Game: React.FC<GameProps> = ({ language }) => {
         ctx.textAlign = 'left';
         ctx.fillStyle = '#fff';
         const lineHeight = fontSize + 6;
-        // Stack rows upward from topY so the row closest to the mute button
-        // stays put and earlier rows grow upward, away from the gameplay area.
-        const startY = topY - lineHeight * (rows.length - 1);
+        // Stack rows downward from topY, into the play area, instead of
+        // upward off the top of the canvas — keeps the first row level
+        // with the score UI/mute button no matter how many rows there are.
         rows.forEach((row, rowIndex) => {
           const rowWidth =
             row.reduce((sum, item) => sum + item.width, 0) + groupGap * Math.max(0, row.length - 1);
           let cursorX = rightX - rowWidth;
-          const y = startY + rowIndex * lineHeight;
+          const y = topY + rowIndex * lineHeight;
           row.forEach((item) => {
             ctx.font = `${fontSize}px ${emojiFontStack}`;
             ctx.fillText(item.food.emoji, cursorX, y);
