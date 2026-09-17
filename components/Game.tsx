@@ -434,6 +434,10 @@ const Game: React.FC<GameProps> = ({ language }) => {
   const touchControlsRef = useRef({ left: false, right: false });
   // Only show the on-screen touch controls on actual touch devices
   const [isTouchDevice, setIsTouchDevice] = useState(false);
+  // In landscape, there's no room below the canvas for a visible control
+  // row without pushing it off-screen, so controls move on top of the
+  // canvas itself (see isLandscape usage below)
+  const [isLandscape, setIsLandscape] = useState(false);
 
   const text = {
     en: {
@@ -941,6 +945,23 @@ const Game: React.FC<GameProps> = ({ language }) => {
   useEffect(() => {
     const hasTouch = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
     setIsTouchDevice(hasTouch);
+  }, []);
+
+  // Track orientation so landscape can swap to the on-canvas overlay
+  // controls — in landscape the canvas fills nearly the whole viewport
+  // height, leaving no room below it for the normal control row without
+  // pushing it below the fold.
+  useEffect(() => {
+    const updateOrientation = () => {
+      setIsLandscape(window.innerWidth > window.innerHeight);
+    };
+    updateOrientation();
+    window.addEventListener('resize', updateOrientation);
+    window.addEventListener('orientationchange', updateOrientation);
+    return () => {
+      window.removeEventListener('resize', updateOrientation);
+      window.removeEventListener('orientationchange', updateOrientation);
+    };
   }, []);
 
   useEffect(() => {
@@ -2982,15 +3003,87 @@ const Game: React.FC<GameProps> = ({ language }) => {
               {language === 'en' ? currentHolidayRef.current.message : currentHolidayRef.current.messageCn}
             </div>
           )}
+
+          {/* Landscape-only invisible controls, overlaid directly on the
+              canvas: in landscape the canvas already fills nearly the full
+              viewport height, so a visible control row below it would get
+              pushed off-screen. Same tap-area size as the portrait buttons
+              (96x96 via w-24/h-24) and the same handlers — just no visible
+              circle, positioned low enough to clear the score/food-count
+              HUD drawn at the top of the canvas. */}
+          {isTouchDevice && isLandscape && (
+            // pointer-events-none on the wrapper (with pointer-events-auto
+            // on each button) so the empty space between the three zones
+            // stays click-through to the canvas underneath — otherwise this
+            // full-size wrapper div would swallow every tap on the canvas,
+            // including the ones that are supposed to fall through to
+            // start/restart the game.
+            <div className="absolute inset-0 pointer-events-none" style={{ touchAction: 'none' }}>
+              <button
+                type="button"
+                aria-label={language === 'en' ? 'Move left' : '向左移动'}
+                onPointerDown={(e) => {
+                  e.preventDefault();
+                  touchControlsRef.current.left = true;
+                  keysRef.current.left = true;
+                }}
+                onPointerUp={() => {
+                  touchControlsRef.current.left = false;
+                  keysRef.current.left = false;
+                }}
+                onPointerLeave={() => {
+                  touchControlsRef.current.left = false;
+                  keysRef.current.left = false;
+                }}
+                onPointerCancel={() => {
+                  touchControlsRef.current.left = false;
+                  keysRef.current.left = false;
+                }}
+                className="pointer-events-auto absolute left-2 top-1/2 -translate-y-1/2 w-24 h-24"
+              />
+              <button
+                type="button"
+                aria-label={language === 'en' ? 'Move right' : '向右移动'}
+                onPointerDown={(e) => {
+                  e.preventDefault();
+                  touchControlsRef.current.right = true;
+                  keysRef.current.right = true;
+                }}
+                onPointerUp={() => {
+                  touchControlsRef.current.right = false;
+                  keysRef.current.right = false;
+                }}
+                onPointerLeave={() => {
+                  touchControlsRef.current.right = false;
+                  keysRef.current.right = false;
+                }}
+                onPointerCancel={() => {
+                  touchControlsRef.current.right = false;
+                  keysRef.current.right = false;
+                }}
+                className="pointer-events-auto absolute right-2 top-1/2 -translate-y-1/2 w-24 h-24"
+              />
+              <button
+                type="button"
+                aria-label={language === 'en' ? 'Jump' : '跳跃'}
+                onPointerDown={(e) => {
+                  e.preventDefault();
+                  handleAction();
+                }}
+                className="pointer-events-auto absolute bottom-2 left-1/2 -translate-x-1/2 w-24 h-24"
+              />
+            </div>
+          )}
         </div>
       </div>
 
       {/* On-screen movement/jump controls — real DOM buttons instead of
           canvas-drawn ones, so their tap size stays fixed and comfortable
           no matter how small the canvas itself gets scaled down on a
-          narrow phone screen. Only shown on devices that report touch
-          support, detected once on mount. */}
-      {isTouchDevice && (
+          narrow phone screen. Only shown on touch devices in portrait; in
+          landscape the same controls are overlaid on the canvas instead
+          (see above) since there's no room below it on screen. */}
+      {isTouchDevice && !isLandscape && (
         <div
           className="flex items-center justify-between gap-6 max-w-[420px] mx-auto select-none"
           style={{ touchAction: 'none' }}
