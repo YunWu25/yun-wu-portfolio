@@ -32,6 +32,20 @@ const COLLECTIBLES_CONFIG = [
   { emoji: '🌽', name: 'Corn', nameCn: '玉米', weight: 8, points: 90, size: 36, givesLife: true },
   { emoji: '🍆', name: 'Eggplant', nameCn: '茄子', weight: 5, points: 100, size: 34 },
   { emoji: '🍅', name: 'Tomato', nameCn: '番茄', weight: 6, points: 110, size: 32, givesLife: true },
+  // More snacks & treats
+  { emoji: '🍩', name: 'Donut', nameCn: '甜甜圈', weight: 10, points: 50, size: 28 },
+  { emoji: '🧁', name: 'Cupcake', nameCn: '纸杯蛋糕', weight: 8, points: 70, size: 26 },
+  { emoji: '🍰', name: 'Cake Slice', nameCn: '蛋糕', weight: 5, points: 90, size: 28 },
+  { emoji: '🍭', name: 'Lollipop', nameCn: '棒棒糖', weight: 10, points: 40, size: 24 },
+  { emoji: '🥐', name: 'Croissant', nameCn: '牛角包', weight: 8, points: 60, size: 28 },
+  { emoji: '🍦', name: 'Ice Cream', nameCn: '冰淇淋', weight: 8, points: 60, size: 28 },
+  // More fruits (bigger items, more points!)
+  { emoji: '🍎', name: 'Apple', nameCn: '苹果', weight: 8, points: 100, size: 30, givesLife: true },
+  { emoji: '🍌', name: 'Banana', nameCn: '香蕉', weight: 8, points: 90, size: 32 },
+  { emoji: '🍇', name: 'Grapes', nameCn: '葡萄', weight: 6, points: 110, size: 30 },
+  { emoji: '🍓', name: 'Strawberry', nameCn: '草莓', weight: 8, points: 90, size: 26 },
+  { emoji: '🍉', name: 'Watermelon', nameCn: '西瓜', weight: 5, points: 120, size: 36 },
+  { emoji: '🥑', name: 'Avocado', nameCn: '牛油果', weight: 5, points: 110, size: 30 },
 ];
 
 // Calculate total weight for random selection
@@ -53,6 +67,12 @@ const OBSTACLE_CONFIG = [
   { emoji: '🦑', name: 'Calamari', nameCn: '鱿鱼' },
   { emoji: '🍥', name: 'Fish Cake', nameCn: '鱼饼' },
   { emoji: '🍢', name: 'Oden Skewer', nameCn: '关东煮' },
+  { emoji: '🐟', name: 'Fish', nameCn: '鱼' },
+  { emoji: '🦐', name: 'Shrimp', nameCn: '虾' },
+  { emoji: '🐙', name: 'Octopus', nameCn: '章鱼' },
+  // More vegetables cat doesn't like
+  { emoji: '🧄', name: 'Garlic', nameCn: '大蒜' },
+  { emoji: '🍋', name: 'Lemon', nameCn: '柠檬' },
 ];
 
 interface Obstacle {
@@ -3042,8 +3062,8 @@ const Game: React.FC<GameProps> = ({ language }) => {
       <div className="mt-6 text-center">
         <p className={`${TYPOGRAPHY.body} ${COLORS.gray400} text-sm`}>
           {language === 'en'
-            ? 'Tip: 🌱Easy has more lives, 💀Hard is faster! 🌽🍅 restore health. Avoid seafood 🦐🦀!'
-            : '提示：🌱简单有更多生命，💀困难速度更快！🌽🍅 可恢复生命。躲避海鲜 🦐🦀！'}
+            ? 'Tip: 🌱Easy has more lives, 💀Hard is faster! 🌽🍅🍎 restore health. Avoid fish & seafood 🐟🦐🦀!'
+            : '提示：🌱简单有更多生命，💀困难速度更快！🌽🍅🍎 可恢复生命。躲避鱼和海鲜 🐟🦐🦀！'}
         </p>
       </div>
     </div>
