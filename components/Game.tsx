@@ -3033,8 +3033,8 @@ const Game: React.FC<GameProps> = ({ language }) => {
           <button
             onClick={togglePause}
             aria-label={isPaused ? (language === 'en' ? 'Resume' : '继续') : (language === 'en' ? 'Pause' : '暂停')}
-            className="absolute top-16 right-3 w-10 h-10 rounded-full bg-black/50 hover:bg-black/70 flex items-center justify-center transition-colors outline-none focus:outline-none"
-            style={{ WebkitTapHighlightColor: 'transparent' }}
+            className="absolute top-16 right-3 w-10 h-10 rounded-full bg-black/50 hover:bg-black/70 flex items-center justify-center transition-colors outline-none focus:outline-none border-0 focus:ring-0 focus-visible:ring-0"
+            style={{ WebkitTapHighlightColor: 'transparent', WebkitAppearance: 'none', appearance: 'none' }}
             title={isPaused ? (language === 'en' ? 'Resume' : '继续') : (language === 'en' ? 'Pause' : '暂停')}
           >
             <span className="text-xl">{isPaused ? '▶️' : '⏸️'}</span>
@@ -3209,7 +3209,7 @@ const Game: React.FC<GameProps> = ({ language }) => {
             className="-m-4 p-4 flex items-center justify-center active:scale-95 transition-transform"
           >
             <span className="w-16 h-16 rounded-full bg-[#e07a5f] border-2 border-[#81b29a] text-white text-2xl flex items-center justify-center">
-              ⬆
+              ▲
             </span>
           </button>
         </div>
