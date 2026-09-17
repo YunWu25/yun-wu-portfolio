@@ -2992,10 +2992,14 @@ const Game: React.FC<GameProps> = ({ language }) => {
           support, detected once on mount. */}
       {isTouchDevice && (
         <div
-          className="mt-1 flex items-center justify-between gap-6 max-w-[420px] mx-auto select-none"
+          className="flex items-center justify-between gap-6 max-w-[420px] mx-auto select-none"
           style={{ touchAction: 'none' }}
         >
-          <div className="flex gap-3">
+          {/* gap-8 between left/right matches the 16px hit slop on each
+              side (p-4/-m-4 below) so their invisible tap areas meet at
+              the midpoint instead of overlapping and stealing taps from
+              one another. */}
+          <div className="flex gap-8">
             {/* Each button's actual tappable area (the padded outer <button>)
                 is larger than the visible circle (the inner <span>) — a
                 negative margin cancels the padding back out so the extra
@@ -3021,7 +3025,7 @@ const Game: React.FC<GameProps> = ({ language }) => {
                 touchControlsRef.current.left = false;
                 keysRef.current.left = false;
               }}
-              className="group -m-3 p-3 flex items-center justify-center active:scale-95 transition-transform"
+              className="group -m-4 p-4 flex items-center justify-center active:scale-95 transition-transform"
             >
               <span className="w-16 h-16 rounded-full bg-[#3d405b] border-2 border-[#81b29a] text-white text-2xl flex items-center justify-center group-active:bg-[#e07a5f] transition-colors">
                 ◀
@@ -3047,7 +3051,7 @@ const Game: React.FC<GameProps> = ({ language }) => {
                 touchControlsRef.current.right = false;
                 keysRef.current.right = false;
               }}
-              className="group -m-3 p-3 flex items-center justify-center active:scale-95 transition-transform"
+              className="group -m-4 p-4 flex items-center justify-center active:scale-95 transition-transform"
             >
               <span className="w-16 h-16 rounded-full bg-[#3d405b] border-2 border-[#81b29a] text-white text-2xl flex items-center justify-center group-active:bg-[#e07a5f] transition-colors">
                 ▶
@@ -3061,9 +3065,9 @@ const Game: React.FC<GameProps> = ({ language }) => {
               e.preventDefault();
               handleAction();
             }}
-            className="-m-3 p-3 flex items-center justify-center active:scale-95 transition-transform"
+            className="-m-4 p-4 flex items-center justify-center active:scale-95 transition-transform"
           >
-            <span className="w-20 h-20 rounded-full bg-[#e07a5f] border-2 border-[#81b29a] text-white text-3xl flex items-center justify-center">
+            <span className="w-16 h-16 rounded-full bg-[#e07a5f] border-2 border-[#81b29a] text-white text-2xl flex items-center justify-center">
               ⬆
             </span>
           </button>
