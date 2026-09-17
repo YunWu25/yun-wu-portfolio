@@ -84,27 +84,31 @@ const LaptopMockup: React.FC<{ project: Project }> = ({ project }) => {
 
 const ProjectCard: React.FC<{ project: Project; language: Language }> = ({ project, language }) => {
   const cardContent = (
-    <div className="bg-white dark:bg-dark-surface border border-gray-100 dark:border-dark-border rounded-xl p-6 md:p-8 flex items-center gap-4 hover:shadow-lg hover:border-gray-200 dark:hover:border-dark-muted transition-all duration-300 group">
-      <div className="flex-1 min-w-0">
+    <div className="bg-white dark:bg-dark-surface border border-gray-100 dark:border-dark-border rounded-xl p-6 md:p-8 flex flex-col sm:flex-row items-center gap-4 hover:shadow-lg hover:border-gray-200 dark:hover:border-dark-muted transition-all duration-300 group">
+      {/* Laptop Mockup — shown first on mobile, above the text. Below
+          the `sm` breakpoint the card stacks vertically instead of sitting
+          side-by-side, since the mockup's minimum width otherwise squeezed
+          the text column down to almost nothing on a phone, forcing every
+          title/type/role onto one truncated, cut-off line. */}
+      <div className="shrink-0 order-1 sm:order-2">
+        <LaptopMockup project={project} />
+      </div>
+
+      <div className="flex-1 min-w-0 w-full text-center sm:text-left order-2 sm:order-1">
         <h3
-          className={`font-sans text-xl md:text-2xl ${COLORS.gray400} mb-1 group-hover:text-coral transition-colors truncate`}
+          className={`font-sans text-xl md:text-2xl ${COLORS.gray400} mb-1 group-hover:text-coral transition-colors`}
         >
           {project.title}
         </h3>
-        <p className={`font-sans ${COLORS.gray300} text-xl md:text-2xl mb-3 truncate`}>
+        <p className={`font-sans ${COLORS.gray300} text-xl md:text-2xl mb-3`}>
           {project.type}
         </p>
-        <div className="flex items-baseline gap-2">
+        <div className="flex items-baseline gap-2 justify-center sm:justify-start">
           <span className={`font-sans ${COLORS.gray300} text-lg whitespace-nowrap`}>
             {language === 'en' ? 'Role' : '角色'}
           </span>
-          <span className={`font-sans text-xl ${COLORS.gray300} truncate`}>{project.role}</span>
+          <span className={`font-sans text-xl ${COLORS.gray300}`}>{project.role}</span>
         </div>
-      </div>
-
-      {/* Laptop Mockup */}
-      <div className="shrink-0">
-        <LaptopMockup project={project} />
       </div>
     </div>
   );
