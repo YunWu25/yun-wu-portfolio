@@ -33,19 +33,19 @@ const COLLECTIBLES_CONFIG = [
   { emoji: '🍆', name: 'Eggplant', nameCn: '茄子', weight: 5, points: 100, size: 34 },
   { emoji: '🍅', name: 'Tomato', nameCn: '番茄', weight: 6, points: 110, size: 32, givesLife: true },
   // More snacks & treats
-  { emoji: '🍩', name: 'Donut', nameCn: '甜甜圈', weight: 10, points: 50, size: 28 },
-  { emoji: '🧁', name: 'Cupcake', nameCn: '纸杯蛋糕', weight: 8, points: 70, size: 26 },
-  { emoji: '🍰', name: 'Cake Slice', nameCn: '蛋糕', weight: 5, points: 90, size: 28 },
-  { emoji: '🍭', name: 'Lollipop', nameCn: '棒棒糖', weight: 10, points: 40, size: 24 },
-  { emoji: '🥐', name: 'Croissant', nameCn: '牛角包', weight: 8, points: 60, size: 28 },
-  { emoji: '🍦', name: 'Ice Cream', nameCn: '冰淇淋', weight: 8, points: 60, size: 28 },
+  { emoji: '🍩', name: 'Donut', nameCn: '甜甜圈', weight: 12, points: 50, size: 28 },
+  { emoji: '🧁', name: 'Cupcake', nameCn: '纸杯蛋糕', weight: 6, points: 70, size: 26 },
+  { emoji: '🍰', name: 'Cake Slice', nameCn: '蛋糕', weight: 4, points: 90, size: 28 },
+  { emoji: '🍭', name: 'Lollipop', nameCn: '棒棒糖', weight: 15, points: 40, size: 24 },
+  { emoji: '🥐', name: 'Croissant', nameCn: '牛角包', weight: 9, points: 60, size: 28 },
+  { emoji: '🍦', name: 'Ice Cream', nameCn: '冰淇淋', weight: 7, points: 60, size: 28 },
   // More fruits (bigger items, more points!)
-  { emoji: '🍎', name: 'Apple', nameCn: '苹果', weight: 8, points: 100, size: 30, givesLife: true },
-  { emoji: '🍌', name: 'Banana', nameCn: '香蕉', weight: 8, points: 90, size: 32 },
-  { emoji: '🍇', name: 'Grapes', nameCn: '葡萄', weight: 6, points: 110, size: 30 },
-  { emoji: '🍓', name: 'Strawberry', nameCn: '草莓', weight: 8, points: 90, size: 26 },
-  { emoji: '🍉', name: 'Watermelon', nameCn: '西瓜', weight: 5, points: 120, size: 36 },
+  { emoji: '🍎', name: 'Apple', nameCn: '苹果', weight: 9, points: 100, size: 30, givesLife: true },
+  { emoji: '🍇', name: 'Grapes', nameCn: '葡萄', weight: 7, points: 110, size: 30 },
+  { emoji: '🍓', name: 'Strawberry', nameCn: '草莓', weight: 11, points: 90, size: 26 },
+  { emoji: '🍉', name: 'Watermelon', nameCn: '西瓜', weight: 4, points: 120, size: 36 },
   { emoji: '🥑', name: 'Avocado', nameCn: '牛油果', weight: 5, points: 110, size: 30 },
+  { emoji: '🫑', name: 'Green Pepper', nameCn: '青椒', weight: 6, points: 100, size: 30 },
 ];
 
 // Calculate total weight for random selection
@@ -53,11 +53,12 @@ const TOTAL_WEIGHT = COLLECTIBLES_CONFIG.reduce((sum, item) => sum + item.weight
 
 // Obstacle items - things the cat doesn't want! (seafood dishes, not cute animals)
 const OBSTACLE_CONFIG = [
+  // Cats are famously spooked by bananas
+  { emoji: '🍌', name: 'Banana', nameCn: '香蕉' },
   // Vegetables cat doesn't like
   { emoji: '🥕', name: 'Carrot', nameCn: '胡萝卜' },
   { emoji: '🎃', name: 'Pumpkin', nameCn: '南瓜' },
   { emoji: '🌶️', name: 'Red Pepper', nameCn: '红辣椒' },
-  { emoji: '🫑', name: 'Green Pepper', nameCn: '青椒' },
   // Seafood dishes (look like food, not cute animals)
   { emoji: '🍤', name: 'Fried Shrimp', nameCn: '炸虾' },
   { emoji: '🦪', name: 'Oyster', nameCn: '生蚝' },
@@ -2763,57 +2764,104 @@ const Game: React.FC<GameProps> = ({ language }) => {
         ctx.globalAlpha = 1;
       });
 
-      // Show food counts — a single right-aligned row sitting just to the
-      // left of the mute button, vertically centered on it. Font size
-      // shrinks to fit as more distinct foods get collected, so everything
-      // the cat has eaten stays on one row instead of wrapping or
-      // overflowing past the score UI on the left. Each emoji and its count
-      // are drawn as separate fillText calls (emoji font vs. plain sans) —
-      // combining them in one string made the digits render with odd gaps,
-      // since the emoji-first font stack's much wider glyph metrics carried
-      // over into the following number.
+      // Show food counts — right-aligned rows sitting just to the left of
+      // the mute button, stacking downward from it. Font size shrinks only
+      // as a last resort; the first choice is to wrap onto a second row so
+      // small items don't become unreadable. Each row is measured and
+      // right-aligned independently so nothing drifts past the mute button
+      // on the right or the score UI in the top-left. Each emoji and its
+      // count are drawn as separate fillText calls (emoji font vs. plain
+      // sans) — combining them in one string made the digits render with
+      // odd gaps, since the emoji-first font stack's much wider glyph
+      // metrics carried over into the following number.
       const counts = Array.from(foodCountsRef.current.values());
       if (counts.length > 0) {
         const emojiFontStack = '"Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", sans-serif';
         const muteButtonSize = 40;
         const muteButtonMargin = 12; // matches the DOM button's `top-3 right-3`
         const rightX = canvas.width - muteButtonMargin - muteButtonSize - 10;
-        const y = muteButtonMargin + muteButtonSize / 2 + 5; // vertically centered on the mute button
+        const topY = muteButtonMargin + muteButtonSize / 2 + 5; // vertically centered on the mute button
         const leftBound = 130; // clears the score UI in the top-left
         const availableWidth = rightX - leftBound;
         const baseFontSize = 13;
-        const minFontSize = 7;
+        const minFontSize = 9;
+        const maxRows = 2;
         const itemGap = 3; // between an emoji and its own count
         const groupGap = 8; // between different food items
 
-        const measureAt = (fontSize: number) => {
-          ctx.font = `${fontSize}px ${emojiFontStack}`;
-          const emojiWidths = counts.map((f) => ctx.measureText(f.emoji).width);
-          ctx.font = `bold ${fontSize}px sans-serif`;
-          const countWidths = counts.map((f) => ctx.measureText(`×${f.count}`).width);
-          const total =
-            emojiWidths.reduce((sum, w, i) => sum + w + itemGap + (countWidths[i] ?? 0), 0) +
-            groupGap * Math.max(0, counts.length - 1);
-          return { emojiWidths, countWidths, total };
+        const measureItems = (fontSize: number) =>
+          counts.map((f) => {
+            ctx.font = `${fontSize}px ${emojiFontStack}`;
+            const emojiWidth = ctx.measureText(f.emoji).width;
+            ctx.font = `bold ${fontSize}px sans-serif`;
+            const countWidth = ctx.measureText(`×${f.count}`).width;
+            return { food: f, width: emojiWidth + itemGap + countWidth, emojiWidth, countWidth };
+          });
+
+        // Greedily pack items into as few rows as possible at a given font
+        // size, each row capped to availableWidth.
+        const packRows = (fontSize: number) => {
+          const items = measureItems(fontSize);
+          const rows: (typeof items)[] = [[]];
+          let rowWidth = 0;
+          items.forEach((item) => {
+            const addedWidth = rowWidth === 0 ? item.width : rowWidth + groupGap + item.width;
+            const currentRow = rows[rows.length - 1];
+            if (rowWidth > 0 && addedWidth > availableWidth && currentRow) {
+              rows.push([item]);
+              rowWidth = item.width;
+            } else {
+              currentRow?.push(item);
+              rowWidth = addedWidth;
+            }
+          });
+          return rows;
+        };
+
+        // Scale the font so the total width targets a two-row budget instead
+        // of a one-row budget — shrinking to whatever single-row width fits
+        // would defeat the point of wrapping. Only fall below the two-row
+        // budget once we're already at the minimum readable size.
+        const totalWidthAt = (fontSize: number) => {
+          const items = measureItems(fontSize);
+          return items.reduce((sum, item) => sum + item.width, 0) + groupGap * Math.max(0, items.length - 1);
         };
 
         let fontSize = baseFontSize;
-        let { emojiWidths, countWidths, total } = measureAt(fontSize);
-        if (total > availableWidth) {
-          fontSize = Math.max(minFontSize, baseFontSize * (availableWidth / total));
-          ({ emojiWidths, countWidths, total } = measureAt(fontSize));
+        const baseTotal = totalWidthAt(baseFontSize);
+        const rowBudget = availableWidth * maxRows;
+        if (baseTotal > rowBudget) {
+          fontSize = Math.max(minFontSize, baseFontSize * (rowBudget / baseTotal));
+        }
+        let rows = packRows(fontSize);
+        // Greedy packing isn't a perfect bin-packer, so the width-based
+        // estimate above can still overflow into a 3rd row on an uneven mix
+        // of item widths. Nudge the font down a bit more until it fits (or
+        // we hit the floor) rather than letting a row run off-screen.
+        while (rows.length > maxRows && fontSize > minFontSize) {
+          fontSize = Math.max(minFontSize, fontSize - 1);
+          rows = packRows(fontSize);
         }
 
         ctx.textAlign = 'left';
         ctx.fillStyle = '#fff';
-        let cursorX = rightX - total;
-        counts.forEach((food, i) => {
-          ctx.font = `${fontSize}px ${emojiFontStack}`;
-          ctx.fillText(food.emoji, cursorX, y);
-          cursorX += (emojiWidths[i] ?? 0) + itemGap;
-          ctx.font = `bold ${fontSize}px sans-serif`;
-          ctx.fillText(`×${food.count}`, cursorX, y);
-          cursorX += (countWidths[i] ?? 0) + groupGap;
+        const lineHeight = fontSize + 6;
+        // Stack rows upward from topY so the row closest to the mute button
+        // stays put and earlier rows grow upward, away from the gameplay area.
+        const startY = topY - lineHeight * (rows.length - 1);
+        rows.forEach((row, rowIndex) => {
+          const rowWidth =
+            row.reduce((sum, item) => sum + item.width, 0) + groupGap * Math.max(0, row.length - 1);
+          let cursorX = rightX - rowWidth;
+          const y = startY + rowIndex * lineHeight;
+          row.forEach((item) => {
+            ctx.font = `${fontSize}px ${emojiFontStack}`;
+            ctx.fillText(item.food.emoji, cursorX, y);
+            cursorX += item.emojiWidth + itemGap;
+            ctx.font = `bold ${fontSize}px sans-serif`;
+            ctx.fillText(`×${item.food.count}`, cursorX, y);
+            cursorX += item.countWidth + groupGap;
+          });
         });
       }
 
