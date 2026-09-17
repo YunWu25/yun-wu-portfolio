@@ -430,10 +430,10 @@ const Game: React.FC<GameProps> = ({ language }) => {
   // Track which movement keys are pressed
   const keysRef = useRef({ left: false, right: false });
 
-  // Track active touch controls
+  // Track active touch controls (set by the on-screen buttons below the canvas)
   const touchControlsRef = useRef({ left: false, right: false });
-  // Only show touch controls on actual touch devices
-  const isTouchDeviceRef = useRef(false);
+  // Only show the on-screen touch controls on actual touch devices
+  const [isTouchDevice, setIsTouchDevice] = useState(false);
 
   const text = {
     en: {
@@ -934,6 +934,14 @@ const Game: React.FC<GameProps> = ({ language }) => {
       }
     }
   }, [resetGame, playArcadeMusic, playBirthdaySong, playJumpSound]);
+
+  // Detect touch devices up front so the on-screen movement/jump buttons
+  // below the canvas only render where they're actually needed, instead of
+  // waiting for a first touch (which the old canvas-drawn controls did).
+  useEffect(() => {
+    const hasTouch = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+    setIsTouchDevice(hasTouch);
+  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -2535,61 +2543,6 @@ const Game: React.FC<GameProps> = ({ language }) => {
       }
     };
 
-    // Touch control button positions (stored for hit detection)
-    const touchButtonSize = 70;
-    const touchButtonY = canvas.height - 130;
-    const leftButtonX = 30;
-    const rightButtonX = 130;
-
-    const drawTouchControls = () => {
-      // Only show on touch devices during gameplay
-      if (gameStateRef.current !== 'PLAYING' || !isTouchDeviceRef.current) return;
-
-      // Semi-transparent control buttons for mobile
-      const drawButton = (x: number, y: number, isPressed: boolean, arrow: 'left' | 'right') => {
-        ctx.globalAlpha = isPressed ? 0.8 : 0.4;
-
-        // Button background
-        ctx.fillStyle = isPressed ? '#e07a5f' : '#3d405b';
-        ctx.beginPath();
-        ctx.roundRect(x, y, touchButtonSize, touchButtonSize, 12);
-        ctx.fill();
-
-        // Button border
-        ctx.strokeStyle = '#81b29a';
-        ctx.lineWidth = 3;
-        ctx.stroke();
-
-        // Arrow
-        ctx.fillStyle = '#fff';
-        ctx.font = 'bold 32px "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText(arrow === 'left' ? '◀' : '▶', x + touchButtonSize / 2, y + touchButtonSize / 2 + 10);
-
-        ctx.globalAlpha = 1;
-      };
-
-      drawButton(leftButtonX, touchButtonY, touchControlsRef.current.left, 'left');
-      drawButton(rightButtonX, touchButtonY, touchControlsRef.current.right, 'right');
-
-      // Jump hint on right side
-      ctx.globalAlpha = 0.4;
-      ctx.fillStyle = '#3d405b';
-      ctx.beginPath();
-      ctx.roundRect(canvas.width - 100, touchButtonY, touchButtonSize, touchButtonSize, 12);
-      ctx.fill();
-      ctx.strokeStyle = '#81b29a';
-      ctx.lineWidth = 3;
-      ctx.stroke();
-      ctx.fillStyle = '#fff';
-      ctx.font = 'bold 24px "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText('⬆', canvas.width - 100 + touchButtonSize / 2, touchButtonY + touchButtonSize / 2 + 8);
-      ctx.font = 'bold 10px sans-serif';
-      ctx.fillText('TAP', canvas.width - 100 + touchButtonSize / 2, touchButtonY + touchButtonSize - 8);
-      ctx.globalAlpha = 1;
-    };
-
     // Draw Mario-style platforms
     const drawPlatforms = () => {
       platformsRef.current.forEach((platform) => {
@@ -2888,9 +2841,6 @@ const Game: React.FC<GameProps> = ({ language }) => {
         ctx.globalAlpha = 1;
       });
 
-      // Draw mobile touch controls
-      drawTouchControls();
-
       // Overlay screens
       if (gameStateRef.current === 'START') {
         drawOverlay(t.title, t.startPrompt, '😺', true); // Happy cat + difficulty selection
@@ -2950,29 +2900,7 @@ const Game: React.FC<GameProps> = ({ language }) => {
       mousePositionRef.current = pos;
     };
 
-    // Check if position is on a touch control button
-    const checkTouchControl = (pos: { x: number; y: number }) => {
-      if (gameStateRef.current !== 'PLAYING') return null;
-
-      // Left button
-      if (pos.x >= leftButtonX && pos.x <= leftButtonX + touchButtonSize &&
-          pos.y >= touchButtonY && pos.y <= touchButtonY + touchButtonSize) {
-        return 'left';
-      }
-      // Right button
-      if (pos.x >= rightButtonX && pos.x <= rightButtonX + touchButtonSize &&
-          pos.y >= touchButtonY && pos.y <= touchButtonY + touchButtonSize) {
-        return 'right';
-      }
-      return null;
-    };
-
     const handlePointerDown = (e: PointerEvent) => {
-      // Detect touch device when user actually touches the screen
-      if (e.pointerType === 'touch') {
-        isTouchDeviceRef.current = true;
-      }
-
       const pos = getCanvasPosition(e);
 
       // Check for difficulty button clicks on start screen
@@ -2999,54 +2927,16 @@ const Game: React.FC<GameProps> = ({ language }) => {
         return; // Don't fall through to regular action on start screen
       }
 
-      // Check for touch control buttons during gameplay
-      const touchControl = checkTouchControl(pos);
-      if (touchControl === 'left') {
-        touchControlsRef.current.left = true;
-        keysRef.current.left = true;
-        return;
-      }
-      if (touchControl === 'right') {
-        touchControlsRef.current.right = true;
-        keysRef.current.right = true;
-        return;
-      }
-
-      // Regular action (jump or restart)
+      // Regular action (jump or restart) — left/right movement now comes
+      // from the dedicated on-screen buttons below the canvas, not from
+      // hit-testing canvas-drawn buttons.
       handleAction();
-    };
-
-    const handlePointerUp = () => {
-      // Release touch controls (but not keyboard controls)
-      if (touchControlsRef.current.left) {
-        touchControlsRef.current.left = false;
-        keysRef.current.left = false;
-      }
-      if (touchControlsRef.current.right) {
-        touchControlsRef.current.right = false;
-        keysRef.current.right = false;
-      }
-    };
-
-    const handlePointerLeave = () => {
-      // Release touch controls when pointer leaves canvas
-      if (touchControlsRef.current.left) {
-        touchControlsRef.current.left = false;
-        keysRef.current.left = false;
-      }
-      if (touchControlsRef.current.right) {
-        touchControlsRef.current.right = false;
-        keysRef.current.right = false;
-      }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('keyup', handleKeyUp);
     canvas.addEventListener('pointermove', handlePointerMove);
     canvas.addEventListener('pointerdown', handlePointerDown);
-    canvas.addEventListener('pointerup', handlePointerUp);
-    canvas.addEventListener('pointerleave', handlePointerLeave);
-    canvas.addEventListener('pointercancel', handlePointerUp);
 
     return () => {
       cancelAnimationFrame(animationIdRef.current);
@@ -3054,9 +2944,6 @@ const Game: React.FC<GameProps> = ({ language }) => {
       window.removeEventListener('keyup', handleKeyUp);
       canvas.removeEventListener('pointermove', handlePointerMove);
       canvas.removeEventListener('pointerdown', handlePointerDown);
-      canvas.removeEventListener('pointerup', handlePointerUp);
-      canvas.removeEventListener('pointerleave', handlePointerLeave);
-      canvas.removeEventListener('pointercancel', handlePointerUp);
     };
   }, [handleAction, resetGame, spawnObstacle, spawnCollectible, spawnPlatform, t, language, playMoveSound, playCollectSound, playHitSound, stopMusic]);
 
@@ -3097,6 +2984,80 @@ const Game: React.FC<GameProps> = ({ language }) => {
           )}
         </div>
       </div>
+
+      {/* On-screen movement/jump controls — real DOM buttons instead of
+          canvas-drawn ones, so their tap size stays fixed and comfortable
+          no matter how small the canvas itself gets scaled down on a
+          narrow phone screen. Only shown on devices that report touch
+          support, detected once on mount. */}
+      {isTouchDevice && (
+        <div
+          className="mt-4 flex items-center justify-between gap-6 max-w-[420px] mx-auto select-none"
+          style={{ touchAction: 'none' }}
+        >
+          <div className="flex gap-3">
+            <button
+              type="button"
+              aria-label={language === 'en' ? 'Move left' : '向左移动'}
+              onPointerDown={(e) => {
+                e.preventDefault();
+                touchControlsRef.current.left = true;
+                keysRef.current.left = true;
+              }}
+              onPointerUp={() => {
+                touchControlsRef.current.left = false;
+                keysRef.current.left = false;
+              }}
+              onPointerLeave={() => {
+                touchControlsRef.current.left = false;
+                keysRef.current.left = false;
+              }}
+              onPointerCancel={() => {
+                touchControlsRef.current.left = false;
+                keysRef.current.left = false;
+              }}
+              className="w-16 h-16 rounded-full bg-[#3d405b] border-2 border-[#81b29a] text-white text-2xl flex items-center justify-center active:bg-[#e07a5f] active:scale-95 transition-transform"
+            >
+              ◀
+            </button>
+            <button
+              type="button"
+              aria-label={language === 'en' ? 'Move right' : '向右移动'}
+              onPointerDown={(e) => {
+                e.preventDefault();
+                touchControlsRef.current.right = true;
+                keysRef.current.right = true;
+              }}
+              onPointerUp={() => {
+                touchControlsRef.current.right = false;
+                keysRef.current.right = false;
+              }}
+              onPointerLeave={() => {
+                touchControlsRef.current.right = false;
+                keysRef.current.right = false;
+              }}
+              onPointerCancel={() => {
+                touchControlsRef.current.right = false;
+                keysRef.current.right = false;
+              }}
+              className="w-16 h-16 rounded-full bg-[#3d405b] border-2 border-[#81b29a] text-white text-2xl flex items-center justify-center active:bg-[#e07a5f] active:scale-95 transition-transform"
+            >
+              ▶
+            </button>
+          </div>
+          <button
+            type="button"
+            aria-label={language === 'en' ? 'Jump' : '跳跃'}
+            onPointerDown={(e) => {
+              e.preventDefault();
+              handleAction();
+            }}
+            className="w-20 h-20 rounded-full bg-[#e07a5f] border-2 border-[#81b29a] text-white text-3xl flex items-center justify-center active:scale-95 transition-transform"
+          >
+            ⬆
+          </button>
+        </div>
+      )}
 
       <div className="mt-6 text-center">
         <p className={`${TYPOGRAPHY.body} ${COLORS.gray400} text-sm`}>
