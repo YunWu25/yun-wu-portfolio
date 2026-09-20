@@ -648,6 +648,9 @@ const Game: React.FC<GameProps> = ({ language }) => {
 
     const playBeat = () => {
       if (isMutedRef.current || gameStateRef.current !== 'PLAYING') return;
+      // A suspended context's clock is frozen, so beats scheduled now would all
+      // land on the same instant and burst out together once it resumes
+      if (ctx.state !== 'running') return;
 
       const now = ctx.currentTime;
       const melodyNote = melodyNotes[beatIndex % melodyNotes.length];
@@ -660,8 +663,14 @@ const Game: React.FC<GameProps> = ({ language }) => {
       beatIndex++;
     };
 
-    // Start the music loop
-    playBeat();
+    // Start the music loop. If the context is still suspended (first gesture,
+    // or iOS which only unlocks audio on touchend/click), play the first note
+    // the moment it is running instead of waiting a full beat for the next tick.
+    if (ctx.state === 'running') {
+      playBeat();
+    } else {
+      void ctx.resume().then(playBeat);
+    }
     musicIntervalRef.current = window.setInterval(playBeat, beatDuration * 1000);
   }, [initAudio, playNote]);
 
@@ -741,6 +750,39 @@ const Game: React.FC<GameProps> = ({ language }) => {
       }
     }
   }, [stopMusic, playArcadeMusic, playBirthdaySong]);
+
+  // Audio lifecycle. Creating an AudioContext inside the first click/keypress
+  // ran synchronously in that input handler and made the first note late, so
+  // build it up front (it starts suspended) and just resume() it on the first
+  // gesture. The listeners stay for the whole visit: iOS only accepts
+  // touchend/click as unlock gestures (not pointerdown), and it can re-suspend
+  // the context after interruptions. On unmount, stop the music timer and
+  // close the context; before this, leaving the page left both running.
+  useEffect(() => {
+    const warmUp = window.setTimeout(() => {
+      initAudio();
+    }, 300);
+
+    const unlock = () => {
+      const ctx = audioContextRef.current;
+      if (ctx?.state === 'suspended') void ctx.resume();
+    };
+    const unlockEvents = ['pointerdown', 'touchend', 'click', 'keydown'] as const;
+    unlockEvents.forEach((type) => {
+      window.addEventListener(type, unlock, { capture: true });
+    });
+
+    return () => {
+      window.clearTimeout(warmUp);
+      unlockEvents.forEach((type) => {
+        window.removeEventListener(type, unlock, { capture: true });
+      });
+      stopMusic();
+      const ctx = audioContextRef.current;
+      audioContextRef.current = null;
+      if (ctx && ctx.state !== 'closed') void ctx.close();
+    };
+  }, [initAudio, stopMusic]);
 
   // Get random collectible based on weights
   const getRandomCollectible = useCallback(() => {
