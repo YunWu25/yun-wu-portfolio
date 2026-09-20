@@ -15,9 +15,11 @@ const About = lazy(() => import('./About'));
 const Time = lazy(() => import('./Time'));
 const EyeCare = lazy(() => import('./EyeCare'));
 const Game = lazy(() => import('./Game'));
-// Loading skeleton component
+// Loading skeleton component. Tall enough that the footer stays below the fold
+// until the lazy page arrives; a short placeholder let the footer sit on screen
+// and jump down when the real content replaced it (layout shift).
 const PageLoader: React.FC = () => (
-  <div className="flex items-center justify-center min-h-[200px]">
+  <div className="flex items-center justify-center min-h-[80vh]">
     <div className="w-8 h-8 border-2 border-coral border-t-transparent rounded-full animate-spin" />
   </div>
 );

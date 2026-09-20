@@ -99,6 +99,10 @@ const About: React.FC<AboutProps> = ({ language }) => {
           data-wobble-target
           src="images/about-page-yun.jpg"
           alt="Yun Wu"
+          width={3000}
+          height={1674}
+          loading="lazy"
+          decoding="async"
           className={`w-full ${BORDERS.radius.md} my-4`}
         />
         <p className={`${TYPOGRAPHY.bodySmall} ${COLORS.gray600} mb-6`}>{t.bio2}</p>

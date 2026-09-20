@@ -39,9 +39,74 @@ const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>, originalUrl
   }
 };
 
+const THUMBNAIL_WIDTH = 400;
+const DEFAULT_ASPECT_RATIO = 3 / 2;
+// Don't hold the gallery hostage to one slow image
+const RATIO_LOAD_TIMEOUT_MS = 4000;
+const RATIO_CACHE_KEY = 'photoAspectRatios';
+
+// The API doesn't return image dimensions, and an <img> without them has no
+// height until it loads, so every thumbnail that finished loading pushed the
+// cards below it down (a large layout shift). We measure each thumbnail's
+// aspect ratio up front, keep the skeleton up meanwhile, then render every
+// <img> with width/height so the browser reserves its space before it loads.
+const loadCachedRatios = (): Map<string, number> => {
+  try {
+    const raw = localStorage.getItem(RATIO_CACHE_KEY);
+    if (raw) {
+      const parsed: unknown = JSON.parse(raw);
+      if (parsed && typeof parsed === 'object') {
+        return new Map(Object.entries(parsed as Record<string, number>));
+      }
+    }
+  } catch {
+    // Storage unavailable or corrupt, measure from scratch
+  }
+  return new Map();
+};
+
+const ratioCache = loadCachedRatios();
+
+const saveCachedRatios = () => {
+  try {
+    localStorage.setItem(RATIO_CACHE_KEY, JSON.stringify(Object.fromEntries(ratioCache)));
+  } catch {
+    // Storage full or blocked, the cache is only an optimisation
+  }
+};
+
+const measureAspectRatio = (photo: PhotoData): Promise<void> =>
+  new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      if (img.naturalWidth > 0 && img.naturalHeight > 0) {
+        ratioCache.set(photo.key, img.naturalWidth / img.naturalHeight);
+      }
+      resolve();
+    };
+    img.onerror = () => {
+      resolve();
+    };
+    img.src = getThumbnailUrl(photo.url, THUMBNAIL_WIDTH);
+  });
+
+const resolveAspectRatios = async (photos: PhotoData[]): Promise<Map<string, number>> => {
+  const unmeasured = photos.filter((p) => !ratioCache.has(p.key));
+  if (unmeasured.length > 0) {
+    await Promise.race([
+      Promise.all(unmeasured.map(measureAspectRatio)),
+      new Promise<void>((resolve) => setTimeout(resolve, RATIO_LOAD_TIMEOUT_MS)),
+    ]);
+    saveCachedRatios();
+  }
+  // Snapshot so ratios measured after the timeout can't change a card mid-session
+  return new Map(ratioCache);
+};
+
 const Photography: React.FC<PhotographyProps> = ({ language }) => {
   const [columnCount, setColumnCount] = useState(2);
   const [photos, setPhotos] = useState<PhotoData[]>([]);
+  const [ratios, setRatios] = useState<Map<string, number>>(new Map());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState<number | null>(null);
@@ -106,6 +171,7 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
         if (data.length === 0) {
           setError('No photos available');
         } else {
+          setRatios(await resolveAspectRatios(data.filter((p) => p.showInGallery)));
           setPhotos(data);
           setError(null);
         }
@@ -217,9 +283,15 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
             }}
           >
             <img
-              src={getThumbnailUrl(photo.url, 400)}
+              src={getThumbnailUrl(photo.url, THUMBNAIL_WIDTH)}
               alt={photo.alt}
-              className="w-full h-auto object-cover transition-opacity duration-300 group-hover:opacity-90"
+              width={THUMBNAIL_WIDTH}
+              height={Math.round(THUMBNAIL_WIDTH / (ratios.get(photo.key) ?? DEFAULT_ASPECT_RATIO))}
+              // Photos we couldn't measure in time get a fixed 3:2 box and show the
+              // whole image inside it, so they can never resize when they load
+              className={`w-full ${
+                ratios.has(photo.key) ? 'h-auto object-cover' : 'aspect-[3/2] object-contain'
+              } transition-opacity duration-300 group-hover:opacity-90`}
               loading={index < 4 ? 'eager' : 'lazy'}
               decoding="async"
               fetchPriority={index < 2 ? 'high' : 'auto'}
@@ -298,13 +370,47 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
 
   const t = shopText[language];
 
+  // Shared by the loading skeleton and the loaded gallery so the header keeps
+  // the same height when photos arrive (otherwise the grid and footer jump).
+  const headerSection = (
+    <div id="photography-header" className="mb-12 text-center">
+      <p className={`${TYPOGRAPHY.body} ${COLORS.gray500} mb-4`}>{intro}</p>
+
+      {/* Year Filter */}
+      <div className="flex flex-wrap justify-center gap-2 mb-4">
+        {years.map((year) => (
+          <button
+            key={year}
+            onClick={() => {
+              setSelectedYear(year);
+            }}
+            className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+              selectedYear === year
+                ? 'bg-coral text-white'
+                : 'bg-gray-100 dark:bg-dark-surface text-gray-600 dark:text-dark-muted hover:bg-gray-200 dark:hover:bg-dark-border'
+            }`}
+          >
+            {year === 'all' ? (language === 'en' ? 'All' : '全部') : year}
+          </button>
+        ))}
+      </div>
+
+      <button
+        onClick={openShop}
+        disabled={loading}
+        className="inline-flex items-center gap-2 px-6 py-3 bg-coral text-white font-bold rounded-lg hover:bg-coral/90 transition-colors disabled:opacity-50"
+      >
+        <ShoppingCart size={20} />
+        {t.buy}
+      </button>
+    </div>
+  );
+
   if (loading) {
     return (
       <div id="photography-root" className="w-full">
-        <div className="mb-12 text-center">
-          <p className={`${TYPOGRAPHY.body} ${COLORS.gray500}`}>{intro}</p>
-        </div>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 h-[70vh]">
+        {headerSection}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 h-[70vh] overflow-hidden">
           {[180, 220, 160, 200].map((height, i) => (
             <div key={i} className="space-y-4">
               {[height, height + 40, height - 20].map((h, j) => (
@@ -351,36 +457,7 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
 
   return (
     <div id="photography-root" className="w-full">
-      <div id="photography-header" className="mb-12 text-center">
-        <p className={`${TYPOGRAPHY.body} ${COLORS.gray500} mb-4`}>{intro}</p>
-
-        {/* Year Filter */}
-        <div className="flex flex-wrap justify-center gap-2 mb-4">
-          {years.map((year) => (
-            <button
-              key={year}
-              onClick={() => {
-                setSelectedYear(year);
-              }}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                selectedYear === year
-                  ? 'bg-coral text-white'
-                  : 'bg-gray-100 dark:bg-dark-surface text-gray-600 dark:text-dark-muted hover:bg-gray-200 dark:hover:bg-dark-border'
-              }`}
-            >
-              {year === 'all' ? (language === 'en' ? 'All' : '全部') : year}
-            </button>
-          ))}
-        </div>
-
-        <button
-          onClick={openShop}
-          className="inline-flex items-center gap-2 px-6 py-3 bg-coral text-white font-bold rounded-lg hover:bg-coral/90 transition-colors"
-        >
-          <ShoppingCart size={20} />
-          {t.buy}
-        </button>
-      </div>
+      {headerSection}
 
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 h-[70vh]">
         {photoColumns.map((columnPhotos, index) => renderColumn(columnPhotos, index))}
