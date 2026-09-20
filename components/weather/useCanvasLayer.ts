@@ -88,8 +88,22 @@ export function useCanvasLayer(
     };
     rafRef.current = requestAnimationFrame(loop);
 
+    // Browsers throttle rAF in background tabs but don't stop it everywhere;
+    // stop drawing entirely while hidden so these full-viewport canvases never
+    // compete with the page for the main thread. Resetting lastTime on resume
+    // keeps the first frame's dt from spanning the whole hidden period.
+    const onVisibilityChange = () => {
+      cancelAnimationFrame(rafRef.current);
+      if (!document.hidden) {
+        lastTime = 0;
+        rafRef.current = requestAnimationFrame(loop);
+      }
+    };
+    document.addEventListener('visibilitychange', onVisibilityChange);
+
     return () => {
       cancelAnimationFrame(rafRef.current);
+      document.removeEventListener('visibilitychange', onVisibilityChange);
       window.removeEventListener('resize', resize);
       scrollContainer?.removeEventListener('scroll', onScroll);
       motionQuery.removeEventListener('change', onMotionChange);

@@ -41,10 +41,17 @@ const NightCloudCanvas: React.FC = () => {
   const weatherRef = useRef(weather);
   const cloudsRef = useRef<CloudParticle[]>([]);
   const timeRef = useRef(0);
+  const hasDrawnRef = useRef(false);
 
   useEffect(() => {
     weatherRef.current = weather;
   }, [weather]);
+
+  // Clouds only ever draw on clear nights. The canvas carries a full-viewport
+  // CSS blur + multiply blend, which the compositor re-runs whenever anything
+  // beneath it repaints (e.g. the game canvas at 60fps), so take it out of the
+  // render tree the rest of the time instead of leaving an empty layer on.
+  const cloudsPossible = weather.enabled && !weather.isDay && weather.type === WeatherType.CLEAR;
 
   useCanvasLayer(
     canvasRef,
@@ -59,7 +66,10 @@ const NightCloudCanvas: React.FC = () => {
         !isFullMoon(new Date()) &&
         !prefersReducedMotion;
 
+      // Nothing to draw and nothing left over from before: skip the clear too
+      if (!active && !hasDrawnRef.current) return;
       ctx.clearRect(0, 0, w, h);
+      hasDrawnRef.current = active;
 
       if (active) {
         const time = timeRef.current;
@@ -119,7 +129,12 @@ const NightCloudCanvas: React.FC = () => {
       ref={canvasRef}
       aria-hidden="true"
       className="fixed inset-0 z-40 pointer-events-none"
-      style={{ filter: 'blur(12px)', mixBlendMode: 'multiply', opacity: 0.6 }}
+      style={{
+        filter: 'blur(12px)',
+        mixBlendMode: 'multiply',
+        opacity: 0.6,
+        display: cloudsPossible ? 'block' : 'none',
+      }}
     />
   );
 };

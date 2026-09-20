@@ -367,6 +367,35 @@ const CAT_TYPES = [
   { name: 'Lavender Cat', fur: '#c4b5fd', furLight: '#ddd6fe', innerEar: '#fecaca', nose: '#f472b6' },
 ];
 
+// Module-level so `t` keeps the same identity across renders. `t` is a dependency
+// of the game's main effect; when this lived inside the component every render
+// (e.g. tapping mute/pause) built a new object and tore down/re-created the
+// whole canvas loop and its listeners, delaying the interaction's next paint.
+const GAME_TEXT = {
+  en: {
+    description: 'Help the cat collect snacks and dodge obstacles! Use ← → or A/D to move, SPACE/↑/CLICK to jump. Mobile: Use on-screen arrows!',
+    title: 'Let\'s Go',
+    startPrompt: 'Press SPACE or Click to Start',
+    gameOver: 'GAME OVER',
+    retry: 'Press SPACE to Retry',
+    score: 'SCORE',
+    collected: 'COLLECTED',
+    paused: 'PAUSED',
+    resume: 'Press ESC or tap the pause button to Resume',
+  },
+  zh: {
+    description: '帮助小猫收集零食并躲避障碍物！用 ← → 或 A/D 移动，空格/↑/点击跳跃。手机：使用屏幕箭头！',
+    title: '零食捕手',
+    startPrompt: '按空格键或点击开始',
+    gameOver: '游戏结束',
+    retry: '按空格键重试',
+    score: '得分',
+    collected: '收集',
+    paused: '已暂停',
+    resume: '按 ESC 或点击暂停按钮继续',
+  },
+};
+
 const Game: React.FC<GameProps> = ({ language }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const gameStateRef = useRef<'START' | 'PLAYING' | 'PAUSED' | 'GAMEOVER'>('START');
@@ -443,32 +472,7 @@ const Game: React.FC<GameProps> = ({ language }) => {
   // canvas itself (see isLandscape usage below)
   const [isLandscape, setIsLandscape] = useState(false);
 
-  const text = {
-    en: {
-      description: 'Help the cat collect snacks and dodge obstacles! Use ← → or A/D to move, SPACE/↑/CLICK to jump. Mobile: Use on-screen arrows!',
-      title: 'Let\'s Go',
-      startPrompt: 'Press SPACE or Click to Start',
-      gameOver: 'GAME OVER',
-      retry: 'Press SPACE to Retry',
-      score: 'SCORE',
-      collected: 'COLLECTED',
-      paused: 'PAUSED',
-      resume: 'Press ESC or tap the pause button to Resume',
-    },
-    zh: {
-      description: '帮助小猫收集零食并躲避障碍物！用 ← → 或 A/D 移动，空格/↑/点击跳跃。手机：使用屏幕箭头！',
-      title: '零食捕手',
-      startPrompt: '按空格键或点击开始',
-      gameOver: '游戏结束',
-      retry: '按空格键重试',
-      score: '得分',
-      collected: '收集',
-      paused: '已暂停',
-      resume: '按 ESC 或点击暂停按钮继续',
-    },
-  };
-
-  const t = text[language];
+  const t = GAME_TEXT[language];
 
   // Initialize Audio Context
   const initAudio = useCallback(() => {
