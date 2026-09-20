@@ -2,6 +2,10 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Handoff
+
+Before starting work, read `Handoff.md` at the repo root. It tracks the in-progress Core Web Vitals optimization: current state, open problems, next steps, and pitfalls already hit. When you change that state (commit, verify, resolve a blocker), update the matching section and its date. Move any lasting lessons into this file once the work is done.
+
 ## Commands
 
 ```bash
