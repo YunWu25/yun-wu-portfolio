@@ -1,20 +1,27 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, Suspense, lazy } from 'react';
 import { BrowserRouter, useLocation, useNavigate, Routes, Route } from 'react-router-dom';
 import Splash from './components/Splash';
 import MainContent from './components/MainContent';
 import FloatingBubble from './components/FloatingBubble';
-import ChatWidget from './components/chat/ChatWidget';
 import {
   BubbleCollisionProvider,
   useGlobalWobbleCollision,
 } from './components/BubbleCollisionContext';
-import { PhotoManager } from './components/admin/PhotoManager';
-import { ChatLogs } from './components/admin/ChatLogs';
 import { WeatherProvider } from './components/weather/WeatherContext';
 import WeatherSystem from './components/weather/WeatherSystem';
 import NightCloudCanvas from './components/weather/NightCloudCanvas';
 import { ViewState } from './types';
 import { SCROLL_THRESHOLDS } from './constants';
+
+// Admin pages and the chat widget aren't needed to paint the home page, so
+// they load as separate chunks instead of inflating the initial bundle (LCP).
+const PhotoManager = lazy(() =>
+  import('./components/admin/PhotoManager').then((m) => ({ default: m.PhotoManager }))
+);
+const ChatLogs = lazy(() =>
+  import('./components/admin/ChatLogs').then((m) => ({ default: m.ChatLogs }))
+);
+const ChatWidget = lazy(() => import('./components/chat/ChatWidget'));
 
 export type Language = 'en' | 'zh';
 
@@ -156,7 +163,9 @@ const AppContent: React.FC = () => {
           <FloatingBubble />
 
           {/* AI Chat Widget */}
-          <ChatWidget language={language} />
+          <Suspense fallback={null}>
+            <ChatWidget language={language} />
+          </Suspense>
         </div>
       </WeatherProvider>
     </BubbleCollisionProvider>
@@ -172,11 +181,13 @@ const WobbleCollisionDetector: React.FC = () => {
 const App: React.FC = () => {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/admin/chat-logs" element={<ChatLogs />} />
-        <Route path="/admin/*" element={<PhotoManager />} />
-        <Route path="*" element={<AppContent />} />
-      </Routes>
+      <Suspense fallback={null}>
+        <Routes>
+          <Route path="/admin/chat-logs" element={<ChatLogs />} />
+          <Route path="/admin/*" element={<PhotoManager />} />
+          <Route path="*" element={<AppContent />} />
+        </Routes>
+      </Suspense>
     </BrowserRouter>
   );
 };

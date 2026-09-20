@@ -17,18 +17,12 @@ export default defineConfig(() => {
       },
     },
     build: {
-      // Three.js vendor chunk is large but cached separately
+      // Three.js only loads with the lazy ProjectFlow route, so that chunk is large
       chunkSizeWarningLimit: 1200,
-      rollupOptions: {
-        output: {
-          manualChunks: {
-            // Split Three.js into its own chunk for better caching
-            'three-vendor': ['three', '@react-three/fiber', '@react-three/drei'],
-            // Split React into its own chunk
-            'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-          },
-        },
-      },
+      // No manualChunks: forcing a 'three-vendor' chunk pulled React's shared
+      // runtime (jsx-runtime, scheduler) into it, so the 1MB Three.js bundle was
+      // statically imported and modulepreloaded on every page, including the home
+      // page. Rollup's default splitting keeps Three.js with the lazy route.
     },
   };
 });
