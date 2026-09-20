@@ -71,3 +71,12 @@ Uses typescript-eslint strict type-checked config with:
 - `@typescript-eslint/prefer-optional-chain`: error
 - `@typescript-eslint/no-floating-promises`: error (ignoreVoid: true)
 - React Hooks and React Refresh plugins enabled
+
+## Dependency maintenance
+
+- **Updates**: Dependabot (`.github/dependabot.yml`) opens grouped minor/patch PRs weekly, and `.github/workflows/dependabot-auto-merge.yml` merges them. Major versions are never auto-merged; review those by hand.
+- **CI**: `.github/workflows/ci.yml` runs `npm ci && npm run build` on every PR. To make auto-merge wait for it, require the `build` check on `main` (GitHub Settings > Branches).
+- **Security alerts**: run `npm audit` (add `--omit=dev` to see only what can ship to visitors). Fix with `npm audit fix`, which only touches `package-lock.json`. Never use `--force`; it can bump major versions and break the build. After fixing, run `npm run build` and open `/project-flow` (Three.js) to check it still renders.
+- **Transitive dependencies** (e.g. `js-yaml` via ESLint, `fflate` via drei) are not covered by Dependabot version updates; they need "Dependabot security updates" turned on in the repo's Code security settings, or a manual `npm audit fix`.
+- **Node version**: CI and `deploy.yml` use Node 22 because some dependencies (e.g. `camera-controls`) require it. Use the same locally.
+

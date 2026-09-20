@@ -1,0 +1,42 @@
+name: CI
+
+# Runs the same command as a production build (lint + typecheck + vite build)
+# on every pull request, including Dependabot's. Make the "build" job a
+# required check on main (Settings > Branches) so auto-merge waits for it.
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          # Keep in sync with deploy.yml; some dependencies (e.g. camera-controls) need Node 22+
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint, typecheck and build
+        run: npm run build
+
+      # Informational only: shows what could ship to visitors without failing the PR
+      - name: Audit production dependencies
+        run: npm audit --omit=dev
+        continue-on-error: true
