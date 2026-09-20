@@ -157,7 +157,13 @@ const About: React.FC<AboutProps> = ({ language }) => {
                   key={index}
                   className="inline-flex items-center justify-center mx-16 opacity-100 min-w-30 shrink-0"
                 >
-                  <img src={brand.src} alt={brand.name} className="h-24 w-auto object-contain" />
+                  <img
+                    src={brand.src}
+                    alt={brand.name}
+                    width={234}
+                    height={234}
+                    className="h-24 w-auto object-contain"
+                  />
                 </div>
               ))}
           </div>

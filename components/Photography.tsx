@@ -91,12 +91,24 @@ const measureAspectRatio = (photo: PhotoData): Promise<void> =>
   });
 
 const resolveAspectRatios = async (photos: PhotoData[]): Promise<Map<string, number>> => {
+  // Drop cached ratios for photos that no longer exist so the cache can't grow forever
+  const currentKeys = new Set(photos.map((p) => p.key));
+  let pruned = false;
+  for (const key of ratioCache.keys()) {
+    if (!currentKeys.has(key)) {
+      ratioCache.delete(key);
+      pruned = true;
+    }
+  }
+
   const unmeasured = photos.filter((p) => !ratioCache.has(p.key));
   if (unmeasured.length > 0) {
     await Promise.race([
       Promise.all(unmeasured.map(measureAspectRatio)),
       new Promise<void>((resolve) => setTimeout(resolve, RATIO_LOAD_TIMEOUT_MS)),
     ]);
+    saveCachedRatios();
+  } else if (pruned) {
     saveCachedRatios();
   }
   // Snapshot so ratios measured after the timeout can't change a card mid-session
@@ -468,6 +480,7 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
         currentIndex={selectedPhotoIndex ?? 0}
         totalItems={galleryPhotos.length}
         imageUrl={selectedPhoto?.url ?? ''}
+        aspectRatio={selectedPhoto ? ratios.get(selectedPhoto.key) : undefined}
         title={selectedPhoto?.title ?? ''}
         subtitle={selectedPhoto ? `${selectedPhoto.artist} · ${selectedPhoto.season}` : ''}
         onClose={() => {

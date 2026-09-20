@@ -7,6 +7,8 @@ interface LightboxProps {
   currentIndex: number;
   totalItems: number;
   imageUrl: string;
+  /** width / height of the image, when known, so its box is sized before it loads */
+  aspectRatio?: number;
   title: string;
   subtitle?: string;
   onClose: () => void;
@@ -21,6 +23,7 @@ const Lightbox: React.FC<LightboxProps> = ({
   currentIndex,
   totalItems,
   imageUrl,
+  aspectRatio,
   title,
   subtitle,
   onClose,
@@ -123,6 +126,14 @@ const Lightbox: React.FC<LightboxProps> = ({
         <img
           src={imageUrl}
           alt={title}
+          // With a known ratio, size the box up front (widest that still fits
+          // 80vh tall and the container's width) so the caption below doesn't
+          // jump when the full-resolution original finishes loading.
+          style={
+            aspectRatio
+              ? { aspectRatio, width: `min(90vw, calc(80vh * ${aspectRatio}))`, height: 'auto' }
+              : undefined
+          }
           className="max-w-full max-h-[80vh] object-contain rounded-lg transition-transform duration-300"
         />
 

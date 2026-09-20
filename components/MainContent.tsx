@@ -15,11 +15,11 @@ const About = lazy(() => import('./About'));
 const Time = lazy(() => import('./Time'));
 const EyeCare = lazy(() => import('./EyeCare'));
 const Game = lazy(() => import('./Game'));
-// Loading skeleton component. Tall enough that the footer stays below the fold
-// until the lazy page arrives; a short placeholder let the footer sit on screen
-// and jump down when the real content replaced it (layout shift).
+// Loading skeleton component. Fills the min-height reserved on #content-container
+// (80vh minus its py-8 padding and 1px borders), so the footer stays below the
+// fold while the lazy page loads and doesn't jump when the real content arrives.
 const PageLoader: React.FC = () => (
-  <div className="flex items-center justify-center min-h-[80vh]">
+  <div className="flex items-center justify-center min-h-[calc(80vh-4rem-2px)]">
     <div className="w-8 h-8 border-2 border-coral border-t-transparent rounded-full animate-spin" />
   </div>
 );
@@ -424,7 +424,11 @@ const MainContent: React.FC<MainContentProps> = ({
           {/* Centralized content wrapper: keep page widths consistent here */}
           <div
             id="content-container"
-            className={`w-full max-w-6xl mx-auto px-6 md:px-16 py-8 border ${COLORS.borderGray200} ${BORDERS.radius.md}`}
+            className={`w-full max-w-6xl mx-auto px-6 md:px-16 py-8 border ${COLORS.borderGray200} ${BORDERS.radius.md} ${
+              // Every lazy page reserves the same minimum height as PageLoader, so a
+              // page shorter than the loader can't pull the footer up into view
+              activeView === ViewState.HOME ? '' : 'min-h-[80vh]'
+            }`}
           >
             <div className="animate-slide-up">{renderBodyContent()}</div>
           </div>
