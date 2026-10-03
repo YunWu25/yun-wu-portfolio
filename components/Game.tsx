@@ -437,6 +437,15 @@ const Game: React.FC<GameProps> = ({ language }) => {
 
   // Track active touch controls (set by the on-screen joystick below the canvas)
   const touchControlsRef = useRef({ left: false, right: false });
+  // Each on-screen joystick reports its own left/right push, so letting go
+  // of one stick doesn't cancel movement from the other.
+  const stickDirectionsRef = useRef<Record<'left' | 'right', -1 | 0 | 1>>({ left: 0, right: 0 });
+  const setStickDirection = (stick: 'left' | 'right', direction: -1 | 0 | 1) => {
+    stickDirectionsRef.current = { ...stickDirectionsRef.current, [stick]: direction };
+    const { left, right } = stickDirectionsRef.current;
+    touchControlsRef.current.left = left < 0 || right < 0;
+    touchControlsRef.current.right = left > 0 || right > 0;
+  };
   // Only show the on-screen touch controls on actual touch devices
   const [isTouchDevice, setIsTouchDevice] = useState(false);
   // In landscape, there's no room below the canvas for a visible control
@@ -3022,7 +3031,11 @@ const Game: React.FC<GameProps> = ({ language }) => {
             width={800}
             height={400}
             className="block bg-[#2b2d42] max-w-full"
-            style={{ maxWidth: '100%', height: 'auto' }}
+            style={isTouchDevice && isLandscape
+              // Landscape: keep the whole game area on screen, so the joysticks
+              // over its bottom corners aren't pushed below the fold.
+              ? { maxWidth: '100%', maxHeight: 'calc(100dvh - 16px)', width: 'auto', height: 'auto' }
+              : { maxWidth: '100%', height: 'auto' }}
           />
           {/* Mute button */}
           <button
@@ -3073,75 +3086,32 @@ const Game: React.FC<GameProps> = ({ language }) => {
             </div>
           )}
 
-          {/* Landscape-only invisible controls, overlaid directly on the
-              canvas: in landscape the canvas already fills nearly the full
-              viewport height, so a visible control row below it would get
-              pushed off-screen. Same tap-area size as the portrait buttons
-              (96x96 via w-24/h-24) and the same handlers — just no visible
-              circle, positioned low enough to clear the score/food-count
-              HUD drawn at the top of the canvas. */}
+          {/* Landscape: the same two joysticks, placed in the bottom corners
+              of the canvas. In landscape the canvas fills nearly the full
+              viewport height, so a control row below it would be pushed
+              off-screen. Each wrapper is only as big as its joystick, so the
+              rest of the canvas still takes taps for start/restart. */}
           {isTouchDevice && isLandscape && (
-            // pointer-events-none on the wrapper (with pointer-events-auto
-            // on each button) so the empty space between the three zones
-            // stays click-through to the canvas underneath — otherwise this
-            // full-size wrapper div would swallow every tap on the canvas,
-            // including the ones that are supposed to fall through to
-            // start/restart the game.
-            <div className="absolute inset-0 pointer-events-none" style={{ touchAction: 'none' }}>
-              <button
-                type="button"
-                aria-label={language === 'en' ? 'Move left' : '向左移动'}
-                onPointerDown={(e) => {
-                  e.preventDefault();
-                  touchControlsRef.current.left = true;
-                  keysRef.current.left = true;
-                }}
-                onPointerUp={() => {
-                  touchControlsRef.current.left = false;
-                  keysRef.current.left = false;
-                }}
-                onPointerLeave={() => {
-                  touchControlsRef.current.left = false;
-                  keysRef.current.left = false;
-                }}
-                onPointerCancel={() => {
-                  touchControlsRef.current.left = false;
-                  keysRef.current.left = false;
-                }}
-                className="pointer-events-auto absolute left-2 top-1/2 -translate-y-1/2 w-24 h-24"
-              />
-              <button
-                type="button"
-                aria-label={language === 'en' ? 'Move right' : '向右移动'}
-                onPointerDown={(e) => {
-                  e.preventDefault();
-                  touchControlsRef.current.right = true;
-                  keysRef.current.right = true;
-                }}
-                onPointerUp={() => {
-                  touchControlsRef.current.right = false;
-                  keysRef.current.right = false;
-                }}
-                onPointerLeave={() => {
-                  touchControlsRef.current.right = false;
-                  keysRef.current.right = false;
-                }}
-                onPointerCancel={() => {
-                  touchControlsRef.current.right = false;
-                  keysRef.current.right = false;
-                }}
-                className="pointer-events-auto absolute right-2 top-1/2 -translate-y-1/2 w-24 h-24"
-              />
-              <button
-                type="button"
-                aria-label={language === 'en' ? 'Jump' : '跳跃'}
-                onPointerDown={(e) => {
-                  e.preventDefault();
-                  handleAction();
-                }}
-                className="pointer-events-auto absolute bottom-2 left-1/2 -translate-x-1/2 w-24 h-24"
-              />
-            </div>
+            <>
+              <div className="absolute bottom-20 left-3" style={{ touchAction: 'none' }}>
+                <VirtualJoystick
+                  label={language === 'en' ? 'Left joystick: move and jump' : '左摇杆：移动与跳跃'}
+                  onDirectionChange={(direction) => {
+                    setStickDirection('left', direction);
+                  }}
+                  onJump={handleAction}
+                />
+              </div>
+              <div className="absolute bottom-20 right-3" style={{ touchAction: 'none' }}>
+                <VirtualJoystick
+                  label={language === 'en' ? 'Right joystick: move and jump' : '右摇杆：移动与跳跃'}
+                  onDirectionChange={(direction) => {
+                    setStickDirection('right', direction);
+                  }}
+                  onJump={handleAction}
+                />
+              </div>
+            </>
           )}
         </div>
       </div>
@@ -3157,36 +3127,24 @@ const Game: React.FC<GameProps> = ({ language }) => {
           className="flex items-center justify-between gap-6 max-w-[420px] mx-auto select-none"
           style={{ touchAction: 'none' }}
         >
-          {/* gap-8 between left/right matches the 16px hit slop on each
-              side (p-4/-m-4 below) so their invisible tap areas meet at
-              the midpoint instead of overlapping and stealing taps from
-              one another. */}
-          {/* Virtual joystick for left/right. Dragging past the dead zone
-              sets the same touchControlsRef flags the old arrow buttons did,
-              so the movement loop doesn't need to change. */}
+          {/* Two joysticks, one per thumb. Each one moves the cat left or
+              right, and pushing it up makes the cat jump, so there's no
+              separate jump button. Both feed setStickDirection so they can
+              be used together. */}
           <VirtualJoystick
-            label={language === 'en' ? 'Joystick: move left and right' : '摇杆：左右移动'}
+            label={language === 'en' ? 'Left joystick: move and jump' : '左摇杆：移动与跳跃'}
             onDirectionChange={(direction) => {
-              touchControlsRef.current.left = direction < 0;
-              touchControlsRef.current.right = direction > 0;
+              setStickDirection('left', direction);
             }}
+            onJump={handleAction}
           />
-          <button
-            type="button"
-            aria-label={language === 'en' ? 'Jump' : '跳跃'}
-            onPointerDown={(e) => {
-              e.preventDefault();
-              handleAction();
+          <VirtualJoystick
+            label={language === 'en' ? 'Right joystick: move and jump' : '右摇杆：移动与跳跃'}
+            onDirectionChange={(direction) => {
+              setStickDirection('right', direction);
             }}
-            className="-m-4 p-4 flex items-center justify-center active:scale-95 transition-transform"
-          >
-            <span className="w-16 h-16 rounded-full bg-[#e07a5f] border-2 border-[#81b29a] flex items-center justify-center">
-              <span
-                aria-hidden="true"
-                style={{ width: 0, height: 0, borderLeft: '9px solid transparent', borderRight: '9px solid transparent', borderBottom: '14px solid white' }}
-              />
-            </span>
-          </button>
+            onJump={handleAction}
+          />
         </div>
       )}
 

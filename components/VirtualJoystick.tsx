@@ -7,8 +7,8 @@ const BASE_SIZE = 96;
 const KNOB_SIZE = 40;
 const MAX_TRAVEL = (BASE_SIZE - KNOB_SIZE) / 2;
 
-// Fraction of MAX_TRAVEL the knob must pass before it counts as pushing
-// left or right. Stops small thumb wobbles from walking the cat around.
+// Fraction of MAX_TRAVEL the knob must pass before it counts as a push.
+// Stops small thumb wobbles from walking the cat around or jumping.
 const DEAD_ZONE = 0.25;
 
 type JoystickDirection = -1 | 0 | 1;
@@ -16,15 +16,17 @@ type JoystickDirection = -1 | 0 | 1;
 interface VirtualJoystickProps {
   label: string;
   onDirectionChange: (direction: JoystickDirection) => void;
+  onJump: () => void;
 }
 
-// On-screen joystick for the cat game. Only the horizontal axis is used
-// for movement, but the knob follows the finger in both directions so it
-// feels like a real stick. Pointer capture keeps the drag alive even when
-// the finger slides off the ring.
-const VirtualJoystick: React.FC<VirtualJoystickProps> = ({ label, onDirectionChange }) => {
+// On-screen joystick for the cat game. Pushing left or right moves the cat,
+// and pushing up jumps. A jump fires once per push: holding the knob up
+// doesn't keep jumping, you have to let go and push up again. Pointer
+// capture keeps the drag alive even when the finger slides off the ring.
+const VirtualJoystick: React.FC<VirtualJoystickProps> = ({ label, onDirectionChange, onJump }) => {
   const baseRef = useRef<HTMLDivElement>(null);
   const activePointer = useRef<number | null>(null);
+  const pushingUp = useRef(false);
   const [knob, setKnob] = useState({ x: 0, y: 0 });
 
   const updateFromPointer = (clientX: number, clientY: number) => {
@@ -44,10 +46,16 @@ const VirtualJoystick: React.FC<VirtualJoystickProps> = ({ label, onDirectionCha
     if (normalizedX <= -DEAD_ZONE) direction = -1;
     else if (normalizedX >= DEAD_ZONE) direction = 1;
     onDirectionChange(direction);
+
+    // Screen y grows downward, so pushing up means a negative y.
+    const isPushingUp = y / MAX_TRAVEL <= -DEAD_ZONE;
+    if (isPushingUp && !pushingUp.current) onJump();
+    pushingUp.current = isPushingUp;
   };
 
   const release = () => {
     activePointer.current = null;
+    pushingUp.current = false;
     setKnob({ x: 0, y: 0 });
     onDirectionChange(0);
   };
