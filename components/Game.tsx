@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useCallback, useState } from 'react';
 import { Language } from '../App';
 import { TYPOGRAPHY, COLORS } from '../styles';
+import VirtualJoystick from './VirtualJoystick';
 
 interface GameProps {
   language: Language;
@@ -434,7 +435,7 @@ const Game: React.FC<GameProps> = ({ language }) => {
   // Track which movement keys are pressed
   const keysRef = useRef({ left: false, right: false });
 
-  // Track active touch controls (set by the on-screen buttons below the canvas)
+  // Track active touch controls (set by the on-screen joystick below the canvas)
   const touchControlsRef = useRef({ left: false, right: false });
   // Only show the on-screen touch controls on actual touch devices
   const [isTouchDevice, setIsTouchDevice] = useState(false);
@@ -445,8 +446,8 @@ const Game: React.FC<GameProps> = ({ language }) => {
 
   const text = {
     en: {
-      description: 'Help the cat collect snacks and dodge obstacles! Use ← → or A/D to move, SPACE/↑/CLICK to jump. Mobile: Use on-screen arrows!',
-      title: 'Let\'s Go',
+      description: 'Help the cat collect snacks and dodge obstacles! Use ← → or A/D to move, SPACE/↑/CLICK to jump. Mobile: Use the on-screen joystick!',
+      title: 'Let\'s Game',
       startPrompt: 'Press SPACE or Click to Start',
       gameOver: 'GAME OVER',
       retry: 'Press SPACE to Retry',
@@ -456,7 +457,7 @@ const Game: React.FC<GameProps> = ({ language }) => {
       resume: 'Press ESC or tap the pause button to Resume',
     },
     zh: {
-      description: '帮助小猫收集零食并躲避障碍物！用 ← → 或 A/D 移动，空格/↑/点击跳跃。手机：使用屏幕箭头！',
+      description: '帮助小猫收集零食并躲避障碍物！用 ← → 或 A/D 移动，空格/↑/点击跳跃。手机：使用屏幕摇杆！',
       title: '零食捕手',
       startPrompt: '按空格键或点击开始',
       gameOver: '游戏结束',
@@ -3160,76 +3161,16 @@ const Game: React.FC<GameProps> = ({ language }) => {
               side (p-4/-m-4 below) so their invisible tap areas meet at
               the midpoint instead of overlapping and stealing taps from
               one another. */}
-          <div className="flex gap-8">
-            {/* Each button's actual tappable area (the padded outer <button>)
-                is larger than the visible circle (the inner <span>) — a
-                negative margin cancels the padding back out so the extra
-                "hit slop" doesn't push the layout around, it just makes the
-                button easier to hit without looking any bigger. */}
-            <button
-              type="button"
-              aria-label={language === 'en' ? 'Move left' : '向左移动'}
-              onPointerDown={(e) => {
-                e.preventDefault();
-                touchControlsRef.current.left = true;
-                keysRef.current.left = true;
-              }}
-              onPointerUp={() => {
-                touchControlsRef.current.left = false;
-                keysRef.current.left = false;
-              }}
-              onPointerLeave={() => {
-                touchControlsRef.current.left = false;
-                keysRef.current.left = false;
-              }}
-              onPointerCancel={() => {
-                touchControlsRef.current.left = false;
-                keysRef.current.left = false;
-              }}
-              className="group -m-4 p-4 flex items-center justify-center active:scale-95 transition-transform"
-            >
-              {/* A CSS border-triangle instead of a "◀" text glyph — Unicode
-                  triangle characters don't have a consistent visual size
-                  across platforms/fonts (this is also why the jump button's
-                  "▲" looked bigger than these), so all three arrows are
-                  drawn the same way for a guaranteed identical size. */}
-              <span className="w-16 h-16 rounded-full bg-[#3d405b] border-2 border-[#81b29a] flex items-center justify-center group-active:bg-[#e07a5f] transition-colors">
-                <span
-                  aria-hidden="true"
-                  style={{ width: 0, height: 0, borderTop: '9px solid transparent', borderBottom: '9px solid transparent', borderRight: '14px solid white' }}
-                />
-              </span>
-            </button>
-            <button
-              type="button"
-              aria-label={language === 'en' ? 'Move right' : '向右移动'}
-              onPointerDown={(e) => {
-                e.preventDefault();
-                touchControlsRef.current.right = true;
-                keysRef.current.right = true;
-              }}
-              onPointerUp={() => {
-                touchControlsRef.current.right = false;
-                keysRef.current.right = false;
-              }}
-              onPointerLeave={() => {
-                touchControlsRef.current.right = false;
-                keysRef.current.right = false;
-              }}
-              onPointerCancel={() => {
-                touchControlsRef.current.right = false;
-                keysRef.current.right = false;
-              }}
-              className="group -m-4 p-4 flex items-center justify-center active:scale-95 transition-transform"
-            >
-              <span className="w-16 h-16 rounded-full bg-[#3d405b] border-2 border-[#81b29a] flex items-center justify-center group-active:bg-[#e07a5f] transition-colors">
-                <span
-                  aria-hidden="true"
-                  style={{ width: 0, height: 0, borderTop: '9px solid transparent', borderBottom: '9px solid transparent', borderLeft: '14px solid white' }}
-                />
-              </span>
-            </button>
-          </div>
+          {/* Virtual joystick for left/right. Dragging past the dead zone
+              sets the same touchControlsRef flags the old arrow buttons did,
+              so the movement loop doesn't need to change. */}
+          <VirtualJoystick
+            label={language === 'en' ? 'Joystick: move left and right' : '摇杆：左右移动'}
+            onDirectionChange={(direction) => {
+              touchControlsRef.current.left = direction < 0;
+              touchControlsRef.current.right = direction > 0;
+            }}
+          />
           <button
             type="button"
             aria-label={language === 'en' ? 'Jump' : '跳跃'}
