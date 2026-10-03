@@ -435,7 +435,7 @@ const Game: React.FC<GameProps> = ({ language }) => {
   // Track which movement keys are pressed
   const keysRef = useRef({ left: false, right: false });
 
-  // Track active touch controls (set by the on-screen joystick below the canvas)
+  // Track active touch controls (set by the on-screen joysticks around the canvas)
   const touchControlsRef = useRef({ left: false, right: false });
   // Each on-screen joystick reports its own left/right push, so letting go
   // of one stick doesn't cancel movement from the other.
@@ -976,18 +976,18 @@ const Game: React.FC<GameProps> = ({ language }) => {
     }
   }, [resetGame, playArcadeMusic, playBirthdaySong, playJumpSound]);
 
-  // Detect touch devices up front so the on-screen movement/jump buttons
-  // below the canvas only render where they're actually needed, instead of
+  // Detect touch devices up front so the on-screen joysticks only render
+  // where they're actually needed, instead of
   // waiting for a first touch (which the old canvas-drawn controls did).
   useEffect(() => {
     const hasTouch = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
     setIsTouchDevice(hasTouch);
   }, []);
 
-  // Track orientation so landscape can swap to the on-canvas overlay
-  // controls — in landscape the canvas fills nearly the whole viewport
-  // height, leaving no room below it for the normal control row without
-  // pushing it below the fold.
+  // Track orientation so landscape can place the joysticks beside the
+  // canvas instead of below it — in landscape the canvas fills nearly the
+  // whole viewport height, leaving no room below it for the normal control
+  // row without pushing it below the fold.
   useEffect(() => {
     const updateOrientation = () => {
       setIsLandscape(window.innerWidth > window.innerHeight);
@@ -2999,7 +2999,7 @@ const Game: React.FC<GameProps> = ({ language }) => {
       }
 
       // Regular action (jump or restart) — left/right movement now comes
-      // from the dedicated on-screen buttons below the canvas, not from
+      // from the on-screen joysticks beside the canvas, not from
       // hit-testing canvas-drawn buttons.
       handleAction();
     };
@@ -3024,16 +3024,32 @@ const Game: React.FC<GameProps> = ({ language }) => {
         <p className={`${TYPOGRAPHY.body} ${COLORS.gray500}`}>{t.description}</p>
       </div>
 
-      <div className="flex justify-center">
-        <div className="relative rounded-xl overflow-hidden shadow-lg border border-gray-200">
+      <div className="flex justify-center items-center gap-12">
+        {/* Landscape: the two joysticks sit outside the game box, one on each
+            side, with a 48px gap so they never cover the game. The game box
+            is kept narrow enough (see its maxWidth) to leave room for them. */}
+        {isTouchDevice && isLandscape && (
+          <VirtualJoystick
+            label={language === 'en' ? 'Left joystick: move and jump' : '左摇杆：移动与跳跃'}
+            onDirectionChange={(direction) => {
+              setStickDirection('left', direction);
+            }}
+            onJump={handleAction}
+          />
+        )}
+        <div
+          className="relative rounded-xl overflow-hidden shadow-lg border border-gray-200"
+          // Landscape: leave room on both sides of the box for the joysticks
+          // (each 96px plus a 48px gap), measured from the row's own width.
+          style={isTouchDevice && isLandscape ? { maxWidth: 'calc(100% - 304px)' } : undefined}
+        >
           <canvas
             ref={canvasRef}
             width={800}
             height={400}
             className="block bg-[#2b2d42] max-w-full"
             style={isTouchDevice && isLandscape
-              // Landscape: keep the whole game area on screen, so the joysticks
-              // over its bottom corners aren't pushed below the fold.
+              // Landscape: keep the whole game area on screen.
               ? { maxWidth: '100%', maxHeight: 'calc(100dvh - 16px)', width: 'auto', height: 'auto' }
               : { maxWidth: '100%', height: 'auto' }}
           />
@@ -3086,42 +3102,24 @@ const Game: React.FC<GameProps> = ({ language }) => {
             </div>
           )}
 
-          {/* Landscape: the same two joysticks, placed in the bottom corners
-              of the canvas. In landscape the canvas fills nearly the full
-              viewport height, so a control row below it would be pushed
-              off-screen. Each wrapper is only as big as its joystick, so the
-              rest of the canvas still takes taps for start/restart. */}
-          {isTouchDevice && isLandscape && (
-            <>
-              <div className="absolute bottom-20 left-3" style={{ touchAction: 'none' }}>
-                <VirtualJoystick
-                  label={language === 'en' ? 'Left joystick: move and jump' : '左摇杆：移动与跳跃'}
-                  onDirectionChange={(direction) => {
-                    setStickDirection('left', direction);
-                  }}
-                  onJump={handleAction}
-                />
-              </div>
-              <div className="absolute bottom-20 right-3" style={{ touchAction: 'none' }}>
-                <VirtualJoystick
-                  label={language === 'en' ? 'Right joystick: move and jump' : '右摇杆：移动与跳跃'}
-                  onDirectionChange={(direction) => {
-                    setStickDirection('right', direction);
-                  }}
-                  onJump={handleAction}
-                />
-              </div>
-            </>
-          )}
         </div>
+        {isTouchDevice && isLandscape && (
+          <VirtualJoystick
+            label={language === 'en' ? 'Right joystick: move and jump' : '右摇杆：移动与跳跃'}
+            onDirectionChange={(direction) => {
+              setStickDirection('right', direction);
+            }}
+            onJump={handleAction}
+          />
+        )}
       </div>
 
-      {/* On-screen movement/jump controls — real DOM buttons instead of
-          canvas-drawn ones, so their tap size stays fixed and comfortable
-          no matter how small the canvas itself gets scaled down on a
-          narrow phone screen. Only shown on touch devices in portrait; in
-          landscape the same controls are overlaid on the canvas instead
-          (see above) since there's no room below it on screen. */}
+      {/* On-screen joysticks — real DOM controls instead of canvas-drawn
+          ones, so their size stays fixed and comfortable no matter how small
+          the canvas itself gets scaled down on a narrow phone screen. Only
+          shown on touch devices in portrait; in landscape the same joysticks
+          sit beside the canvas instead (see above) since there's no room
+          below it on screen. */}
       {isTouchDevice && !isLandscape && (
         <div
           className="flex items-center justify-between gap-6 max-w-[420px] mx-auto select-none"
