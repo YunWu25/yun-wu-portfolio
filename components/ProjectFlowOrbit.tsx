@@ -137,7 +137,7 @@ const OrbitalSystem: React.FC<OrbitalSystemProps> = ({ phases, expandedPhase, on
   // Update ref positions in useEffect (not during render)
   useEffect(() => {
     cardPositions.forEach((pos, index) => {
-      const posRef = cardPositionsRef.current[index];
+      const posRef = cardPositionsRef.current.at(index);
       if (posRef) {
         posRef.set(pos.x, pos.y, pos.z);
       }
@@ -180,7 +180,7 @@ const OrbitalSystem: React.FC<OrbitalSystemProps> = ({ phases, expandedPhase, on
 
       {/* Connecting Lines and Phase Cards */}
       {phases.map((phase, index) => {
-        const pos = cardPositions[index];
+        const pos = cardPositions.at(index);
         if (!pos) return null;
 
         const { x, y, z } = pos;
@@ -202,8 +202,8 @@ const OrbitalSystem: React.FC<OrbitalSystemProps> = ({ phases, expandedPhase, on
               center
               distanceFactor={8}
               zIndexRange={[
-                (cardOpacities[index] ?? 1) < 0.5 ? 0 : 100,
-                (cardOpacities[index] ?? 1) < 0.5 ? 0 : 100,
+                (cardOpacities.at(index) ?? 1) < 0.5 ? 0 : 100,
+                (cardOpacities.at(index) ?? 1) < 0.5 ? 0 : 100,
               ]}
               style={{
                 transition: 'all 0.3s',
@@ -244,7 +244,7 @@ const OrbitalSystem: React.FC<OrbitalSystemProps> = ({ phases, expandedPhase, on
                       : hoveredIndex === index
                         ? 'rgba(255, 107, 107, 0.6)'
                         : 'rgba(255, 107, 107, 0.2)',
-                  opacity: cardOpacities[index] ?? 1,
+                  opacity: cardOpacities.at(index) ?? 1,
                   transition: 'all 0.3s ease-out',
                   boxShadow:
                     hoveredIndex === index || expandedPhase === index

@@ -1,3 +1,4 @@
+import { lookup } from '../utils/lookup';
 import React, { useState } from 'react';
 import { Language } from '../App';
 import { COLORS, TYPOGRAPHY } from '../styles';
@@ -6,6 +7,7 @@ import SaccadesTraining from './eyecare/SaccadesTraining';
 import PursuitsTraining from './eyecare/PursuitsTraining';
 
 type TrainingModule = 'fixation' | 'saccades' | 'pursuits' | null;
+type ModuleName = Exclude<TrainingModule, null>;
 
 interface EyeCareProps {
   language: Language;
@@ -53,7 +55,7 @@ const content = {
 const EyeCare: React.FC<EyeCareProps> = ({ language }) => {
   const [activeModule, setActiveModule] = useState<TrainingModule>(null);
   const [selectedModule, setSelectedModule] = useState<TrainingModule>(null);
-  const t = content[language];
+  const t = lookup(content, language);
 
   // If a training module is active, show it fullscreen
   if (activeModule === 'fixation') {
@@ -88,7 +90,7 @@ const EyeCare: React.FC<EyeCareProps> = ({ language }) => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         {modules.map(({ key, icon }) => {
           if (!key) return null;
-          const moduleContent = t[key];
+          const moduleContent = lookup<ModuleName, (typeof t)[ModuleName]>(t, key);
           const isSelected = selectedModule === key;
 
           return (

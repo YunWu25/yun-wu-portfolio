@@ -1,3 +1,4 @@
+import { lookup } from '../utils/lookup';
 import React, { useEffect, useState } from 'react';
 import { TYPOGRAPHY, COLORS } from '../styles';
 import { Language } from '../App';
@@ -184,7 +185,7 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
     const columns: PhotoData[][] = Array.from({ length: count }, () => []);
     filteredPhotos.forEach((photo, index) => {
       const columnIndex = index % count;
-      columns[columnIndex]?.push(photo);
+      columns.at(columnIndex)?.push(photo);
     });
     // Always triple photos for consistent infinite scroll animation
     return columns.map((col) => [...col, ...col, ...col]);
@@ -296,7 +297,7 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
     },
   };
 
-  const t = shopText[language];
+  const t = lookup(shopText, language);
 
   if (loading) {
     return (
@@ -347,7 +348,7 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
     );
   }
 
-  const selectedPhoto = selectedPhotoIndex !== null ? galleryPhotos[selectedPhotoIndex] : null;
+  const selectedPhoto = selectedPhotoIndex !== null ? galleryPhotos.at(selectedPhotoIndex) : null;
 
   return (
     <div id="photography-root" className="w-full">
@@ -458,7 +459,7 @@ const Photography: React.FC<PhotographyProps> = ({ language }) => {
                       <div className="flex flex-wrap gap-2">
                         {Array.from(selectedForPurchase).map((key) => {
                           const photoIndex = photos.findIndex((p) => p.key === key);
-                          const photo = photoIndex !== -1 ? photos[photoIndex] : null;
+                          const photo = photoIndex !== -1 ? photos.at(photoIndex) : null;
                           const photoNumber = photoIndex + 1;
                           return photo ? (
                             <div key={key} className="relative">

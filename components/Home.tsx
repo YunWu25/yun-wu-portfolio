@@ -1,3 +1,4 @@
+import { lookup } from '../utils/lookup';
 import React, { useState, useEffect } from 'react';
 import { ArrowRight, Moon, Sun } from 'lucide-react';
 import { ViewState } from '../types';
@@ -114,7 +115,7 @@ const Home: React.FC<HomeProps> = ({ onNavigate, language }) => {
     },
   };
 
-  const t = text[language];
+  const t = lookup(text, language);
 
   useEffect(() => {
     const updateTime = () => {

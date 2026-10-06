@@ -1,3 +1,4 @@
+import { lookup } from './utils/lookup';
 import React, { useState, useEffect, useCallback } from 'react';
 import { BrowserRouter, useLocation, useNavigate, Routes, Route } from 'react-router-dom';
 import Splash from './components/Splash';
@@ -55,7 +56,7 @@ const AppContent: React.FC = () => {
 
   // Handle Navigation Logic
   const handleNavigate = (view: ViewState) => {
-    const path = viewToPath[view];
+    const path = lookup(viewToPath, view);
     void navigate(path);
     if (showSplash) {
       setShowSplash(false);

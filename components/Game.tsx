@@ -1,3 +1,4 @@
+import { lookup, lookupOptional } from '../utils/lookup';
 import React, { useEffect, useRef, useCallback, useState } from 'react';
 import { Language } from '../App';
 import { TYPOGRAPHY, COLORS } from '../styles';
@@ -189,7 +190,7 @@ const getChineseNewYearRange = (): { month: number; startDay: number; endDay: nu
     2026: { month: 1, day: 17 }, // Feb 17, 2026
     2027: { month: 1, day: 6 },  // Feb 6, 2027
   };
-  const cny = cnyDates[year] ?? { month: 1, day: 1 };
+  const cny = lookupOptional(cnyDates, year) ?? { month: 1, day: 1 };
   return { month: cny.month, startDay: cny.day, endDay: cny.day + 7 };
 };
 
@@ -478,7 +479,7 @@ const Game: React.FC<GameProps> = ({ language }) => {
     },
   };
 
-  const t = text[language];
+  const t = lookup(text, language);
 
   // Initialize Audio Context
   const initAudio = useCallback(() => {
@@ -1152,7 +1153,7 @@ const Game: React.FC<GameProps> = ({ language }) => {
 
       // Update obstacles
       for (let i = obstaclesRef.current.length - 1; i >= 0; i--) {
-        const obs = obstaclesRef.current[i];
+        const obs = obstaclesRef.current.at(i);
         if (!obs) continue;
         obs.x -= gameSpeedRef.current;
 
@@ -1214,7 +1215,7 @@ const Game: React.FC<GameProps> = ({ language }) => {
 
       // Update collectibles
       for (let i = collectiblesRef.current.length - 1; i >= 0; i--) {
-        const c = collectiblesRef.current[i];
+        const c = collectiblesRef.current.at(i);
         if (!c) continue;
         c.x -= gameSpeedRef.current;
 
@@ -1279,7 +1280,7 @@ const Game: React.FC<GameProps> = ({ language }) => {
 
       // Update platforms - move them left and remove off-screen ones
       for (let i = platformsRef.current.length - 1; i >= 0; i--) {
-        const platform = platformsRef.current[i];
+        const platform = platformsRef.current.at(i);
         if (!platform) continue;
         platform.x -= gameSpeedRef.current;
 
@@ -1769,7 +1770,7 @@ const Game: React.FC<GameProps> = ({ language }) => {
           const candleColors = ['#ff6b6b', '#f39c12', '#9b59b6', '#3498db', '#2ecc71'];
           for (let i = 0; i < 5; i++) {
             const cx = cakeX - 16 + i * 8;
-            ctx.fillStyle = candleColors[i] ?? '#ff6b6b';
+            ctx.fillStyle = candleColors.at(i) ?? '#ff6b6b';
             ctx.fillRect(cx - 2, cakeY - 48, 4, 14);
             const flicker = Math.sin(time * 10 + i) * 1;
             ctx.fillStyle = '#ffd93d';
@@ -1832,7 +1833,7 @@ const Game: React.FC<GameProps> = ({ language }) => {
             ctx.lineWidth = 1;
             ctx.stroke();
             // Frosting
-            ctx.fillStyle = cupcakeColors[i] ?? '#f8b4d9';
+            ctx.fillStyle = cupcakeColors.at(i) ?? '#f8b4d9';
             ctx.beginPath();
             ctx.arc(cupX, cupY - 4, 8, 0, Math.PI * 2);
             ctx.fill();
@@ -2511,7 +2512,7 @@ const Game: React.FC<GameProps> = ({ language }) => {
 
         chars.forEach((char, i) => {
           const colorIndex = Math.floor((time + i * 0.5) % rainbowColors.length);
-          ctx.fillStyle = rainbowColors[colorIndex] ?? '#ff6b6b';
+          ctx.fillStyle = rainbowColors.at(colorIndex) ?? '#ff6b6b';
           ctx.fillText(char, startX + i * 20, canvas.height / 2 - 70);
         });
 
@@ -2566,12 +2567,12 @@ const Game: React.FC<GameProps> = ({ language }) => {
         const mouseY = mousePositionRef.current.y;
 
         difficulties.forEach((diff, i) => {
-          const config = DIFFICULTY_CONFIG[diff];
+          const config = lookup(DIFFICULTY_CONFIG, diff);
           const bx = startX + i * (buttonWidth + buttonGap);
           const by = buttonY;
 
           // Store button position for click detection
-          difficultyButtonsRef[diff] = { x: bx, y: by, w: buttonWidth, h: buttonHeight };
+          Object.assign(difficultyButtonsRef, { [diff]: { x: bx, y: by, w: buttonWidth, h: buttonHeight } });
 
           // Check if mouse is hovering
           const isHover = mouseX >= bx && mouseX <= bx + buttonWidth && mouseY >= by && mouseY <= by + buttonHeight;
@@ -2985,7 +2986,7 @@ const Game: React.FC<GameProps> = ({ language }) => {
 
         const difficulties: Difficulty[] = ['easy', 'medium', 'hard'];
         for (let i = 0; i < difficulties.length; i++) {
-          const diff = difficulties[i];
+          const diff = difficulties.at(i);
           if (!diff) continue;
           const bx = startX + i * (buttonWidth + buttonGap);
           if (pos.x >= bx && pos.x <= bx + buttonWidth && pos.y >= buttonY && pos.y <= buttonY + buttonHeight) {

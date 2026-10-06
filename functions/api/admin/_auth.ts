@@ -57,7 +57,7 @@ export function validateAdminAuth(
 
   let isValid = true;
   for (let i = 0; i < providedKey.length; i++) {
-    if (providedKey[i] !== configuredKey[i]) {
+    if (providedKey.at(i) !== configuredKey.at(i)) {
       isValid = false;
     }
   }

@@ -1,3 +1,4 @@
+import { lookup } from '../utils/lookup';
 import React, { useState } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
@@ -118,7 +119,7 @@ const ProjectFlow: React.FC<ProjectFlowProps> = ({ language }) => {
     },
   };
 
-  const t = content[language];
+  const t = lookup(content, language);
 
   // Double the phases to get 10 cards total
   const doublePhases = [...t.phases, ...t.phases];

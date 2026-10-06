@@ -1,3 +1,4 @@
+import { lookup, lookupOptional, setAt } from '../../utils/lookup';
 // Cloudflare Pages Function: POST /api/chat
 // AI chat endpoint using Cloudflare Workers AI
 // Refactored: Dynamic photo fetching from R2 metadata with strict prompt injection
@@ -112,9 +113,9 @@ function shuffleArray<T>(array: T[]): T[] {
   const shuffled = [...array];
   for (let i = shuffled.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-    const temp = shuffled[i]!;
-    shuffled[i] = shuffled[j]!;
-    shuffled[j] = temp;
+    const temp = shuffled.at(i)!;
+    setAt(shuffled, i, shuffled.at(j)!);
+    setAt(shuffled, j, temp);
   }
   return shuffled;
 }
@@ -202,7 +203,7 @@ function buildDetectedPhotoPrompt(
   category: PhotoCategory,
   language: 'en' | 'zh'
 ): string {
-  const label = CATEGORY_LABELS[category];
+  const label = lookup(CATEGORY_LABELS, category);
 
   if (language === 'zh') {
     return `\n\n## 用户请求了${label.zh}照片\n用户想看${label.zh}照片。请写1-2句简短友好的介绍，如"这是一些${label.zh}照片！希望你喜欢！"。不要输出任何链接或代码，只写文字介绍即可，照片会自动显示。`;
@@ -218,7 +219,7 @@ function buildGeneralPhotoPrompt(
 ): string {
   const availableCategories = Array.from(categoryGroups.keys())
     .filter(cat => cat !== 'other')
-    .map(cat => CATEGORY_LABELS[cat])
+    .map(cat => lookupOptional(CATEGORY_LABELS, cat))
     .filter((label): label is { en: string; zh: string } => label !== undefined);
 
   if (availableCategories.length === 0) {
@@ -287,7 +288,7 @@ async function preparePhotoPrompt(
       };
     } else {
       // Category detected but no photos found - tell user
-      const label = CATEGORY_LABELS[detectedCategory];
+      const label = lookupOptional(CATEGORY_LABELS, detectedCategory);
       if (!label) {
         // Unknown category, fall through to general prompt
         return { prompt: buildGeneralPhotoPrompt(categoryGroups, language), photosToAppend: null };
@@ -370,7 +371,7 @@ async function fetchWeather(
     // The weather code comes from an outside service, so accept only a number
     const rawCode = data.current?.weather_code;
     const code = typeof rawCode === 'number' ? rawCode : 0;
-    const weatherInfo = WEATHER_CODES[code] ?? WEATHER_CODES[0]!;
+    const weatherInfo = lookupOptional(WEATHER_CODES, code) ?? WEATHER_CODES[0]!;
 
     return {
       city: city ?? 'Unknown',

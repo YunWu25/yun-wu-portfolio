@@ -1,3 +1,4 @@
+import { lookup } from '../../utils/lookup';
 import React, { useState, useRef, useEffect } from 'react';
 import { Language } from '../../App';
 import ChatMessage from './ChatMessage';
@@ -87,7 +88,7 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ language }) => {
     },
   };
 
-  const t = text[language];
+  const t = lookup(text, language);
 
   // Save username to localStorage
   const saveNickname = () => {
@@ -108,8 +109,8 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ language }) => {
     if (messages.length === 0 && !hasGreeted.current) {
       hasGreeted.current = true;
       const greeting = username.trim()
-        ? text[language].greetingWithName(username.trim())
-        : text[language].greeting;
+        ? lookup(text, language).greetingWithName(username.trim())
+        : lookup(text, language).greeting;
       setMessages([{ role: 'assistant', content: greeting }]);
       return;
     }
@@ -117,7 +118,7 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ language }) => {
     // Case 2: Restored session - show welcome back message (once per session)
     if (hadRestoredMessages.current && !hasWelcomedBack.current) {
       hasWelcomedBack.current = true;
-      const welcomeBack = text[language].welcomeBack(username.trim());
+      const welcomeBack = lookup(text, language).welcomeBack(username.trim());
       setMessages((prev) => [...prev, { role: 'assistant', content: welcomeBack }]);
     }
   };

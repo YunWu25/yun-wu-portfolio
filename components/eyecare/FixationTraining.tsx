@@ -1,3 +1,4 @@
+import { lookup } from '../../utils/lookup';
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { Language } from '../../App';
 
@@ -61,7 +62,7 @@ const FixationTraining: React.FC<FixationTrainingProps> = ({ language, onExit })
     pulsePhase: 0,
   });
 
-  const t = content[language];
+  const t = lookup(content, language);
 
   // Generate random position within canvas bounds
   const getRandomPosition = useCallback((canvas: HTMLCanvasElement) => {
@@ -82,7 +83,7 @@ const FixationTraining: React.FC<FixationTrainingProps> = ({ language, onExit })
       if (!ctx) return;
 
       const target = targetRef.current;
-      const moveInterval = SPEEDS[speed];
+      const moveInterval = lookup(SPEEDS, speed);
 
       // Clear canvas
       ctx.fillStyle = '#1a1a1a';
@@ -239,7 +240,7 @@ const FixationTraining: React.FC<FixationTrainingProps> = ({ language, onExit })
                       : 'bg-gray-800 text-gray-500 hover:bg-gray-700'
                   }`}
                 >
-                  {t[s]}
+                  {lookup(t, s)}
                 </button>
               ))}
             </div>
