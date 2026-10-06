@@ -39,7 +39,16 @@ const About: React.FC<AboutProps> = ({ language }) => {
         <>
           I enjoy watching films and documentaries. My favorite thing is watching TV series at home (of course, too much screen time means you should{' '}
           <Link to="/eye-care" className="text-coral hover:underline font-bold italic">take a break for eye care</Link>
-          ). I also love shows like Animal World. I&apos;m passionate about documenting my life and the lives of my friends—for the past few years, I&apos;ve been carefully selecting and sharing photos on a near-weekly basis that capture this stage of my journey.
+          ). I also love shows like Animal World. I&apos;m passionate about documenting my life and the lives of my friends—for the past few years, I&apos;ve been carefully selecting and sharing photos on a near-weekly basis that capture this stage of my journey. I also run an eBay store,{' '}
+          <a
+            href="https://www.ebay.com/usr/solarheart-studio"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-coral hover:underline font-bold italic"
+          >
+            Solarheart Studio
+          </a>
+          .
         </>
       ),
       services: 'Services',
@@ -62,7 +71,16 @@ const About: React.FC<AboutProps> = ({ language }) => {
         <>
           我喜欢看电影和纪录片，最喜欢的事是宅在家看剧（当然啦，用眼太多也要适当保护眼睛，
           <Link to="/eye-care" className="text-coral hover:underline font-bold italic">护眼一下</Link>
-          ）。也喜欢看《动物世界》等节目。我热衷于记录我和朋友们的生活——在过去的几年里，我几乎每周都会精心挑选并分享捕捉这一人生阶段的照片。
+          ）。也喜欢看《动物世界》等节目。我热衷于记录我和朋友们的生活——在过去的几年里，我几乎每周都会精心挑选并分享捕捉这一人生阶段的照片。我还经营一家 eBay 店铺，
+          <a
+            href="https://www.ebay.com/usr/solarheart-studio"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-coral hover:underline font-bold italic"
+          >
+            Solarheart Studio
+          </a>
+          。
         </>
       ),
       services: '服务',
