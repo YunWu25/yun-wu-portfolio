@@ -95,6 +95,5 @@ export function useCanvasLayer(
       motionQuery.removeEventListener('change', onMotionChange);
       optionsRef.current.onCleanup?.();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- onFrame/options are read via refs, kept fresh above
   }, [canvasRef]);
 }
