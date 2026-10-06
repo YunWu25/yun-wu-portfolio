@@ -1,3 +1,4 @@
+import { lookup } from '../../utils/lookup';
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { Language } from '../../App';
 
@@ -86,7 +87,7 @@ const PursuitsTraining: React.FC<PursuitsTrainingProps> = ({ language, onExit })
   const [direction, setDirection] = useState<Direction>('clockwise');
   const [timeRemaining, setTimeRemaining] = useState(180); // 3 minutes in seconds
 
-  const t = content[language];
+  const t = lookup(content, language);
 
   // Calculate ball position based on pattern
   const getPosition = useCallback((
@@ -177,7 +178,7 @@ const PursuitsTraining: React.FC<PursuitsTrainingProps> = ({ language, onExit })
           bounce.y = centerY;
           // Random initial direction
           const angle = Math.random() * Math.PI * 2;
-          const baseSpeed = 3 + SPEEDS[speed] * 3;
+          const baseSpeed = 3 + lookup(SPEEDS, speed) * 3;
           bounce.vx = Math.cos(angle) * baseSpeed;
           bounce.vy = Math.sin(angle) * baseSpeed;
           bounce.scaleX = 1;
@@ -187,7 +188,7 @@ const PursuitsTraining: React.FC<PursuitsTrainingProps> = ({ language, onExit })
 
         // Update velocity based on speed setting
         const currentSpeed = Math.sqrt(bounce.vx * bounce.vx + bounce.vy * bounce.vy);
-        const targetSpeed = 3 + SPEEDS[speed] * 3;
+        const targetSpeed = 3 + lookup(SPEEDS, speed) * 3;
         if (Math.abs(currentSpeed - targetSpeed) > 0.5) {
           const scale = targetSpeed / currentSpeed;
           bounce.vx *= scale;
@@ -232,7 +233,7 @@ const PursuitsTraining: React.FC<PursuitsTrainingProps> = ({ language, onExit })
         pos = { x: bounce.x, y: bounce.y };
       } else {
         // Path-based patterns: update angle and get position
-        angleRef.current += SPEEDS[speed] * 0.02;
+        angleRef.current += lookup(SPEEDS, speed) * 0.02;
         pos = getPosition(angleRef.current, centerX, centerY, pattern, maxRadius);
       }
 
@@ -426,7 +427,7 @@ const PursuitsTraining: React.FC<PursuitsTrainingProps> = ({ language, onExit })
                       : 'bg-gray-800 text-gray-500 hover:bg-gray-700'
                   }`}
                 >
-                  {t[s]}
+                  {lookup(t, s)}
                 </button>
               ))}
             </div>
@@ -444,7 +445,7 @@ const PursuitsTraining: React.FC<PursuitsTrainingProps> = ({ language, onExit })
                       : 'bg-gray-800 text-gray-500 hover:bg-gray-700'
                   }`}
                 >
-                  {t[p]}
+                  {lookup(t, p)}
                 </button>
               ))}
             </div>
@@ -462,7 +463,7 @@ const PursuitsTraining: React.FC<PursuitsTrainingProps> = ({ language, onExit })
                       : 'bg-gray-800 text-gray-500 hover:bg-gray-700'
                   }`}
                 >
-                  {t[d]}
+                  {lookup(t, d)}
                 </button>
               ))}
             </div>

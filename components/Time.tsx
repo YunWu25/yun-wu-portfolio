@@ -1,3 +1,4 @@
+import { lookup } from '../utils/lookup';
 import React, { useState } from 'react';
 import { Language } from '../App';
 import { TYPOGRAPHY, COLORS } from '../styles';
@@ -62,7 +63,7 @@ const Time: React.FC<TimeProps> = ({ language }) => {
     },
   };
 
-  const t = text[language];
+  const t = lookup(text, language);
 
   const handleSubmitCode = async (e: React.FormEvent) => {
     e.preventDefault();

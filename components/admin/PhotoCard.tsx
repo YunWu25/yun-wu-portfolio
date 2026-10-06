@@ -1,3 +1,4 @@
+import { lookup } from '../../utils/lookup';
 import React, { useState, useCallback } from 'react';
 import { AdminPhoto, PhotoMetadataUpdate, PHOTO_CATEGORIES, PhotoCategory } from '../../types';
 
@@ -64,7 +65,7 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({ photo, onSave }) => {
       bytes /= 1024;
       i++;
     }
-    return bytes.toFixed(i > 0 ? 1 : 0) + ' ' + (units[i] ?? 'B');
+    return bytes.toFixed(i > 0 ? 1 : 0) + ' ' + (units.at(i) ?? 'B');
   };
 
   const formatDate = (isoString: string): string => {
@@ -73,7 +74,7 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({ photo, onSave }) => {
     return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
   };
 
-  const isModified = (field: keyof typeof formData) => formData[field] !== originalData[field];
+  const isModified = (field: keyof typeof formData) => lookup(formData, field) !== lookup(originalData, field);
 
   return (
     <div className="bg-white dark:bg-dark-surface rounded-xl shadow-sm border border-gray-200 dark:border-dark-border overflow-hidden grid grid-cols-1 md:grid-cols-[200px_1fr]">

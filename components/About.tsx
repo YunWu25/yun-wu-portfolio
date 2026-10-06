@@ -1,3 +1,4 @@
+import { lookup } from '../utils/lookup';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { TYPOGRAPHY, COLORS, BORDERS } from '../styles';
@@ -94,7 +95,7 @@ const About: React.FC<AboutProps> = ({ language }) => {
     },
   };
 
-  const t = content[language];
+  const t = lookup(content, language);
 
   return (
     <div id="about-root" className="w-full">

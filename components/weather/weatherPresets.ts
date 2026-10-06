@@ -1,3 +1,4 @@
+import { lookup } from '../../utils/lookup';
 import { WeatherType, WeatherPreset } from './types';
 
 const WEATHER_PRESETS: Record<WeatherType, WeatherPreset> = {
@@ -92,7 +93,7 @@ const WEATHER_PRESETS: Record<WeatherType, WeatherPreset> = {
 };
 
 export const getScaledPreset = (type: WeatherType, intensity: number): WeatherPreset => {
-  const base = WEATHER_PRESETS[type];
+  const base = lookup(WEATHER_PRESETS, type);
   const scale = 0.2 + (intensity / 10) * 0.8; // 0.2 at intensity 1, 1.0 at intensity 10
   return {
     ...base,

@@ -1,3 +1,4 @@
+import { lookup } from '../../utils/lookup';
 import { WeatherType } from './types';
 
 const NIGHT_CLEAR_CRESCENT = '🌙';
@@ -19,5 +20,5 @@ export function weatherEmoji(type: WeatherType, isDay: boolean, fullMoon: boolea
   if (type === WeatherType.CLEAR && !isDay) {
     return fullMoon ? NIGHT_CLEAR_FULL : NIGHT_CLEAR_CRESCENT;
   }
-  return DAY_EMOJI[type];
+  return lookup(DAY_EMOJI, type);
 }

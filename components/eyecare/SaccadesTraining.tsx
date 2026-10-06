@@ -1,3 +1,4 @@
+import { lookup } from '../../utils/lookup';
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { Language } from '../../App';
 
@@ -76,7 +77,7 @@ const SaccadesTraining: React.FC<SaccadesTrainingProps> = ({ language, onExit })
   const [targets, setTargets] = useState<Target[]>([]);
   const [timeRemaining, setTimeRemaining] = useState(180); // 3 minutes in seconds
 
-  const t = content[language];
+  const t = lookup(content, language);
 
   // Generate target positions based on pattern
   const generateTargets = useCallback((canvas: HTMLCanvasElement, count: number, pat: Pattern): Target[] => {
@@ -159,7 +160,7 @@ const SaccadesTraining: React.FC<SaccadesTrainingProps> = ({ language, onExit })
       const ctx = canvas.getContext('2d');
       if (!ctx) return;
 
-      const switchInterval = SPEEDS[speed];
+      const switchInterval = lookup(SPEEDS, speed);
 
       // Clear canvas
       ctx.fillStyle = '#1a1a1a';
@@ -318,7 +319,7 @@ const SaccadesTraining: React.FC<SaccadesTrainingProps> = ({ language, onExit })
                       : 'bg-gray-800 text-gray-500 hover:bg-gray-700'
                   }`}
                 >
-                  {t[s]}
+                  {lookup(t, s)}
                 </button>
               ))}
             </div>
@@ -354,7 +355,7 @@ const SaccadesTraining: React.FC<SaccadesTrainingProps> = ({ language, onExit })
                       : 'bg-gray-800 text-gray-500 hover:bg-gray-700'
                   }`}
                 >
-                  {t[p]}
+                  {lookup(t, p)}
                 </button>
               ))}
             </div>

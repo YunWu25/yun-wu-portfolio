@@ -75,10 +75,9 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     }
 
     // Category counts summary
-    const categoryCounts: Record<string, number> = {};
-    for (const [cat, catPhotos] of Object.entries(byCategory)) {
-      categoryCounts[cat] = catPhotos.length;
-    }
+    const categoryCounts: Record<string, number> = Object.fromEntries(
+      Object.entries(byCategory).map(([cat, catPhotos]) => [cat, catPhotos.length]),
+    );
 
     return new Response(
       JSON.stringify({

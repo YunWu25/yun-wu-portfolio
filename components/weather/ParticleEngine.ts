@@ -1,3 +1,4 @@
+import { setAt } from '../../utils/lookup';
 /**
  * Core particle engine — manages spawn, update, render, and recycling
  * of all weather particles with object pooling.
@@ -257,7 +258,7 @@ export class ParticleEngine {
     // Try to hit a collision rect
     if (rects.length > 0 && Math.random() > 0.4) {
       const idx = Math.floor(Math.random() * rects.length);
-      const target = rects[idx];
+      const target = rects.at(idx);
       if (target) {
         endX = rand(target.left, target.right);
         endY = target.top;
@@ -462,8 +463,8 @@ export class ParticleEngine {
     if (!preset.hasAccumulation) {
       for (const [, pile] of this.snowPiles) {
         for (let i = 0; i < pile.points.length; i++) {
-          const val = pile.points[i];
-          if (val !== undefined) pile.points[i] = val * 0.998;
+          const val = pile.points.at(i);
+          if (val !== undefined) setAt(pile.points, i, val * 0.998);
         }
       }
     }
@@ -483,7 +484,7 @@ export class ParticleEngine {
     if (!pile) return;
     const idx = Math.floor(x - rect.left);
     if (idx >= 0 && idx < pile.points.length) {
-      pile.points[idx] = Math.min(pile.maxHeight, (pile.points[idx] ?? 0) + 0.3);
+      setAt(pile.points, idx, Math.min(pile.maxHeight, (pile.points.at(idx) ?? 0) + 0.3));
       if (idx > 0) pile.points[idx - 1] = Math.min(pile.maxHeight, (pile.points[idx - 1] ?? 0) + 0.1);
       if (idx < pile.points.length - 1) pile.points[idx + 1] = Math.min(pile.maxHeight, (pile.points[idx + 1] ?? 0) + 0.1);
     }
@@ -502,7 +503,7 @@ export class ParticleEngine {
     if (!pile) return;
     const idx = Math.floor(x);
     if (idx >= 0 && idx < pile.points.length) {
-      pile.points[idx] = Math.min(pile.maxHeight, (pile.points[idx] ?? 0) + 0.2);
+      setAt(pile.points, idx, Math.min(pile.maxHeight, (pile.points.at(idx) ?? 0) + 0.2));
       if (idx > 0) pile.points[idx - 1] = Math.min(pile.maxHeight, (pile.points[idx - 1] ?? 0) + 0.08);
       if (idx < pile.points.length - 1) pile.points[idx + 1] = Math.min(pile.maxHeight, (pile.points[idx + 1] ?? 0) + 0.08);
     }
@@ -858,7 +859,7 @@ export class ParticleEngine {
 
       // Draw snow pile as smooth curve
       for (let i = 0; i < pile.points.length; i += 3) {
-        const h = pile.points[i] ?? 0;
+        const h = pile.points.at(i) ?? 0;
         ctx.lineTo(baseX + i, baseY - h);
       }
       ctx.lineTo(baseX + pile.points.length, baseY);
