@@ -368,7 +368,9 @@ async function fetchWeather(
     };
 
     const temp = data.current?.temperature_2m;
-    const code = data.current?.weather_code ?? 0;
+    // The weather code comes from an outside service, so accept only a number
+    const rawCode = data.current?.weather_code;
+    const code = typeof rawCode === 'number' ? rawCode : 0;
     const weatherInfo = lookupOptional(WEATHER_CODES, code) ?? WEATHER_CODES[0]!;
 
     return {
