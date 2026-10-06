@@ -43,6 +43,10 @@ export const WeatherProvider: React.FC<{ children: React.ReactNode }> = ({ child
   }, []);
 
   useEffect(() => {
+    // Console test commands and their help text are for local development
+    // only, so the live site doesn't expose them to visitors.
+    if (!import.meta.env.DEV) return undefined;
+
     const validTypes = Object.values(WeatherType) as string[];
 
     window.__setWeather = (type: string, intensity?: number, isDay?: boolean) => {
