@@ -162,6 +162,8 @@ const BIRTHDAYS: BirthdayConfig[] = [
   { name: 'Sourav', month: 5, day: 3, message: 'Happy Birthday Sourav!', messageCn: '祝 Sourav 生日快乐！' },
   { name: 'Ryan Chandler', month: 6, day: 16, message: 'Happy Birthday Ryan!', messageCn: '祝 Ryan 生日快乐！' },
   { name: 'Kamala Omarova', month: 8, day: 19, message: 'Happy Birthday Kamala!', messageCn: '祝 Kamala 生日快乐！' },
+  { name: '婷姐', month: 10, day: 23, message: 'Happy Birthday 婷姐!', messageCn: '祝婷姐生日快乐！' },
+  { name: 'Teresa Wu', month: 2, day: 3, message: 'Happy Birthday Teresa!', messageCn: '祝 Teresa 生日快乐！' },
 ];
 
 // Holiday configurations
