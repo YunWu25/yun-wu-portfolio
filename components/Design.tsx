@@ -29,7 +29,7 @@ const LaptopMockup: React.FC<{ project: Project }> = ({ project }) => {
       {/* Screen with gray frame */}
       <div
         className="bg-gray-300 rounded-lg"
-        style={{ padding: '3.2px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+        style={{ padding: '1.6px', boxShadow: '0 4px 12px rgba(0,0,0,0.08)' }}
       >
         {/* Screen content — stays light on purpose: mimics a physical laptop
             display, which doesn't switch color scheme with the page */}
