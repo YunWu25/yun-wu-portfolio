@@ -13,6 +13,8 @@ interface Project {
   link: string | null;
   imageType: 'jpg' | 'gif' | 'png';
   displayText?: string[];
+  /** Screenshot stored in the site itself (public/), used instead of the R2 one. */
+  image?: string;
 }
 
 const getScreenshotUrl = (title: string, type: string, imageType: 'jpg' | 'gif' | 'png'): string => {
@@ -22,7 +24,8 @@ const getScreenshotUrl = (title: string, type: string, imageType: 'jpg' | 'gif' 
 };
 
 const LaptopMockup: React.FC<{ project: Project }> = ({ project }) => {
-  const screenshotUrl = getScreenshotUrl(project.title, project.type, project.imageType);
+  const screenshotUrl =
+    project.image ?? getScreenshotUrl(project.title, project.type, project.imageType);
 
   return (
     <div className="w-48 md:w-56 lg:w-64 shrink-0">
@@ -141,7 +144,7 @@ const Design: React.FC<DesignProps> = ({ language }) => {
       role: 'Designer',
       link: '/math',
       imageType: 'png',
-      displayText: ['Math', '数学'],
+      image: '/images/design/math-web.png',
     },
     {
       title: 'Eye Care',
