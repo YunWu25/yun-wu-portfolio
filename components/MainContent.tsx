@@ -83,9 +83,9 @@ const MainContent: React.FC<MainContentProps> = ({
     { label: language === 'en' ? 'Design' : '设计', view: ViewState.DESIGN },
     { label: language === 'en' ? 'Video' : '影片', view: ViewState.VIDEO },
     { label: language === 'en' ? 'Gallery' : '画廊', view: ViewState.PHOTOGRAPHY },
+    { label: language === 'en' ? 'Math' : '数学', view: ViewState.MATH },
     { label: language === 'en' ? 'Eye Care' : '护眼训练', view: ViewState.EYE_CARE },
     { label: language === 'en' ? "Let's Game" : '游戏时间', view: ViewState.GAME },
-    { label: language === 'en' ? 'Math' : '数学', view: ViewState.MATH },
   ];
 
   const renderBodyContent = () => {
