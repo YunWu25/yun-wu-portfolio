@@ -216,14 +216,6 @@ const Design: React.FC<DesignProps> = ({ language }) => {
       imageType: 'jpg',
     },
     {
-      title: 'Luna Kitchen and Bath',
-      type: '',
-      role: 'Social Media Designer',
-      link: null,
-      imageType: 'jpg',
-      displayText: ['Luna', 'Seattle'],
-    },
-    {
       title: 'Hctc China',
       type: 'Web',
       role: 'Designer',
@@ -278,6 +270,14 @@ const Design: React.FC<DesignProps> = ({ language }) => {
       role: 'Designer',
       link: null,
       imageType: 'jpg',
+    },
+    {
+      title: 'Luna Kitchen and Bath',
+      type: '',
+      role: 'Social Media Designer',
+      link: null,
+      imageType: 'jpg',
+      displayText: ['Luna', 'Seattle'],
     },
   ];
 
