@@ -85,6 +85,7 @@ const MainContent: React.FC<MainContentProps> = ({
     { label: language === 'en' ? 'Gallery' : '画廊', view: ViewState.PHOTOGRAPHY },
     { label: language === 'en' ? 'Eye Care' : '护眼训练', view: ViewState.EYE_CARE },
     { label: language === 'en' ? "Let's Game" : '游戏时间', view: ViewState.GAME },
+    { label: language === 'en' ? 'Math' : '数学', view: ViewState.MATH },
   ];
 
   const renderBodyContent = () => {
@@ -299,7 +300,7 @@ const MainContent: React.FC<MainContentProps> = ({
                 {item.view === ViewState.HOME && (
                   <div
                     className={`overflow-hidden transition-all duration-300 ${
-                      homeExpanded ? 'max-h-80 opacity-100' : 'max-h-0 opacity-0'
+                      homeExpanded ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
                     }`}
                   >
                     <div className="ml-7 mt-4 space-y-4">
