@@ -80,3 +80,13 @@ Uses typescript-eslint strict type-checked config with:
 - **Transitive dependencies** (e.g. `js-yaml` via ESLint, `fflate` via drei) are not covered by Dependabot version updates; they need "Dependabot security updates" turned on in the repo's Code security settings, or a manual `npm audit fix`.
 - **Node version**: CI and `deploy.yml` use Node 22 because some dependencies (e.g. `camera-controls`) require it. Use the same locally.
 
+## 部署
+main 分支即线上。合并后自动部署，有 build 检查。
+
+## 提交规则
+- 只改内容（文字、图片、链接）→ 直接提交 main
+- 新增页面、改结构、动依赖或配置 → 开分支 + PR，等 build 绿了再合
+- 推完把 PR 链接给我
+
+## 页面
+- /math — 数学反应速度测试，单文件，无依赖（`public/math-drill/index.html`，由 `components/MathDrill.tsx` 用 iframe 嵌入）
