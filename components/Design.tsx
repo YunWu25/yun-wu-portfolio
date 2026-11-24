@@ -150,6 +150,14 @@ const Design: React.FC<DesignProps> = ({ language }) => {
       imageType: 'png',
     },
     {
+      title: 'Math',
+      type: 'Web',
+      role: 'Designer',
+      link: '/math',
+      imageType: 'png',
+      displayText: ['Math', '数学'],
+    },
+    {
       title: 'HUADI',
       type: 'Web',
       role: 'Designer',

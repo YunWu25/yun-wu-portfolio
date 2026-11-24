@@ -1,0 +1,607 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>数学反应速度测试</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap">
+<style>
+/* Layout: single centred column; three states (start / drill / results) swapped by [hidden]. */
+[hidden]{display:none!important}
+img{max-width:100%}
+body{margin:0}
+:root{
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --bg:#f4f2ed; --surface:#fffefb; --fg:#1c2321; --muted:#6b7570; --line:#ddd9d0; --sunk:#edeae3;
+  --ok:#2f7d55; --slow:#2563a8; --miss:#c2561a; --accent:#1f4f43; --on-accent:#fffefb;
+  --font-display:'Space Grotesk','Helvetica Neue',sans-serif;
+  --font-body:'Inter',system-ui,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#13181a; --surface:#1b2225; --fg:#e8eae6; --muted:#97a19d; --line:#2e3739; --sunk:#161c1e;
+  --ok:#6ec898; --slow:#6fb3e8; --miss:#ef9053; --accent:#7fd4bd; --on-accent:#13181a; color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#13181a; --surface:#1b2225; --fg:#e8eae6; --muted:#97a19d; --line:#2e3739; --sunk:#161c1e;
+  --ok:#6ec898; --slow:#6fb3e8; --miss:#ef9053; --accent:#7fd4bd; --on-accent:#13181a; color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--font-body);line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-block:26px 48px}
+.wrap{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+h1{font-family:var(--font-display);font-size:1.55rem;font-weight:700;margin:0;text-wrap:balance;letter-spacing:-.01em}
+h2{font-family:var(--font-display);font-size:1rem;font-weight:700;margin:0}
+p{margin:0}
+.lede{color:var(--muted);font-size:.93rem}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;
+  display:flex;flex-direction:column;gap:13px}
+.ghd{display:flex;justify-content:space-between;align-items:baseline;gap:10px;
+  font-size:.74rem;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:600;
+  margin-top:6px;padding-top:12px;border-top:1px solid var(--line)}
+.ghd:first-child{margin-top:0;padding-top:0;border-top:none}
+.ghd button{font-size:.72rem;font-weight:600;padding:3px 9px;border-radius:7px;background:transparent;
+  color:var(--accent);border:1px solid var(--line);text-transform:none;letter-spacing:0}
+.mods{display:flex;flex-direction:column;gap:0}
+.mod{display:flex;gap:12px;align-items:flex-start;padding:11px 2px;cursor:pointer}
+.mod input{margin:3px 0 0;width:18px;height:18px;flex:0 0 auto;accent-color:var(--accent);cursor:pointer}
+.mod .t{display:flex;flex-direction:column;gap:2px;min-width:0}
+.mod .nm{font-weight:600;font-size:.94rem}
+.mod .nm .eg{font-family:var(--font-display);color:var(--accent);font-weight:500;margin-left:7px}
+.mod .d{font-size:.83rem;color:var(--muted)}
+.seg{display:flex;gap:6px;background:var(--sunk);padding:4px;border-radius:11px}
+.seg button{flex:1;padding:9px 6px;font-size:.88rem;border-radius:8px;background:transparent;color:var(--muted);border:none}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--fg);box-shadow:0 1px 3px rgba(0,0,0,.09)}
+button{font-family:var(--font-body);font-size:1rem;font-weight:600;border-radius:10px;cursor:pointer;
+  border:1px solid transparent;padding:13px 20px;transition:opacity .15s}
+button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button:hover{opacity:.88}
+button:disabled{opacity:.4;cursor:not-allowed}
+.primary{background:var(--accent);color:var(--on-accent)}
+.ghost{background:transparent;color:var(--fg);border-color:var(--line)}
+.rail{height:4px;background:var(--line);border-radius:99px;overflow:hidden}
+.rail i{display:block;height:100%;background:var(--accent);width:0;transition:width .2s}
+.counter{display:flex;justify-content:space-between;font-size:.8rem;color:var(--muted);
+  font-variant-numeric:tabular-nums;letter-spacing:.04em;text-transform:uppercase}
+.q{font-family:var(--font-display);font-weight:700;font-size:clamp(2.1rem,10vw,3.4rem);
+  text-align:center;letter-spacing:-.02em;font-variant-numeric:tabular-nums;line-height:1.15;margin:14px 0 2px;
+  overflow-wrap:break-word}
+.qhint{text-align:center;font-size:.85rem;color:var(--muted);min-height:1.3em}
+#ans{width:100%;font-family:var(--font-display);font-weight:700;font-size:2.3rem;text-align:center;
+  background:transparent;color:var(--fg);border:none;border-bottom:3px solid var(--line);
+  padding:6px 0 10px;font-variant-numeric:tabular-nums}
+#ans:focus{outline:none;border-bottom-color:var(--accent)}
+.pulse-ok{border-bottom-color:var(--ok)!important}
+.pulse-miss{border-bottom-color:var(--miss)!important}
+.hint{text-align:center;font-size:.82rem;color:var(--muted)}
+.choices{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.opt{font-family:var(--font-display);font-weight:700;font-size:1.5rem;padding:18px 10px;
+  background:var(--surface);color:var(--fg);border:1.5px solid var(--line);border-radius:12px;
+  display:flex;align-items:center;justify-content:center;gap:9px}
+.opt .k{font-family:var(--font-body);font-size:.72rem;font-weight:600;color:var(--muted);
+  border:1px solid var(--line);border-radius:5px;padding:1px 5px}
+.opt.hit{border-color:var(--ok);color:var(--ok)}
+.opt.no{border-color:var(--miss);color:var(--miss)}
+.choices.long{grid-template-columns:1fr}
+.choices.long .opt{font-size:1.08rem;padding:14px 13px;justify-content:flex-start;text-align:left}
+.score{display:grid;grid-template-columns:repeat(2,1fr);gap:11px}
+.tile{border:1px solid var(--line);border-radius:12px;padding:13px;display:flex;flex-direction:column;gap:2px}
+.tile .n{font-family:var(--font-display);font-size:1.9rem;font-weight:700;font-variant-numeric:tabular-nums;line-height:1}
+.tile .l{font-size:.79rem;color:var(--muted)}
+.weak{display:flex;flex-wrap:wrap;gap:7px}
+.chip{font-family:var(--font-display);font-weight:700;font-size:1.02rem;font-variant-numeric:tabular-nums;
+  padding:6px 11px;border-radius:9px;border:1.5px solid;white-space:nowrap}
+.chip.slow{color:var(--slow);border-color:var(--slow)}
+.chip.miss{color:var(--miss);border-color:var(--miss)}
+.bars{display:flex;flex-direction:column;gap:10px}
+.bar{display:grid;grid-template-columns:1fr auto;gap:4px 10px;align-items:center}
+.bar .bn{font-size:.88rem;font-weight:500}
+.bar .bv{font-size:.82rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.bar .tr{grid-column:1/-1;height:6px;background:var(--sunk);border-radius:99px;overflow:hidden}
+.bar .tr i{display:block;height:100%;border-radius:99px}
+.tblwrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.86rem}
+th,td{text-align:left;padding:7px 9px;border-bottom:1px solid var(--line);white-space:nowrap}
+th{font-size:.73rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600}
+td.num{font-variant-numeric:tabular-nums;font-family:var(--font-display);font-weight:500}
+.tag{font-size:.78rem;font-weight:600}
+.tag.ok{color:var(--ok)} .tag.slow{color:var(--slow)} .tag.miss{color:var(--miss)}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.row>button{flex:1 1 170px}
+.save{font-size:.82rem;color:var(--muted);text-align:center}
+.hhead{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.hhead button{font-size:.75rem;font-weight:600;padding:4px 10px;border-radius:7px;background:transparent;
+  color:var(--muted);border:1px solid var(--line)}
+.spark{display:flex;align-items:flex-end;gap:5px;height:42px}
+.spark div{flex:1;max-width:30px;background:var(--accent);border-radius:3px 3px 0 0;min-height:3px;opacity:.5}
+.spark div:last-child{opacity:1}
+.last{font-size:.88rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.last b{color:var(--fg)}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <section id="start">
+    <h1>数学反应速度测试</h1>
+    <p class="lede">测的不是会不会，是<b>快不快</b>。算得出来但要想 5 秒，在考场上就是慢、中途容易算错、注意力被从题目抽走。</p>
+
+    <div class="card" id="hist" hidden>
+      <div class="hhead"><h2>记录</h2><button type="button" id="clear">清除记录</button></div>
+      <div class="spark" id="spark"></div>
+      <p class="last" id="lastline"></p>
+      <div id="watchWrap" hidden>
+        <h2 id="watchTitle" style="margin-top:6px">盯着的</h2>
+        <div class="weak" id="watchList" style="margin:9px 0"></div>
+        <p class="lede">连续两次在时限内答对，就自动从这里划掉。</p>
+        <button class="ghost" id="goWatch" style="width:100%;margin-top:11px">只练盯着的这些</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>测哪几类</h2>
+      <div class="mods" id="mods"></div>
+    </div>
+
+    <div class="card">
+      <h2>题数</h2>
+      <div class="seg" id="len">
+        <button data-n="20" aria-pressed="true">快测 20 题</button>
+        <button data-n="40" aria-pressed="false">40 题</button>
+        <button data-n="0" aria-pressed="false">全部</button>
+      </div>
+      <p class="lede" id="pool">—</p>
+    </div>
+
+    <button class="primary" id="go">开始</button>
+    <p class="lede" style="text-align:center">计时从题目出现算到你按下<b>第一个字符</b>，不算打字时间。</p>
+  </section>
+
+  <section id="drill" hidden>
+    <div class="rail"><i id="bar"></i></div>
+    <div class="counter"><span id="count">第 1 题</span><span id="modnow"></span></div>
+    <div class="q" id="q">7 × 8</div>
+    <p class="qhint" id="qhint"></p>
+    <input id="ans" inputmode="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="答案">
+    <div class="choices" id="choices" hidden></div>
+    <p class="hint" id="hintline">按 Enter 提交 · 负号用 <b>-</b>，小数用 <b>.</b></p>
+  </section>
+
+  <section id="done" hidden>
+    <h1>你的清单</h1>
+    <div class="score">
+      <div class="tile"><span class="n" id="nSolid" style="color:var(--ok)">0</span><span class="l">稳</span></div>
+      <div class="tile"><span class="n" id="nWeak" style="color:var(--slow)">0</span><span class="l">要练</span></div>
+    </div>
+    <div class="card">
+      <h2 id="weakTitle">要练的</h2>
+      <div class="weak" id="weakList"></div>
+      <p class="lede" id="weakNote"></p>
+    </div>
+    <div class="card">
+      <h2>各类表现</h2>
+      <div class="bars" id="bars"></div>
+    </div>
+    <div class="card">
+      <h2>全部明细</h2>
+      <div class="tblwrap"><table>
+        <thead><tr><th>题</th><th>你的答案</th><th>反应</th><th>判定</th></tr></thead>
+        <tbody id="tbody"></tbody>
+      </table></div>
+    </div>
+    <div class="row">
+      <button class="primary" id="again">再测一次</button>
+      <button class="ghost" id="onlyWeak">只测要练的</button>
+      <button class="ghost" id="back">换类别</button>
+    </div>
+    <p class="save" id="saveMsg"></p>
+  </section>
+
+</div>
+
+<script>
+(function(){
+  var $=function(id){return document.getElementById(id)};
+  var SUP={0:'⁰',1:'¹',2:'²',3:'³',4:'⁴',5:'⁵',6:'⁶',7:'⁷',8:'⁸',9:'⁹','-':'⁻'};
+  var SUB={0:'₀',1:'₁',2:'₂',3:'₃',4:'₄',5:'₅',6:'₆',7:'₇',8:'₈',9:'₉'};
+  function sup(n){return String(n).split('').map(function(c){return SUP[c]||c}).join('')}
+  function sub(n){return String(n).split('').map(function(c){return SUB[c]||c}).join('')}
+  function par(n){return n<0?'(−'+(-n)+')':String(n)}
+
+  /* When embedded on yunwustudio.com/math, bring the drill back into view on each screen change. */
+  function toTop(){
+    try{ if(window.frameElement){ window.frameElement.scrollIntoView({block:'start'}); return } }catch(e){}
+    window.scrollTo(0,0);
+  }
+
+  /* ---------- question banks ---------- */
+  var MF=[3,4,6,7,8,9,11,12];
+  function mulBank(){var o=[];MF.forEach(function(a){MF.forEach(function(b){o.push({t:a+' × '+b,ans:a*b})})});return o}
+  function divBank(){var o=[];MF.forEach(function(a){MF.forEach(function(b){o.push({t:(a*b)+' ÷ '+b,ans:a})})});return o}
+  function sqBank(){var o=[];for(var n=2;n<=20;n++)o.push({t:n+sup(2),ans:n*n});return o}
+  function sqrtBank(){var o=[];for(var n=2;n<=20;n++)o.push({t:'√'+(n*n),ans:n});return o}
+  function powBank(){var o=[],n;
+    for(n=2;n<=10;n++)o.push({t:'2'+sup(n),ans:Math.pow(2,n)});
+    for(n=2;n<=5;n++) o.push({t:'3'+sup(n),ans:Math.pow(3,n)});
+    for(n=2;n<=4;n++) o.push({t:'5'+sup(n),ans:Math.pow(5,n)});
+    for(n=2;n<=5;n++) o.push({t:'10'+sup(n),ans:Math.pow(10,n)});
+    return o}
+  function negBank(){
+    var P=[[-7,3],[-6,8],[-9,4],[-12,3],[-8,-7],[-6,-9],[-4,-12],[-11,-3],[7,-8],[9,-6],[12,-4],[5,-9],
+           [-3,-3],[-8,8],[-12,-12],[6,-7],[-9,9],[-11,4],[-7,-6],[8,-12]];
+    return P.map(function(p){return {t:par(p[0])+' × '+par(p[1]),ans:p[0]*p[1]}})}
+  function naddBank(){
+    var P=[[-7,'+',3],[-5,'-',8],[-12,'+',5],[4,'-',11],[-9,'-',6],[-3,'+',14],[8,'-',15],[-6,'+',6],
+           [-11,'-',4],[7,'-',19],[-8,'+',12],[-15,'+',9],[5,'-',13],[-4,'-',9],[-20,'+',7],[11,'-',18],
+           [-6,'-',6],[-13,'+',13],[9,'-',24],[-7,'+',2]];
+    return P.map(function(p){
+      var v= p[1]==='+' ? p[0]+p[2] : p[0]-p[2];
+      return {t:par(p[0])+' '+(p[1]==='-'?'−':'+')+' '+p[2],ans:v}})}
+  function fracBank(){
+    var P=[[1,2],[1,4],[3,4],[1,5],[2,5],[3,5],[4,5],[1,8],[3,8],[5,8],[7,8],
+           [1,10],[3,10],[7,10],[1,16],[1,20],[1,25],[3,20],[1,40],[9,20]];
+    return P.map(function(p){return {t:p[0]+'/'+p[1],ans:p[0]/p[1],h:'写成小数'}})}
+  function pctBank(){
+    var P=[[10,80],[20,45],[25,64],[50,86],[5,60],[15,40],[30,90],[75,48],[40,35],[60,25],
+           [12,50],[80,65],[35,20],[90,70],[200,14],[1,450],[150,18],[45,20],[8,25],[70,110]];
+    return P.map(function(p){return {t:p[0]+'% of '+p[1],ans:p[0]*p[1]/100}})}
+  function eqBank(){
+    var P=[['3x + 7 = 22',5],['5x − 4 = 31',7],['2x + 9 = 25',8],['7x = 56',8],['x/4 = 9',36],
+           ['4x + 6 = 38',8],['6x − 11 = 25',6],['9x + 5 = 50',5],['x/3 + 2 = 9',21],['8x − 24 = 0',3],
+           ['−3x = 21',-7],['2x − 15 = −3',6],['12x + 4 = 100',8],['x/5 − 3 = 4',35],['10 − 2x = 4',3],
+           ['5x + 5x = 90',9],['−x + 8 = 1',7],['3x/2 = 12',8],['7 + 4x = 7',0],['11x − 11 = 110',11]];
+    return P.map(function(p){return {t:p[0],ans:p[1],h:'x = ?'}})}
+  function expBank(){
+    var P=[['x³ · x⁴',7],['x⁹ ÷ x⁴',5],['(x³)⁴',12],['x⁵ · x',6],['(x²)⁵',10],['x⁷ ÷ x⁷',0],
+           ['x⁶ · x⁻²',4],['(x⁴)³',12],['x² ÷ x⁵',-3],['√x',0.5],['x⁸ ÷ x³',5],['(x⁵)²',10],
+           ['x⁴ · x⁴',8],['x⁻³ · x⁷',4],['x¹⁰ ÷ x⁶',4],['(x⁻²)³',-6],['x · x · x',3],
+           ['x¹² ÷ x⁴',8],['x⁵ ÷ x⁻²',7],['(x⁶)⁰',0]];
+    return P.map(function(p){return {t:p[0]+' = x^?',ans:p[1],h:'指数是多少'}})}
+  var TRIGP=['0','1/2','√2/2','√3/2','1','√3/3','√3','未定义'];
+  function trigBank(){
+    var P=[['sin 0°','0'],['sin 30°','1/2'],['sin 45°','√2/2'],['sin 60°','√3/2'],['sin 90°','1'],
+           ['cos 0°','1'],['cos 30°','√3/2'],['cos 45°','√2/2'],['cos 60°','1/2'],['cos 90°','0'],
+           ['tan 0°','0'],['tan 30°','√3/3'],['tan 45°','1'],['tan 60°','√3'],['tan 90°','未定义']];
+    return P.map(function(p){return {t:p[0],ans:p[1],pool:TRIGP}});
+  }
+  var RADP=['0','π/6','π/4','π/3','π/2','2π/3','3π/4','5π/6','π','3π/2','2π'];
+  var DEGP=['0°','30°','45°','60°','90°','120°','135°','150°','180°','270°','360°'];
+  function radBank(){
+    var P=[['0°','0'],['30°','π/6'],['45°','π/4'],['60°','π/3'],['90°','π/2'],['120°','2π/3'],
+           ['135°','3π/4'],['150°','5π/6'],['180°','π'],['270°','3π/2'],['360°','2π']];
+    var o=P.map(function(p){return {t:p[0]+' = ?',ans:p[1],pool:RADP,h:'换成弧度'}});
+    P.forEach(function(p){ if(p[1]!=='0') o.push({t:p[1]+' = ?',ans:p[0],pool:DEGP,h:'换成角度'}) });
+    return o;
+  }
+  function F(t,h,a){var o=[].slice.call(arguments,3);return {t:t,h:h,ans:a,opts:[a].concat(o)}}
+  function algBank(){return [
+    F('二次方程的根','ax² + bx + c = 0，x = ?','(−b ± √(b²−4ac)) / 2a','(−b ± √(b²−4ac)) / 2','(b ± √(b²−4ac)) / 2a','(−b ± √(b²+4ac)) / 2a'),
+    F('判别式 Δ','ax² + bx + c = 0','b² − 4ac','b² + 4ac','4ac − b²','√(b² − 4ac)'),
+    F('a² − b²','展开成乘积','(a + b)(a − b)','(a − b)(a − b)','(a + b)²','(a − b)²'),
+    F('(a + b)²','展开','a² + 2ab + b²','a² + b²','a² − 2ab + b²','2a² + 2b²'),
+    F('(a − b)²','展开','a² − 2ab + b²','a² − b²','a² + 2ab + b²','a² + b²'),
+    F('斜截式','slope-intercept form','y = mx + b','y = bx + m','x = my + b','y = m + bx'),
+    F('点斜式','point-slope form','y − y₁ = m(x − x₁)','y − x₁ = m(x − y₁)','y + y₁ = m(x + x₁)','y₁ − y = m(x₁ − x)'),
+    F('a³ − b³','展开成乘积','(a − b)(a² + ab + b²)','(a − b)(a² − ab + b²)','(a + b)(a² − ab + b²)','(a − b)³'),
+    F('a³ + b³','展开成乘积','(a + b)(a² − ab + b²)','(a + b)(a² + ab + b²)','(a − b)(a² + ab + b²)','(a + b)³')
+  ]}
+  function geoBank(){return [
+    F('斜率 m','过 (x₁,y₁) 和 (x₂,y₂)','(y₂ − y₁) / (x₂ − x₁)','(x₂ − x₁) / (y₂ − y₁)','(y₂ + y₁) / (x₂ + x₁)','(y₁ − y₂) / (x₂ − x₁)'),
+    F('两点距离 d','(x₁,y₁) 到 (x₂,y₂)','√((x₂−x₁)² + (y₂−y₁)²)','(x₂−x₁)² + (y₂−y₁)²','√((x₂−x₁)² − (y₂−y₁)²)','√(x₂−x₁) + √(y₂−y₁)'),
+    F('中点','(x₁,y₁) 和 (x₂,y₂)','((x₁+x₂)/2 , (y₁+y₂)/2)','((x₂−x₁)/2 , (y₂−y₁)/2)','(x₁+x₂ , y₁+y₂)','((x₁+y₁)/2 , (x₂+y₂)/2)'),
+    F('勾股定理','直角三角形，c 是斜边','a² + b² = c²','a + b = c','a² − b² = c²','(a + b)² = c²'),
+    F('圆面积','半径 r','πr²','2πr','πd²','2πr²'),
+    F('圆周长','半径 r','2πr','πr²','πr','2πr²'),
+    F('三角形面积','底 b，高 h','(1/2) · b · h','b · h','(1/2) · b · 斜边','2 · b · h')
+  ]}
+  function lgtBank(){return [
+    F('log(ab)','拆开','log a + log b','log a · log b','log a − log b','log(a + b)'),
+    F('log(a/b)','拆开','log a − log b','log a / log b','log a + log b','log(a − b)'),
+    F('log(aⁿ)','把指数拿下来','n · log a','(log a)ⁿ','log a + n','aⁿ · log a'),
+    F('换底公式 log_b x','换成常用对数','log x / log b','log b / log x','log x · log b','log(x / b)'),
+    F('sin²θ + cos²θ','毕达哥拉斯恒等式','1','0','2','tan²θ'),
+    F('sin θ','直角三角形','对边 / 斜边','邻边 / 斜边','对边 / 邻边','斜边 / 对边'),
+    F('cos θ','直角三角形','邻边 / 斜边','对边 / 斜边','邻边 / 对边','斜边 / 邻边'),
+    F('tan θ','直角三角形','对边 / 邻边','邻边 / 对边','对边 / 斜边','sin θ · cos θ')
+  ]}
+  function logBank(){
+    var P=[[2,8,3],[2,32,5],[2,64,6],[2,128,7],[2,1024,10],[3,9,2],[3,27,3],[3,81,4],[5,25,2],[5,125,3],
+           [10,100,2],[10,1000,3],[10,10000,4],[2,1,0],[7,49,2],[4,16,2],[6,36,2],[10,0.1,-1],[2,2,1],[9,81,2]];
+    return P.map(function(p){return {t:'log'+sub(p[0])+' '+p[1],ans:p[2]}})}
+
+  var MODS=[
+    {g:'算术 —— 每天都用',
+     k:'mul', nm:'乘法表',    eg:'7 × 8',    d:'3–12 互乘，去掉 2、5、10 这些送分的', bank:mulBank, th:2000, on:true},
+    {k:'div', nm:'除法',      eg:'72 ÷ 8',   d:'反着认乘法表 —— 约分、化简全靠它',     bank:divBank, th:2500, on:true},
+    {k:'sq',  nm:'平方',      eg:'14²',      d:'1–20 的平方 —— 因式分解、二次公式',    bank:sqBank,  th:2000, on:true},
+    {k:'sqrt',nm:'开平方',    eg:'√196',     d:'化简根式的瓶颈，12 月的缺口之一',       bank:sqrtBank,th:2500, on:true},
+
+    {g:'符号 —— 「会但写错」的重灾区',
+     k:'neg', nm:'正负号 ×',  eg:'(−6) × 8', d:'乘除的符号规则',                       bank:negBank, th:2500, on:true},
+    {k:'nadd',nm:'正负号 ±',  eg:'(−5) − 8', d:'加减的符号比乘除更容易错',             bank:naddBank,th:2500, on:true},
+
+    {g:'代数 —— ALEKS 的主体',
+     k:'eq',  nm:'一次方程',  eg:'3x+7=22',  d:'解出 x —— 分级考占比最大的一块',       bank:eqBank,  th:3500, on:true},
+    {k:'pow', nm:'幂',        eg:'2⁶',       d:'2、3、5、10 的幂 —— 对数的底子',        bank:powBank, th:2500, on:true},
+    {k:'exp', nm:'指数法则',  eg:'x³·x⁴',    d:'指数加减乘 —— 通向根式和对数',          bank:expBank, th:3000, on:false},
+
+    {g:'换算 —— 默认不测',
+     k:'frac',nm:'分数⇄小数', eg:'3/8',      d:'换算慢会拖掉整道题',                   bank:fracBank,th:3000, on:false},
+    {k:'pct', nm:'百分比',    eg:'25% of 64',d:'分级考里的常客',                       bank:pctBank, th:3000, on:false},
+
+    {g:'公式 —— 记错了，算得再快也是错的',
+     k:'alg', nm:'代数公式',  eg:'(a+b)²',   d:'二次公式、判别式、因式分解、直线方程',  bank:algBank, th:5000, on:false},
+    {k:'geo', nm:'几何公式',  eg:'斜率 m',   d:'斜率、距离、中点、勾股、圆',            bank:geoBank, th:5000, on:false},
+    {k:'lgt', nm:'对数三角公式',eg:'log(ab)',d:'对数四条法则 + SOH-CAH-TOA',            bank:lgtBank, th:5000, on:false},
+
+    {g:'12 月学完再打开 —— 选择题',
+     k:'trig',nm:'三角特殊角',eg:'sin 60°',  d:'选精确值，不是小数。sin 60° 是 √3/2，不是 0.866', bank:trigBank,th:4000, on:false},
+    {k:'rad', nm:'角度⇄弧度', eg:'60° = π/3',d:'学三角的第一道坎，大学数学全用弧度',    bank:radBank, th:4000, on:false},
+    {k:'log', nm:'对数',      eg:'log₂ 32',  d:'认出 32 = 2⁵ —— 对数就通了一半',        bank:logBank, th:3000, on:false}
+  ];
+  var MAP={}; MODS.forEach(function(m){MAP[m.k]=m});
+
+  /* ---------- picker ---------- */
+  var nWanted=20, holder=$('mods'), curGroup=null;
+  MODS.forEach(function(m){
+    if(m.g){
+      var h=document.createElement('div'); h.className='ghd';
+      var s=document.createElement('span'); s.textContent=m.g; h.appendChild(s);
+      var b=document.createElement('button'); b.type='button'; b.textContent='全选 / 全不选';
+      var grp=[]; curGroup=grp;
+      b.addEventListener('click',function(){
+        var any=grp.some(function(x){return !x.m.on});
+        grp.forEach(function(x){x.m.on=any; x.cb.checked=any}); refresh();
+      });
+      h.appendChild(b); holder.appendChild(h);
+    }
+    var lab=document.createElement('label'); lab.className='mod';
+    var cb=document.createElement('input'); cb.type='checkbox'; cb.checked=m.on;
+    var t=document.createElement('span'); t.className='t';
+    var nm=document.createElement('span'); nm.className='nm'; nm.textContent=m.nm;
+    var eg=document.createElement('span'); eg.className='eg'; eg.textContent=m.eg; nm.appendChild(eg);
+    var d=document.createElement('span'); d.className='d'; d.textContent=m.d;
+    t.appendChild(nm); t.appendChild(d); lab.appendChild(cb); lab.appendChild(t);
+    cb.addEventListener('change',function(){m.on=cb.checked; refresh()});
+    if(curGroup) curGroup.push({m:m,cb:cb});
+    holder.appendChild(lab);
+  });
+  $('len').addEventListener('click',function(e){
+    var b=e.target.closest('button'); if(!b) return;
+    [].forEach.call(this.querySelectorAll('button'),function(x){x.setAttribute('aria-pressed',String(x===b))});
+    nWanted=parseInt(b.dataset.n,10); refresh();
+  });
+  function pool(){
+    var out=[];
+    MODS.forEach(function(m){ if(m.on) m.bank().forEach(function(q){ q.m=m.k; out.push(q) }) });
+    return out;
+  }
+  function refresh(){
+    var p=pool().length, picked=MODS.filter(function(m){return m.on}).length;
+    $('pool').textContent= p? ('选中 '+picked+' 类，题库共 '+p+' 题，这次抽 '+(nWanted&&nWanted<p?nWanted:p)+' 题') : '至少选一类';
+    $('go').disabled = p===0;
+  }
+  refresh();
+
+  /* ---------- drill ---------- */
+  var qs=[], idx=0, res=[], shown=0, firstKey=0, busy=false;
+  var secStart=$('start'), secDrill=$('drill'), secDone=$('done'), inp=$('ans');
+  function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var k=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[k];a[k]=t}return a}
+
+  function begin(list,cap){
+    if(!list.length) return;
+    qs=shuffle(list);
+    var n= cap===undefined?nWanted:cap;
+    if(n && qs.length>n) qs=qs.slice(0,n);
+    idx=0; res=[];
+    secStart.hidden=true; secDone.hidden=true; secDrill.hidden=false;
+    toTop();
+    render();
+  }
+  var box=$('choices'), hintline=$('hintline');
+  function render(){
+    var q=qs[idx];
+    busy=false;
+    $('q').textContent=q.t;
+    $('qhint').textContent=q.h||'';
+    $('count').textContent='第 '+(idx+1)+' / '+qs.length+' 题';
+    $('modnow').textContent=MAP[q.m].nm;
+    $('bar').style.width=(idx/qs.length*100)+'%';
+    shown=performance.now(); firstKey=0;
+    box.textContent='';
+    if(q.pool||q.opts){
+      inp.hidden=true; box.hidden=false;
+      hintline.textContent='点一个，或按 1–4';
+      var four = q.opts ? q.opts.slice()
+               : shuffle(q.pool.filter(function(o){return o!==q.ans})).slice(0,3).concat([q.ans]);
+      box.className = 'choices' + (Math.max.apply(null,four.map(function(o){return o.length}))>11 ? ' long' : '');
+      shuffle(four).forEach(function(o,i){
+        var b=document.createElement('button'); b.type='button'; b.className='opt';
+        var k=document.createElement('span'); k.className='k'; k.textContent=i+1;
+        var s=document.createElement('span'); s.textContent=o;
+        b.appendChild(k); b.appendChild(s);
+        b.addEventListener('click',function(){ if(busy) return; if(!firstKey) firstKey=performance.now()-shown; commit(o,o===q.ans,b) });
+        box.appendChild(b);
+      });
+      box.firstChild.focus({preventScroll:true});
+    }else{
+      inp.hidden=false; box.hidden=true;
+      hintline.innerHTML='按 Enter 提交 · 负号用 <b>-</b>，小数用 <b>.</b>';
+      inp.value=''; inp.className='';
+      inp.focus({preventScroll:true});
+    }
+  }
+  document.addEventListener('keydown',function(e){
+    if(secDrill.hidden || !qs[idx] || !(qs[idx].pool||qs[idx].opts)) return;
+    var n=parseInt(e.key,10);
+    if(n>=1 && n<=4 && box.children[n-1]){ e.preventDefault(); box.children[n-1].click() }
+  });
+  function commit(raw,ok,btn){
+    if(busy) return;            // ignore a second Enter/click during the 180 ms feedback flash
+    busy=true;
+    var q=qs[idx], ms=firstKey||(performance.now()-shown);
+    var v= !ok ? 'miss' : (ms>=MAP[q.m].th ? 'slow' : 'ok');
+    res.push({t:q.t,m:q.m,want:q.ans,got:ok?raw:null,raw:raw,ms:Math.round(ms),v:v,pool:q.pool,opts:q.opts,h:q.h});
+    if(btn) btn.className='opt '+(ok?'hit':'no'); else inp.className= ok?'pulse-ok':'pulse-miss';
+    idx++;
+    setTimeout(function(){ idx<qs.length ? render() : finish() },180);
+  }
+  function parseAns(raw){
+    raw=raw.trim().replace(/[−–—]/g,'-').replace(/\s+/g,'');
+    if(raw==='') return NaN;
+    var f=raw.match(/^(-?\d+)\/(\d+)$/);
+    if(f) return parseInt(f[1],10)/parseInt(f[2],10);
+    return Number(raw);         // strict: "12-3" or "5abc" no longer count as 12 / 5
+  }
+  inp.addEventListener('input',function(){ if(!firstKey && inp.value.length) firstKey=performance.now()-shown });
+  inp.addEventListener('keydown',function(e){
+    if(e.key!=='Enter' || busy) return;
+    var raw=inp.value.trim(); if(raw==='') return;
+    var got=parseAns(raw);
+    commit(raw, isFinite(got) && Math.abs(got-qs[idx].ans)<1e-9, null);
+  });
+
+  function fmt(n){ return typeof n==='string' ? n : (Number.isInteger(n)?String(n):String(parseFloat(n.toFixed(6)))) }
+
+  function finish(){
+    secDrill.hidden=true; secDone.hidden=false;
+    toTop();
+    var weak=res.filter(function(r){return r.v!=='ok'});
+    $('nSolid').textContent=res.length-weak.length;
+    $('nWeak').textContent=weak.length;
+
+    var wl=$('weakList'); wl.textContent='';
+    if(!weak.length){
+      $('weakTitle').textContent='没有要练的';
+      $('weakNote').textContent='全部在时限内答对。这几类不是你的瓶颈，把时间挪给三角。';
+    }else{
+      $('weakTitle').textContent='要练的 '+weak.length+' 个';
+      weak.sort(function(x,y){return y.ms-x.ms});
+      weak.forEach(function(r){var c=document.createElement('span');c.className='chip '+r.v;c.textContent=r.t;wl.appendChild(c)});
+      var slow=weak.filter(function(r){return r.v==='slow'}).length;
+      $('weakNote').textContent='橙框 = 答错，蓝框 = 答对但想得太久（'+slow+' 个），按慢的程度排序。每天先考这几个，连着两天在时限内答对就划掉。';
+    }
+
+    var bs=$('bars'); bs.textContent='';
+    MODS.forEach(function(m){
+      var rs=res.filter(function(r){return r.m===m.k}); if(!rs.length) return;
+      var good=rs.filter(function(r){return r.v==='ok'}).length, pct=Math.round(good/rs.length*100);
+      var row=document.createElement('div'); row.className='bar';
+      var nm=document.createElement('span'); nm.className='bn'; nm.textContent=m.nm;
+      var vv=document.createElement('span'); vv.className='bv'; vv.textContent=good+' / '+rs.length+' 稳';
+      var tr=document.createElement('span'); tr.className='tr';
+      var i=document.createElement('i'); i.style.width=pct+'%';
+      i.style.background= pct>=80?'var(--ok)': pct>=50?'var(--slow)':'var(--miss)';
+      tr.appendChild(i); row.appendChild(nm); row.appendChild(vv); row.appendChild(tr); bs.appendChild(row);
+    });
+
+    var tb=$('tbody'); tb.textContent='';
+    res.forEach(function(r){
+      var tr=document.createElement('tr');
+      function td(txt,cls){var d=document.createElement('td'); if(cls)d.className=cls; d.textContent=txt; return d}
+      tr.appendChild(td(r.t,'num'));
+      tr.appendChild(td(r.v==='miss' ? r.raw+'  (应为 '+fmt(r.want)+')' : fmt(r.got),'num'));
+      tr.appendChild(td((r.ms/1000).toFixed(1)+' 秒','num'));
+      var t=document.createElement('td'), s=document.createElement('span');
+      s.className='tag '+r.v; s.textContent= r.v==='ok'?'稳': r.v==='slow'?'慢':'错';
+      t.appendChild(s); tr.appendChild(t); tb.appendChild(tr);
+    });
+
+    save(weak);
+  }
+
+  /* ---------- 本地记录（localStorage，不经过任何服务器） ---------- */
+  var KEY='mathdrill.v1', ALL=null;
+  function allQ(){
+    if(ALL) return ALL;
+    ALL={}; MODS.forEach(function(m){ m.bank().forEach(function(q){ q.m=m.k; ALL[q.t]=q }) });
+    return ALL;
+  }
+  function loadStore(){
+    try{ var s=JSON.parse(localStorage.getItem(KEY)); if(s&&s.runs&&s.items) return s }catch(e){}
+    return {runs:[],items:{}};
+  }
+  function writeStore(s){ try{ localStorage.setItem(KEY,JSON.stringify(s)); return true }catch(e){ return false } }
+
+  function save(weak){
+    var msg=$('saveMsg'), s=loadStore();
+    res.forEach(function(r){
+      var it=s.items[r.t]||{m:r.m,streak:0,fail:0};
+      if(r.v==='ok'){ it.streak++ } else { it.streak=0; it.fail++ }
+      it.m=r.m; it.lastAt=new Date().toISOString().slice(0,10);
+      s.items[r.t]=it;
+    });
+    s.runs.push({at:new Date().toISOString(),total:res.length,solid:res.length-weak.length});
+    if(s.runs.length>40) s.runs=s.runs.slice(-40);
+    var ok=writeStore(s);
+    msg.textContent = ok ? '已记在这台设备的浏览器里 ✓' : '这个浏览器不让存记录（可能是无痕模式）。';
+    renderHistory();
+  }
+
+  function watched(s){
+    return Object.keys(s.items).filter(function(k){
+      var it=s.items[k]; return it.fail>0 && it.streak<2 && allQ()[k];
+    });
+  }
+  function renderHistory(){
+    var s=loadStore();
+    if(!s.runs.length){ $('hist').hidden=true; return }
+    $('hist').hidden=false;
+
+    var sp=$('spark'); sp.textContent='';
+    s.runs.slice(-8).forEach(function(r){
+      var d=document.createElement('div');
+      d.style.height=Math.max(3,Math.round(r.solid/r.total*42))+'px';
+      d.title=r.at.slice(0,10)+'  '+r.solid+'/'+r.total;
+      sp.appendChild(d);
+    });
+
+    var last=s.runs[s.runs.length-1], line=$('lastline'); line.textContent='';
+    function t(x){ return document.createTextNode(x) }
+    var b=document.createElement('b'); b.textContent=last.solid+' / '+last.total;
+    line.appendChild(t('上次 '+last.at.slice(5,10)+' · '));
+    line.appendChild(b);
+    line.appendChild(t(' 稳 · 一共测过 '+s.runs.length+' 次'));
+
+    var w=watched(s), wrap=$('watchWrap'), wl=$('watchList');
+    if(!w.length){ wrap.hidden=true; return }
+    wrap.hidden=false;
+    $('watchTitle').textContent='盯着的 '+w.length+' 个';
+    w.sort(function(a,c){ return s.items[c].fail-s.items[a].fail });
+    wl.textContent='';
+    w.forEach(function(k){
+      var it=s.items[k], c=document.createElement('span');
+      c.className='chip '+(it.streak===1?'slow':'miss');
+      c.textContent=k+(it.streak===1?'  ①':'');
+      c.title='错过 '+it.fail+' 次 · 当前连对 '+it.streak+' 次';
+      wl.appendChild(c);
+    });
+  }
+  $('clear').addEventListener('click',function(){
+    if(this.dataset.armed){ try{ localStorage.removeItem(KEY) }catch(e){}
+      this.textContent='清除记录'; delete this.dataset.armed; renderHistory(); return }
+    this.dataset.armed='1'; this.textContent='再点一次确认清除';
+    var btn=this; setTimeout(function(){ btn.textContent='清除记录'; delete btn.dataset.armed },4000);
+  });
+  $('goWatch').addEventListener('click',function(){
+    var s=loadStore(), A=allQ(), list=watched(s).map(function(k){return A[k]});
+    if(list.length) begin(list,0);
+  });
+  try{ renderHistory() }catch(e){ $('hist').hidden=true }
+
+  $('go').addEventListener('click',function(){ begin(pool()) });
+  $('again').addEventListener('click',function(){ begin(pool()) });
+  $('back').addEventListener('click',function(){ secDone.hidden=true; secStart.hidden=false; toTop(); refresh(); renderHistory() });
+  $('onlyWeak').addEventListener('click',function(){
+    var w=res.filter(function(r){return r.v!=='ok'}).map(function(r){
+      return {t:r.t,ans:r.want,m:r.m,pool:r.pool,opts:r.opts,h:r.h} });
+    w.length ? begin(w,0) : begin(pool());
+  });
+})();
+</script>
+
+</body>
+</html>
