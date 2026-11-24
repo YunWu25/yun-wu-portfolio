@@ -158,6 +158,34 @@ const Design: React.FC<DesignProps> = ({ language }) => {
       imageType: 'png',
     },
     {
+      title: '创客集成',
+      type: 'App',
+      role: 'Designer',
+      link: 'https://www.zcool.com.cn/work/ZNTg4OTcwNDg=.html',
+      imageType: 'gif',
+    },
+    {
+      title: 'Get Fun',
+      type: 'App',
+      role: 'UI/UX Designer',
+      link: 'https://www.zcool.com.cn/work/ZNTU4MDA2NzI=.html',
+      imageType: 'gif',
+    },
+    {
+      title: 'COC',
+      type: 'APP',
+      role: 'UI/UX Designer',
+      link: 'https://www.zcool.com.cn/work/ZNTU3ODQ2MzY=.html',
+      imageType: 'gif',
+    },
+    {
+      title: 'Easy Go',
+      type: 'App',
+      role: 'Designer',
+      link: null,
+      imageType: 'jpg',
+    },
+    {
       title: 'HUADI',
       type: 'Web',
       role: 'Designer',
@@ -172,7 +200,6 @@ const Design: React.FC<DesignProps> = ({ language }) => {
       imageType: 'jpg',
       displayText: ['Hctcchina', 'China'],
     },
-
     {
       title: 'COC',
       type: 'Web',
@@ -193,20 +220,6 @@ const Design: React.FC<DesignProps> = ({ language }) => {
       role: 'Designer',
       link: 'https://www.zcool.com.cn/work/ZMzk1NjE3MTY=.html',
       imageType: 'jpg',
-    },
-    {
-      title: '创客集成',
-      type: 'App',
-      role: 'Designer',
-      link: 'https://www.zcool.com.cn/work/ZNTg4OTcwNDg=.html',
-      imageType: 'gif',
-    },
-    {
-      title: 'Get Fun',
-      type: 'App',
-      role: 'UI/UX Designer',
-      link: 'https://www.zcool.com.cn/work/ZNTU4MDA2NzI=.html',
-      imageType: 'gif',
     },
     {
       title: 'Beauty',
@@ -255,20 +268,6 @@ const Design: React.FC<DesignProps> = ({ language }) => {
       type: 'EHCS',
       role: 'UI/UX Designer',
       link: 'https://media.yunwustudio.com/public/design/CGH%20EHCS.jpg',
-      imageType: 'jpg',
-    },
-    {
-      title: 'COC',
-      type: 'APP',
-      role: 'UI/UX Designer',
-      link: 'https://www.zcool.com.cn/work/ZNTU3ODQ2MzY=.html',
-      imageType: 'gif',
-    },
-    {
-      title: 'Easy Go',
-      type: 'App',
-      role: 'Designer',
-      link: null,
       imageType: 'jpg',
     },
     {
