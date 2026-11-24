@@ -136,6 +136,14 @@ const Design: React.FC<DesignProps> = ({ language }) => {
   // Project data
   const projects: Project[] = [
     {
+      title: 'Math',
+      type: 'Web',
+      role: 'Designer',
+      link: '/math',
+      imageType: 'png',
+      displayText: ['Math', '数学'],
+    },
+    {
       title: 'Eye Care',
       type: 'Web',
       role: 'Designer',
@@ -148,14 +156,6 @@ const Design: React.FC<DesignProps> = ({ language }) => {
       role: 'Designer',
       link: '/game',
       imageType: 'png',
-    },
-    {
-      title: 'Math',
-      type: 'Web',
-      role: 'Designer',
-      link: '/math',
-      imageType: 'png',
-      displayText: ['Math', '数学'],
     },
     {
       title: 'HUADI',
