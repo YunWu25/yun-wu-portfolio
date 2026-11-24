@@ -177,7 +177,7 @@ const Design: React.FC<DesignProps> = ({ language }) => {
       title: 'COC',
       type: 'Web',
       role: 'Designer',
-      link: null,
+      link: 'https://www.zcool.com.cn/work/ZNTU3ODQ2MzY=.html',
       imageType: 'jpg',
     },
     {
@@ -205,7 +205,7 @@ const Design: React.FC<DesignProps> = ({ language }) => {
       title: 'Get Fun',
       type: 'App',
       role: 'UI/UX Designer',
-      link: null,
+      link: 'https://www.zcool.com.cn/work/ZNTU4MDA2NzI=.html',
       imageType: 'gif',
     },
     {
@@ -261,7 +261,7 @@ const Design: React.FC<DesignProps> = ({ language }) => {
       title: 'COC',
       type: 'APP',
       role: 'UI/UX Designer',
-      link: 'https://media.yunwustudio.com/public/design/COC%20APP.gif',
+      link: 'https://www.zcool.com.cn/work/ZNTU3ODQ2MzY=.html',
       imageType: 'gif',
     },
     {
