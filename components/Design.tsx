@@ -272,7 +272,7 @@ const Design: React.FC<DesignProps> = ({ language }) => {
     },
     {
       title: 'Luna Kitchen and Bath',
-      type: '',
+      type: 'Web',
       role: 'Social Media Designer',
       link: null,
       imageType: 'jpg',
