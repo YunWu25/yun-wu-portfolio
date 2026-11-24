@@ -15,6 +15,7 @@ const About = lazy(() => import('./About'));
 const Time = lazy(() => import('./Time'));
 const EyeCare = lazy(() => import('./EyeCare'));
 const Game = lazy(() => import('./Game'));
+const MathDrill = lazy(() => import('./MathDrill'));
 // Loading skeleton component
 const PageLoader: React.FC = () => (
   <div className="flex items-center justify-center min-h-[200px]">
@@ -66,6 +67,7 @@ const MainContent: React.FC<MainContentProps> = ({
       activeView === ViewState.DESIGN ||
       activeView === ViewState.EYE_CARE ||
       activeView === ViewState.GAME ||
+      activeView === ViewState.MATH ||
       activeView === ViewState.VIDEO ||
       activeView === ViewState.TIME
   );
@@ -127,6 +129,12 @@ const MainContent: React.FC<MainContentProps> = ({
         return (
           <Suspense fallback={<PageLoader />}>
             <Game language={language} />
+          </Suspense>
+        );
+      case ViewState.MATH:
+        return (
+          <Suspense fallback={<PageLoader />}>
+            <MathDrill language={language} />
           </Suspense>
         );
       case ViewState.TIME:
@@ -245,6 +253,7 @@ const MainContent: React.FC<MainContentProps> = ({
                           activeView === ViewState.VIDEO ||
                           activeView === ViewState.TIME ||
                           activeView === ViewState.GAME ||
+                          activeView === ViewState.MATH ||
                           activeView === ViewState.EYE_CARE))
                         ? 'opacity-100 scale-100'
                         : 'opacity-0 group-hover:opacity-40 scale-0 group-hover:scale-75'
@@ -260,6 +269,7 @@ const MainContent: React.FC<MainContentProps> = ({
                           activeView === ViewState.VIDEO ||
                           activeView === ViewState.TIME ||
                           activeView === ViewState.GAME ||
+                          activeView === ViewState.MATH ||
                           activeView === ViewState.EYE_CARE))
                         ? `${COLORS.gray900} font-medium`
                         : `${COLORS.gray500} group-hover:text-coral`

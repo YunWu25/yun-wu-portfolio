@@ -8,6 +8,7 @@ export enum ViewState {
   TIME = 'TIME',
   GAME = 'GAME',
   EYE_CARE = 'EYE_CARE',
+  MATH = 'MATH',
 }
 
 export interface ProjectTask {
