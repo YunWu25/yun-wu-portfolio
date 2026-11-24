@@ -34,6 +34,9 @@ body{background:var(--bg);color:var(--fg);font-family:var(--font-body);line-heig
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
   padding-block:8px 32px}
 .wrap{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+/* Space between the parts of each screen. The drill screen keeps its own tighter rhythm. */
+#start,#done{display:flex;flex-direction:column;gap:24px}
+#drill{display:flex;flex-direction:column;gap:10px}
 h1{font-family:var(--font-body);font-size:1.875rem;font-weight:300;margin:0;text-align:center;
   color:var(--fg);text-wrap:balance;line-height:1.3}
 @media (min-width:768px){h1{font-size:2.25rem}}
@@ -42,6 +45,8 @@ h1{font-family:var(--font-body);font-size:1.875rem;font-weight:300;margin:0;text
 h2{font-family:var(--font-body);font-size:1.1rem;font-weight:400;margin:0;color:var(--fg)}
 p{margin:0}
 .lede{color:var(--muted);font-size:.93rem}
+.startbar{display:flex;flex-direction:column;gap:10px;padding-top:4px}
+.startbar .primary{width:100%}
 /* Sections sit directly on the page background: no box, just a divider line above. */
 .card{background:transparent;border:none;border-top:1px solid var(--line);border-radius:0;padding:20px 0 0;
   display:flex;flex-direction:column;gap:13px}
@@ -117,8 +122,8 @@ th{font-size:.73rem;text-transform:uppercase;letter-spacing:.06em;color:var(--mu
 td.num{font-variant-numeric:tabular-nums;font-family:var(--font-display);font-weight:500}
 .tag{font-size:.78rem;font-weight:600}
 .tag.ok{color:var(--ok)} .tag.slow{color:var(--slow)} .tag.miss{color:var(--miss)}
-.row{display:flex;gap:10px;flex-wrap:wrap}
-.row>button{flex:1 1 170px}
+.row{display:flex;gap:12px;flex-wrap:wrap;padding-top:8px}
+.row>button{flex:1 1 auto;white-space:nowrap;padding:12px 22px}
 .save{font-size:.82rem;color:var(--muted);text-align:center}
 .hhead{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
 .hhead button{font-size:.75rem;font-weight:500;padding:4px 10px;border-radius:999px;background:transparent;
@@ -165,8 +170,10 @@ td.num{font-variant-numeric:tabular-nums;font-family:var(--font-display);font-we
       <p class="lede" id="pool">—</p>
     </div>
 
-    <button class="primary" id="go" data-i="go"></button>
-    <p class="lede" style="text-align:center" data-ih="timing"></p>
+    <div class="startbar">
+      <button class="primary" id="go" data-i="go"></button>
+      <p class="lede" data-ih="timing"></p>
+    </div>
   </section>
 
   <section id="drill" hidden>
@@ -242,7 +249,7 @@ td.num{font-variant-numeric:tabular-nums;font-family:var(--font-display);font-we
     yourList:L('你的清单','Your list'), solid:L('稳','Solid'), toPractice:L('要练','To practice'),
     byCat:L('各类表现','By category'), detail:L('全部明细','All answers'),
     thQ:L('题','Question'), thA:L('你的答案','Your answer'), thT:L('反应','Reaction'), thV:L('判定','Result'),
-    again:L('再测一次','Test again'), onlyWeak:L('只测要练的','Only the ones to practice'), back:L('换类别','Change categories'),
+    again:L('再测一次','Test again'), onlyWeak:L('只测要练的','Practice weak ones'), back:L('换类别','Change categories'),
     answer:L('答案','Answer'),
     choiceHint:L('点一个，或按 1–4','Tap one, or press 1–4'),
     typeHint:L('按 Enter 提交 · 负号用 <b>-</b>，小数用 <b>.</b>','Press Enter to submit · use <b>-</b> for negatives and <b>.</b> for decimals'),
