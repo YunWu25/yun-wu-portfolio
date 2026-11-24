@@ -1,5 +1,4 @@
 import React from 'react';
-import { ArrowUpRight } from 'lucide-react';
 import { TYPOGRAPHY, COLORS } from '../styles';
 import { Language } from '../App';
 
@@ -84,14 +83,8 @@ const LaptopMockup: React.FC<{ project: Project }> = ({ project }) => {
 };
 
 const ProjectCard: React.FC<{ project: Project; language: Language }> = ({ project, language }) => {
-  // Only cards with a link react to hover, so cards without one don't look clickable.
-  const hasLink = Boolean(project.link);
   const cardContent = (
-    <div
-      className={`bg-white dark:bg-dark-surface border border-gray-100 dark:border-dark-border rounded-xl p-6 md:p-8 flex flex-col sm:flex-row items-center gap-4 transition-all duration-300 group ${
-        hasLink ? 'hover:shadow-lg hover:border-gray-200 dark:hover:border-dark-muted' : ''
-      }`}
-    >
+    <div className="bg-white dark:bg-dark-surface border border-gray-100 dark:border-dark-border rounded-xl p-6 md:p-8 flex flex-col sm:flex-row items-center gap-4 hover:shadow-lg hover:border-gray-200 dark:hover:border-dark-muted transition-all duration-300 group">
       {/* Laptop Mockup — shown first on mobile, above the text. Below
           the `sm` breakpoint the card stacks vertically instead of sitting
           side-by-side, since the mockup's minimum width otherwise squeezed
@@ -103,19 +96,9 @@ const ProjectCard: React.FC<{ project: Project; language: Language }> = ({ proje
 
       <div className="flex-1 min-w-0 w-full text-center sm:text-left order-2 sm:order-1">
         <h3
-          className={`font-sans text-xl md:text-2xl ${COLORS.gray400} mb-1 transition-colors ${
-            hasLink ? 'group-hover:text-coral' : ''
-          }`}
+          className={`font-sans text-xl md:text-2xl ${COLORS.gray400} mb-1 group-hover:text-coral transition-colors`}
         >
           {project.title}
-          {hasLink && (
-            <ArrowUpRight
-              size={20}
-              strokeWidth={1.5}
-              aria-hidden="true"
-              className="inline-block ml-1 align-baseline text-coral opacity-60 group-hover:opacity-100 transition-opacity"
-            />
-          )}
         </h3>
         <p className={`font-sans ${COLORS.gray300} text-xl md:text-2xl mb-3`}>
           {project.type}
