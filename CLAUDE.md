@@ -84,6 +84,8 @@ Uses typescript-eslint strict type-checked config with:
 main 分支即线上。合并后自动部署，有 build 检查。
 
 ## 提交规则
+判断标准：这个改动会不会进构建、会不会影响线上页面。
+
 - 不进构建的（CLAUDE.md、README、注释、.gitignore）→ 直接提交 main
 - 只改内容（文字、图片、链接）→ 直接提交 main
 - 新增或删除页面、改组件或样式、动 package.json 或构建配置 → 开分支 + PR，等 build 绿了再合
