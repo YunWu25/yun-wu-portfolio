@@ -134,7 +134,8 @@ button:disabled{opacity:.4;cursor:not-allowed}
 .preset .pn{font-size:.95rem;font-weight:500}
 .preset .ps{font-size:.78rem;font-weight:300;color:var(--muted);line-height:1.4}
 /* Number pad */
-.padtoggle{align-self:center;font-size:.8rem;font-weight:500;padding:6px 14px;border-radius:999px;
+.toolrow{display:flex;justify-content:center;flex-wrap:wrap;gap:8px}
+.padtoggle{font-size:.8rem;font-weight:500;padding:6px 14px;border-radius:999px;
   background:transparent;color:var(--muted);border:1px solid var(--line)}
 .padtoggle[aria-pressed="true"]{color:var(--accent);border-color:var(--accent)}
 .pad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;user-select:none;-webkit-user-select:none}
@@ -226,7 +227,10 @@ td.num{font-variant-numeric:tabular-nums;font-family:var(--font-display);font-we
     <input id="ans" inputmode="text" autocomplete="off" autocapitalize="off" spellcheck="false">
     <div class="choices" id="choices" hidden></div>
     <p class="hint" id="hintline"></p>
-    <button type="button" class="padtoggle" id="padToggle" aria-pressed="false" hidden data-i="padToggle"></button>
+    <div class="toolrow">
+      <button type="button" class="padtoggle" id="autoToggle" aria-pressed="true" hidden></button>
+      <button type="button" class="padtoggle" id="padToggle" aria-pressed="false" hidden data-i="padToggle"></button>
+    </div>
     <div class="pad" id="pad" hidden></div>
   </section>
 
@@ -301,11 +305,14 @@ td.num{font-variant-numeric:tabular-nums;font-family:var(--font-display);font-we
     again:L('再测一次','Test again'), onlyWeak:L('只测要练的','Practice weak ones'), back:L('换类别','Change categories'),
     answer:L('答案','Answer'),
     choiceHint:L('点一个，或按 1–4','Tap one, or press 1–4'),
-    typeHint:L('按 Enter 提交 · 负号用 <b>-</b>，小数用 <b>.</b>，分数用 <b>/</b>','Press Enter to submit · use <b>-</b> for negatives, <b>.</b> for decimals, <b>/</b> for fractions'),
+    typeHint:L('答对自动跳下一题 · 答错按 Enter · 负号用 <b>-</b>，小数用 <b>.</b>，分数用 <b>/</b>','Right answers move on by themselves · press Enter to give up on a wrong one · use <b>-</b> for negatives, <b>.</b> for decimals, <b>/</b> for fractions'),
     tagOk:L('稳','Solid'), tagSlow:L('慢','Slow'), tagVslow:L('很慢','Very slow'), tagMiss:L('错','Wrong'),
     quick:L('快捷组合','Quick sets'),
     padToggle:L('数字键盘','Number pad'),
-    typeHintPad:L('点 ✓ 提交 · 也可以按 Enter','Tap ✓ to submit · Enter works too'),
+    typeHintManual:L('按 Enter 提交 · 负号用 <b>-</b>，小数用 <b>.</b>，分数用 <b>/</b>','Press Enter to submit · use <b>-</b> for negatives, <b>.</b> for decimals, <b>/</b> for fractions'),
+    typeHintPadManual:L('点 ✓ 提交 · 也可以按 Enter','Tap ✓ to submit · Enter works too'),
+    autoOn:L('⏩ 答对自动跳','⏩ Auto-advance when right'), autoOff:L('⏸ 手动按 Enter','⏸ Manual: press Enter'),
+    typeHintPad:L('答对自动跳下一题 · 答错点 ✓','Right answers move on by themselves · tap ✓ to give up on a wrong one'),
     speedTitle:L('平均反应速度','Average reaction time'),
     saved:L('已记在这台设备的浏览器里 ✓','Saved in this browser on this device ✓'),
     noSave:L('这个浏览器不让存记录（可能是无痕模式）。','This browser won’t save records (it may be in private mode).'),
@@ -499,6 +506,19 @@ td.num{font-variant-numeric:tabular-nums;font-family:var(--font-display);font-we
     F('√108',SIMPLIFY,'6√3','3√6','36√3','4√6'),
     F('√200',SIMPLIFY,'10√2','2√10','100√2','20√5')
   ]}
+
+  /* Mental math with (n + k)(n − k) = n² − k² and (n ± 1)² — typed. */
+  var H_DS=L('凑成 (n + k)(n − k) = n² − k²','write it as (n + k)(n − k) = n² − k²'),
+      H_PS=L('(n ± k)² = n² ± 2nk + k²','(n ± k)² = n² ± 2nk + k²'),
+      H_DD=L('a² − b² = (a + b)(a − b)','a² − b² = (a + b)(a − b)');
+  function dsqBank(){
+    var o=[];
+    [[49,51],[98,102],[103,97],[21,19],[32,28],[45,55],[63,57],[104,96],[71,69],[25,35]]
+      .forEach(function(p){ o.push({t:p[0]+' × '+p[1],ans:p[0]*p[1],h:H_DS}) });
+    [99,51,101,49,31].forEach(function(n){ o.push({t:n+sup(2),ans:n*n,h:H_PS}) });
+    [[53,47],[26,24],[101,99]].forEach(function(p){ o.push({t:p[0]+sup(2)+' − '+p[1]+sup(2),ans:p[0]*p[0]-p[1]*p[1],h:H_DD}) });
+    return o;
+  }
 
   /* ================= CS route: new banks =================
      Typed answers are numbers (fractions like 1/6 are accepted). Symbolic answers are multiple choice.
@@ -861,7 +881,8 @@ td.num{font-variant-numeric:tabular-nums;font-family:var(--font-display);font-we
     {id:'alg0', nm:L('代数基础','Algebra basics'), st:NOW, mods:[
       {k:'eq',  nm:L('一次方程','Linear equations'), eg:'3x+7=22', d:L('解出 x —— 分级考占比最大的一块','Solve for x — the biggest part of the placement test'), bank:eqBank, th:3500, on:true},
       {k:'pow', nm:L('幂','Powers'), eg:'2⁶', d:L('2、3、5、10 的幂 —— 对数的底子','Powers of 2, 3, 5 and 10 — the groundwork for logs'), bank:powBank, th:2500, on:true},
-      {k:'exp', nm:L('指数法则','Exponent rules'), eg:'x³·x⁴', d:L('指数加减乘 —— 通向根式和对数','Adding, subtracting and multiplying exponents — the way into radicals and logs'), bank:expBank, th:3000, on:false}]},
+      {k:'exp', nm:L('指数法则','Exponent rules'), eg:'x³·x⁴', d:L('指数加减乘 —— 通向根式和对数','Adding, subtracting and multiplying exponents — the way into radicals and logs'), bank:expBank, th:3000, on:false},
+      {k:'dsq', nm:L('平方差速算','Difference-of-squares mental math'), eg:'49 × 51', d:L('49 × 51 = 50² − 1 = 2499 —— 平方差、完全平方变成心算','49 × 51 = 50² − 1 = 2499 — difference of squares and perfect squares as mental math'), bank:dsqBank, th:6000, on:false}]},
     {id:'conv', nm:L('换算','Conversions'), st:OPT, mods:[
       {k:'frac',nm:L('分数⇄小数','Fraction ⇄ decimal'), eg:'3/8', d:L('换算慢会拖掉整道题','A slow conversion drags down the whole problem'), bank:fracBank, th:3000, on:false},
       {k:'pct', nm:L('百分比','Percentages'), eg:'25% of 64', d:L('分级考里的常客','A regular on the placement test'), bank:pctBank, th:3000, on:false}]},
@@ -1092,7 +1113,7 @@ td.num{font-variant-numeric:tabular-nums;font-family:var(--font-display);font-we
       hintline.textContent=s('choiceHint');
       [].forEach.call(box.children,function(b){ b.lastChild.textContent=T(b._val) });
     }else{
-      hintline.innerHTML=s(padOn?'typeHintPad':'typeHint');
+      hintline.innerHTML=s(padOn ? (autoOn?'typeHintPad':'typeHintPadManual') : (autoOn?'typeHint':'typeHintManual'));
     }
   }
 
@@ -1120,15 +1141,30 @@ td.num{font-variant-numeric:tabular-nums;font-family:var(--font-display);font-we
     if(k==='del'){ inp.value=inp.value.slice(0,-1); return }
     if(!firstKey) firstKey=performance.now()-shown;
     inp.value += k==='-' ? '−' : k;
+    autoCheck();
   });
   function syncPad(){
     var typed=!secDrill.hidden && !inp.hidden;
     padBtn.hidden=!typed;
+    autoBtn.hidden=!typed;
+    autoBtn.textContent=s(autoOn?'autoOn':'autoOff');
+    autoBtn.setAttribute('aria-pressed',String(autoOn));
     pad.hidden=!(typed && padOn);
     padBtn.setAttribute('aria-pressed',String(padOn));
     // With our pad open, don't let the phone's own keyboard slide up over it.
     inp.setAttribute('inputmode', padOn ? 'none' : 'text');
   }
+  /* Auto-advance switch: on = a right answer moves on by itself; off = strict, every answer needs
+     Enter / ✓. Default on; the choice is remembered. */
+  var autoBtn=$('autoToggle'), AUTOKEY='mathdrill.auto';
+  var autoOn=(function(){ try{ return localStorage.getItem(AUTOKEY)!=='0' }catch(e){ return true } })();
+  autoBtn.addEventListener('click',function(){
+    autoOn=!autoOn;
+    try{ localStorage.setItem(AUTOKEY, autoOn?'1':'0') }catch(e){}
+    syncPad();
+    if(qs[idx] && !busy){ questionText(); autoCheck() }
+    inp.focus({preventScroll:true});
+  });
   padBtn.addEventListener('click',function(){
     padOn=!padOn;
     try{ localStorage.setItem(PADKEY, padOn?'1':'0') }catch(e){}
@@ -1188,7 +1224,14 @@ td.num{font-variant-numeric:tabular-nums;font-family:var(--font-display);font-we
     if(f) return parseInt(f[1],10)/parseInt(f[2],10);
     return Number(raw);         // strict: "12-3" or "5abc" don't count as 12 / 5
   }
-  inp.addEventListener('input',function(){ if(!firstKey && inp.value.length) firstKey=performance.now()-shown });
+  inp.addEventListener('input',function(){ if(!firstKey && inp.value.length) firstKey=performance.now()-shown; autoCheck() });
+  /* Move on as soon as what's typed equals the answer — no Enter needed. A wrong answer still needs
+     Enter (or ✓), because while typing "1" we can't tell whether "12" is coming. */
+  function autoCheck(){
+    if(!autoOn || busy || inp.hidden || !qs[idx]) return;
+    var got=parseAns(inp.value);
+    if(isFinite(got) && Math.abs(got-qs[idx].ans)<1e-9) commit(inp.value.trim(), true, null);
+  }
   function submitTyped(){
     if(busy) return;
     var raw=inp.value.trim(); if(raw==='') return;
