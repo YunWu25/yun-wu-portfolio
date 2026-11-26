@@ -8,7 +8,9 @@
 <style>
 /* Layout: single centred column; three states (start / drill / results) swapped by [hidden].
    Colours follow yunwustudio.com: white / #18181a page, coral #ff6b6b for anything "chosen".
-   --ok / --slow / --miss are result colours and stay as they were. */
+   --ok / --slow / --miss are result colours and stay as they were; --vslow is the third tier.
+   [hidden] must stay !important: .pad and .choices set display:grid, which would otherwise
+   override the hidden attribute and show the keypad / options when they should be gone. */
 [hidden]{display:none!important}
 img{max-width:100%}
 body{margin:0}
@@ -16,18 +18,18 @@ body{margin:0}
   padding-top:env(safe-area-inset-top,0px);
   padding-bottom:env(safe-area-inset-bottom,0px);
   --bg:#ffffff; --surface:#ffffff; --fg:#111827; --text:#4b5563; --muted:#6b7280; --line:#e5e7eb; --sunk:#f3f4f6;
-  --ok:#2f7d55; --slow:#2563a8; --miss:#c2561a; --accent:#ff6b6b; --on-accent:#ffffff;
+  --ok:#2f7d55; --slow:#2563a8; --miss:#c2561a; --vslow:#7b4bb7; --accent:#ff6b6b; --on-accent:#ffffff;
   --font-display:'Space Grotesk','Helvetica Neue',sans-serif;
   --font-body:'Inter',system-ui,sans-serif;
   color-scheme:light;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --bg:#18181a; --surface:#221f21; --fg:#f2f0f1; --text:#a8a3a5; --muted:#a8a3a5; --line:#333033; --sunk:#2a2729;
-  --ok:#6ec898; --slow:#6fb3e8; --miss:#ef9053; color-scheme:dark;
+  --ok:#6ec898; --slow:#6fb3e8; --miss:#ef9053; --vslow:#b996e6; color-scheme:dark;
 }}
 :root[data-theme="dark"]{
   --bg:#18181a; --surface:#221f21; --fg:#f2f0f1; --text:#a8a3a5; --muted:#a8a3a5; --line:#333033; --sunk:#2a2729;
-  --ok:#6ec898; --slow:#6fb3e8; --miss:#ef9053; color-scheme:dark;
+  --ok:#6ec898; --slow:#6fb3e8; --miss:#ef9053; --vslow:#b996e6; color-scheme:dark;
 }
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--fg);font-family:var(--font-body);line-height:1.55;
@@ -109,6 +111,28 @@ button:disabled{opacity:.4;cursor:not-allowed}
   padding:6px 11px;border-radius:9px;border:1.5px solid;white-space:nowrap}
 .chip.slow{color:var(--slow);border-color:var(--slow)}
 .chip.miss{color:var(--miss);border-color:var(--miss)}
+.chip.vslow{color:var(--vslow);border-color:var(--vslow)}
+.tag.vslow{color:var(--vslow)}
+/* One-click presets */
+.presets{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.preset{display:flex;flex-direction:column;align-items:flex-start;gap:3px;text-align:left;padding:13px 14px;
+  background:transparent;color:var(--fg);border:1px solid var(--line);border-radius:12px;transition:border-color .15s}
+.preset:hover{border-color:var(--accent);opacity:1}
+.preset .pn{font-size:.95rem;font-weight:500}
+.preset .ps{font-size:.78rem;font-weight:300;color:var(--muted);line-height:1.4}
+/* Number pad */
+.padtoggle{align-self:center;font-size:.8rem;font-weight:500;padding:6px 14px;border-radius:999px;
+  background:transparent;color:var(--muted);border:1px solid var(--line)}
+.padtoggle[aria-pressed="true"]{color:var(--accent);border-color:var(--accent)}
+.pad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;user-select:none;-webkit-user-select:none}
+.pad button{font-family:var(--font-display);font-size:1.6rem;font-weight:700;padding:0;min-height:56px;
+  background:var(--surface);color:var(--fg);border:1px solid var(--line);border-radius:12px;
+  touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.pad button:active{background:var(--sunk)}
+.pad .enter{grid-column:span 2;background:var(--accent);color:var(--on-accent);border-color:transparent;
+  font-family:var(--font-body);font-size:1.15rem;font-weight:500}
+/* Speed chart */
+.speed svg{display:block}
 .bars{display:flex;flex-direction:column;gap:10px}
 .bar{display:grid;grid-template-columns:1fr auto;gap:4px 10px;align-items:center}
 .bar .bn{font-size:.88rem;font-weight:500}
@@ -142,6 +166,11 @@ td.num{font-variant-numeric:tabular-nums;font-family:var(--font-display);font-we
   <section id="start">
     <h1 data-i="title"></h1>
     <p class="intro" data-ih="intro"></p>
+
+    <div class="card">
+      <h2 data-i="quick"></h2>
+      <div class="presets" id="presets"></div>
+    </div>
 
     <div class="card" id="hist" hidden>
       <div class="hhead"><h2 data-i="history"></h2><button type="button" id="clear" data-i="clear"></button></div>
@@ -184,6 +213,8 @@ td.num{font-variant-numeric:tabular-nums;font-family:var(--font-display);font-we
     <input id="ans" inputmode="text" autocomplete="off" autocapitalize="off" spellcheck="false">
     <div class="choices" id="choices" hidden></div>
     <p class="hint" id="hintline"></p>
+    <button type="button" class="padtoggle" id="padToggle" aria-pressed="false" hidden data-i="padToggle"></button>
+    <div class="pad" id="pad" hidden></div>
   </section>
 
   <section id="done" hidden>
@@ -191,6 +222,11 @@ td.num{font-variant-numeric:tabular-nums;font-family:var(--font-display);font-we
     <div class="score">
       <div class="tile"><span class="n" id="nSolid" style="color:var(--ok)">0</span><span class="l" data-i="solid"></span></div>
       <div class="tile"><span class="n" id="nWeak" style="color:var(--slow)">0</span><span class="l" data-i="toPractice"></span></div>
+    </div>
+    <div class="card">
+      <h2 data-i="speedTitle"></h2>
+      <div class="speed" id="speed"></div>
+      <p class="lede" id="speedNote"></p>
     </div>
     <div class="card">
       <h2 id="weakTitle"></h2>
@@ -253,7 +289,11 @@ td.num{font-variant-numeric:tabular-nums;font-family:var(--font-display);font-we
     answer:L('答案','Answer'),
     choiceHint:L('点一个，或按 1–4','Tap one, or press 1–4'),
     typeHint:L('按 Enter 提交 · 负号用 <b>-</b>，小数用 <b>.</b>','Press Enter to submit · use <b>-</b> for negatives and <b>.</b> for decimals'),
-    tagOk:L('稳','Solid'), tagSlow:L('慢','Slow'), tagMiss:L('错','Wrong'),
+    tagOk:L('稳','Solid'), tagSlow:L('慢','Slow'), tagVslow:L('很慢','Very slow'), tagMiss:L('错','Wrong'),
+    quick:L('快捷组合','Quick sets'),
+    padToggle:L('数字键盘','Number pad'),
+    typeHintPad:L('点 ✓ 提交 · 也可以按 Enter','Tap ✓ to submit · Enter works too'),
+    speedTitle:L('平均反应速度','Average reaction time'),
     saved:L('已记在这台设备的浏览器里 ✓','Saved in this browser on this device ✓'),
     noSave:L('这个浏览器不让存记录（可能是无痕模式）。','This browser won’t save records (it may be in private mode).'),
     noneTitle:L('没有要练的','Nothing to practice'),
@@ -266,9 +306,18 @@ td.num{font-variant-numeric:tabular-nums;font-family:var(--font-display);font-we
     pool:function(c,p,n){return LANG==='zh'?'选中 '+c+' 类，题库共 '+p+' 题，这次抽 '+n+' 题':c+' categories · '+p+' questions in the bank · '+n+' this round'},
     watch:function(n){return LANG==='zh'?'盯着的 '+n+' 个':'Watching '+n},
     weakTitle:function(n){return LANG==='zh'?'要练的 '+n+' 个':n+' to practice'},
-    weakNote:function(n){return LANG==='zh'
-      ?'橙框 = 答错，蓝框 = 答对但想得太久（'+n+' 个），按慢的程度排序。每天先考这几个，连着两天在时限内答对就划掉。'
-      :'Orange = wrong, blue = right but too slow ('+n+'), slowest first. Test these first each day; two days in a row within the time limit and they’re crossed off.'},
+    weakNote:function(n,v){return LANG==='zh'
+      ?'橙框 = 答错，紫框 = 答对但超过时限一倍（'+v+' 个），蓝框 = 答对但想得太久（'+n+' 个），按慢的程度排序。每天先考这几个，连着两天在时限内答对就划掉。'
+      :'Orange = wrong, purple = right but over twice the time limit ('+v+'), blue = right but too slow ('+n+'), slowest first. Test these first each day; two days in a row within the time limit and they’re crossed off.'},
+    speedNote:function(cur,hist,n){
+      var c=(cur/1000).toFixed(1), h=hist===null?'':(hist/1000).toFixed(1), d=hist===null?0:Math.abs(cur-hist)/1000;
+      if(hist===null) return LANG==='zh'?'本次 '+c+' 秒。这是第一次记录，下次开始就能和历史比。':'This round '+c+' s. This is the first record; from next time you can compare.';
+      var cmp = d<0.05 ? (LANG==='zh'?'和平时一样':'about the same as usual')
+              : cur<hist ? (LANG==='zh'?'快了 '+d.toFixed(1)+' 秒':d.toFixed(1)+' s faster')
+              : (LANG==='zh'?'慢了 '+d.toFixed(1)+' 秒':d.toFixed(1)+' s slower');
+      return LANG==='zh'?'本次 '+c+' 秒 · 历史平均 '+h+' 秒（前 '+n+' 次）· '+cmp
+                        :'This round '+c+' s · history average '+h+' s (previous '+n+') · '+cmp},
+    avgLabel:function(ms){return (LANG==='zh'?'历史平均 ':'avg ')+(ms/1000).toFixed(1)+(LANG==='zh'?' 秒':' s')},
     solidOf:function(g,n){return LANG==='zh'?g+' / '+n+' 稳':g+' / '+n+' solid'},
     should:function(a){return LANG==='zh'?'  (应为 '+a+')':'  (should be '+a+')'},
     secs:function(ms){return (ms/1000).toFixed(1)+(LANG==='zh'?' 秒':' s')},
@@ -295,11 +344,11 @@ td.num{font-variant-numeric:tabular-nums;font-family:var(--font-display);font-we
   function divBank(){var o=[];MF.forEach(function(a){MF.forEach(function(b){o.push({t:(a*b)+' ÷ '+b,ans:a})})});return o}
   function sqBank(){var o=[];for(var n=2;n<=20;n++)o.push({t:n+sup(2),ans:n*n});return o}
   function sqrtBank(){var o=[];for(var n=2;n<=20;n++)o.push({t:'√'+(n*n),ans:n});return o}
-  function powBank(){var o=[],n;
-    for(n=2;n<=10;n++)o.push({t:'2'+sup(n),ans:Math.pow(2,n)});
-    for(n=2;n<=5;n++) o.push({t:'3'+sup(n),ans:Math.pow(3,n)});
-    for(n=2;n<=4;n++) o.push({t:'5'+sup(n),ans:Math.pow(5,n)});
-    for(n=2;n<=5;n++) o.push({t:'10'+sup(n),ans:Math.pow(10,n)});
+  function powBank(){var o=[],n;   // starts at ³: 2², 3², 5², 10² are already in the squares bank
+    for(n=3;n<=10;n++)o.push({t:'2'+sup(n),ans:Math.pow(2,n)});
+    for(n=3;n<=5;n++) o.push({t:'3'+sup(n),ans:Math.pow(3,n)});
+    for(n=3;n<=4;n++) o.push({t:'5'+sup(n),ans:Math.pow(5,n)});
+    for(n=3;n<=5;n++) o.push({t:'10'+sup(n),ans:Math.pow(10,n)});
     return o}
   function negBank(){
     var P=[[-7,3],[-6,8],[-9,4],[-12,3],[-8,-7],[-6,-9],[-4,-12],[-11,-3],[7,-8],[9,-6],[12,-4],[5,-9],
@@ -391,6 +440,51 @@ td.num{font-variant-numeric:tabular-nums;font-family:var(--font-display);font-we
     var P=[[2,8,3],[2,32,5],[2,64,6],[2,128,7],[2,1024,10],[3,9,2],[3,27,3],[3,81,4],[5,25,2],[5,125,3],
            [10,100,2],[10,1000,3],[10,10000,4],[2,1,0],[7,49,2],[4,16,2],[6,36,2],[10,0.1,-1],[2,2,1],[9,81,2]];
     return P.map(function(p){return {t:'log'+sub(p[0])+' '+p[1],ans:p[2]}})}
+  /* Trap questions: pairs that look alike but differ in order of operations or signs. */
+  function trapBank(){
+    var P=[['−3²',-9],['(−3)²',9],['4 + 3 × 2',10],['(4 + 3) × 2',14],['2 × 3²',18],['(2 × 3)²',36],
+           ['6 ÷ 2 × 3',9],['6 ÷ (2 × 3)',1],['−4 − (−6) × 2',8],['8 − (3 − 2)',7],
+           ['−2⁴',-16],['(−2)⁴',16],['10 − 4 − 3',3],['10 − (4 − 3)',9],['12 ÷ 4 ÷ 3',1],['12 ÷ (4 ÷ 3)',9],
+           ['5 − 3 × 2',-1],['(5 − 3) × 2',4],['−6 ÷ 2 × 3',-9],['3 − (−2)²',-1],['20 − 2 × (3 + 4)',6],['−(−2)³',8]];
+    return P.map(function(p){return {t:p[0],ans:p[1]}})}
+  /* Multiple choice. Every option was run through a numeric checker: the right one equals the
+     question, and no wrong one does (e.g. 2√12 is not offered for √48, it is the same number). */
+  function factorBank(){return [
+    F('x² − 5x + 6',FACTOR,'(x − 2)(x − 3)','(x + 2)(x + 3)','(x − 1)(x − 6)','(x + 2)(x − 3)'),
+    F('x² + 7x + 12',FACTOR,'(x + 3)(x + 4)','(x − 3)(x − 4)','(x + 2)(x + 6)','(x + 1)(x + 12)'),
+    F('x² − x − 12',FACTOR,'(x − 4)(x + 3)','(x + 4)(x − 3)','(x − 6)(x + 2)','(x − 4)(x − 3)'),
+    F('x² + 2x − 15',FACTOR,'(x + 5)(x − 3)','(x − 5)(x + 3)','(x + 15)(x − 1)','(x + 5)(x + 3)'),
+    F('x² − 9x + 20',FACTOR,'(x − 4)(x − 5)','(x + 4)(x + 5)','(x − 2)(x − 10)','(x − 4)(x + 5)'),
+    F('x² + x − 20',FACTOR,'(x + 5)(x − 4)','(x − 5)(x + 4)','(x + 10)(x − 2)','(x + 5)(x + 4)'),
+    F('x² − 2x − 8',FACTOR,'(x − 4)(x + 2)','(x + 4)(x − 2)','(x − 8)(x + 1)','(x − 4)(x − 2)'),
+    F('2x² + 7x + 3',FACTOR,'(2x + 1)(x + 3)','(2x + 3)(x + 1)','(2x − 1)(x − 3)','(2x + 1)(x − 3)'),
+    F('x² − 49',FACTOR,'(x + 7)(x − 7)','(x − 7)²','(x + 7)²','(x − 49)(x + 1)'),
+    F('x² − 25',FACTOR,'(x + 5)(x − 5)','(x − 5)²','(x + 25)(x − 1)','(x + 5)²'),
+    F('x² − 16',FACTOR,'(x + 4)(x − 4)','(x − 4)²','(x + 8)(x − 2)','(x + 16)(x − 1)'),
+    F('4x² − 9',FACTOR,'(2x + 3)(2x − 3)','(4x + 3)(x − 3)','(2x − 3)²','(4x + 9)(x − 1)'),
+    F('x² + 6x + 9',FACTOR,'(x + 3)²','(x − 3)²','(x + 9)(x + 1)','(x + 3)(x − 3)'),
+    F('x² − 10x + 25',FACTOR,'(x − 5)²','(x + 5)²','(x + 5)(x − 5)','(x − 25)(x − 1)'),
+    F('9x² + 12x + 4',FACTOR,'(3x + 2)²','(9x + 2)(x + 2)','(3x − 2)²','(3x + 4)(3x + 1)')
+  ]}
+  var SIMPLIFY=L('化成最简根式','simplest radical form');
+  function rootBank(){return [
+    F('√8',SIMPLIFY,'2√2','4√2','2√4','3√2'),
+    F('√12',SIMPLIFY,'2√3','3√2','4√3','6√2'),
+    F('√18',SIMPLIFY,'3√2','2√3','9√2','2√9'),
+    F('√20',SIMPLIFY,'2√5','5√2','4√5','10√2'),
+    F('√27',SIMPLIFY,'3√3','9√3','3√9','2√3'),
+    F('√28',SIMPLIFY,'2√7','7√2','4√7','2√14'),
+    F('√32',SIMPLIFY,'4√2','2√4','8√2','16√2'),
+    F('√45',SIMPLIFY,'3√5','5√3','9√5','5√9'),
+    F('√48',SIMPLIFY,'4√3','3√4','16√3','2√6'),
+    F('√50',SIMPLIFY,'5√2','2√5','25√2','10√5'),
+    F('√72',SIMPLIFY,'6√2','2√6','36√2','8√3'),
+    F('√75',SIMPLIFY,'5√3','3√5','25√3','3√25'),
+    F('√80',SIMPLIFY,'4√5','5√4','16√5','8√10'),
+    F('√98',SIMPLIFY,'7√2','2√7','49√2','14√7'),
+    F('√108',SIMPLIFY,'6√3','3√6','36√3','4√6'),
+    F('√200',SIMPLIFY,'10√2','2√10','100√2','20√5')
+  ]}
 
   var MODS=[
     {g:L('算术 —— 每天都用','Arithmetic — used every day'),
@@ -402,11 +496,16 @@ td.num{font-variant-numeric:tabular-nums;font-family:var(--font-display);font-we
     {g:L('符号 —— 「会但写错」的重灾区','Signs — where “I knew it but wrote it wrong” happens'),
      k:'neg', nm:L('正负号 ×','Signs ×'), eg:'(−6) × 8', d:L('乘除的符号规则','Sign rules for multiplying and dividing'), bank:negBank, th:2500, on:true},
     {k:'nadd',nm:L('正负号 ±','Signs ±'), eg:'(−5) − 8', d:L('加减的符号比乘除更容易错','Signs go wrong more often when adding and subtracting'), bank:naddBank, th:2500, on:true},
+    {k:'trap',nm:L('陷阱题','Trap questions'), eg:'−3² vs (−3)²', d:L('长得像、算法不同：运算顺序和负号。−3² 是 −9，(−3)² 才是 9','Look alike, work differently: order of operations and signs. −3² is −9; only (−3)² is 9'), bank:trapBank, th:4000, on:true},
 
     {g:L('代数 —— ALEKS 的主体','Algebra — the core of ALEKS'),
      k:'eq',  nm:L('一次方程','Linear equations'), eg:'3x+7=22', d:L('解出 x —— 分级考占比最大的一块','Solve for x — the biggest part of the placement test'), bank:eqBank, th:3500, on:true},
     {k:'pow', nm:L('幂','Powers'), eg:'2⁶', d:L('2、3、5、10 的幂 —— 对数的底子','Powers of 2, 3, 5 and 10 — the groundwork for logs'), bank:powBank, th:2500, on:true},
     {k:'exp', nm:L('指数法则','Exponent rules'), eg:'x³·x⁴', d:L('指数加减乘 —— 通向根式和对数','Adding, subtracting and multiplying exponents — the way into radicals and logs'), bank:expBank, th:3000, on:false},
+
+    {g:L('选择题 —— 按学习进度打开','Multiple choice — turn on as you learn'),
+     k:'factor',nm:L('因式分解','Factoring'), eg:'x²−5x+6', d:L('二次三项式、平方差、完全平方 —— ABE Math 6 学过，现在就能开','Trinomials, difference of squares, perfect squares — covered in ABE Math 6, ready to turn on now'), bank:factorBank, th:6000, on:false},
+    {k:'root',nm:L('根式化简','Simplifying radicals'), eg:'√48 = 4√3', d:L('化成最简根式 —— 12-21 那周学完再开','Simplest radical form — turn on after the week of 12-21'), bank:rootBank, th:5000, on:false},
 
     {g:L('换算 —— 默认不测','Conversions — off by default'),
      k:'frac',nm:L('分数⇄小数','Fraction ⇄ decimal'), eg:'3/8', d:L('换算慢会拖掉整道题','A slow conversion drags down the whole problem'), bank:fracBank, th:3000, on:false},
@@ -423,6 +522,18 @@ td.num{font-variant-numeric:tabular-nums;font-family:var(--font-display);font-we
     {k:'log', nm:L('对数','Logarithms'), eg:'log₂ 32', d:L('认出 32 = 2⁵ —— 对数就通了一半','Spot that 32 = 2⁵ and logs are half done'), bank:logBank, th:3000, on:false}
   ];
   var MAP={}; MODS.forEach(function(m){MAP[m.k]=m});
+
+  /* One-click sets. They don't change the checkboxes below; "Test again" repeats the last set. */
+  var PRESETS=[
+    {nm:L('每日热身','Daily warm-up'), sub:L('算术 + 符号 · 15 题','Arithmetic + signs · 15'), n:15,
+     keys:['mul','div','sq','sqrt','neg','nadd','trap']},
+    {nm:L('符号防错专项','Sign-error drill'), sub:L('正负号 + 陷阱题 · 20 题','Signs + trap questions · 20'), n:20,
+     keys:['neg','nadd','trap']},
+    {nm:L('ALEKS 冲刺','ALEKS sprint'), sub:L('方程、指数、换算、公式 · 30 题','Equations, exponents, conversions, formulas · 30'), n:30,
+     keys:['trap','eq','pow','exp','frac','pct','alg','geo','factor']},
+    {nm:L('12 月攻坚','December push'), sub:L('根式、三角、对数 · 20 题','Radicals, trig, logs · 20'), n:20,
+     keys:['sqrt','root','exp','trig','rad','log']}
+  ];
 
   /* ---------- static text ---------- */
   function applyStatic(){
@@ -464,17 +575,30 @@ td.num{font-variant-numeric:tabular-nums;font-family:var(--font-display);font-we
   function pickerText(){
     groupEls.forEach(function(g){ g.span.textContent=T(g.m.g); g.btn.textContent=s('toggleAll') });
     MODS.forEach(function(m){ m.el.nm.nodeValue=T(m.nm); m.el.eg.textContent=T(m.eg); m.el.d.textContent=T(m.d) });
+    PRESETS.forEach(function(p){ p.el.nm.textContent=T(p.nm); p.el.sub.textContent=T(p.sub) });
   }
+  PRESETS.forEach(function(p){
+    var b=document.createElement('button'); b.type='button'; b.className='preset';
+    var a=document.createElement('span'); a.className='pn';
+    var c=document.createElement('span'); c.className='ps';
+    b.appendChild(a); b.appendChild(c); $('presets').appendChild(b);
+    p.el={nm:a,sub:c};
+    b.addEventListener('click',function(){ cur={keys:p.keys,n:p.n}; begin(pool(p.keys),p.n,true) });
+  });
   $('len').addEventListener('click',function(e){
     var b=e.target.closest('button'); if(!b) return;
     [].forEach.call(this.querySelectorAll('button'),function(x){x.setAttribute('aria-pressed',String(x===b))});
     nWanted=parseInt(b.dataset.n,10); refresh();
   });
-  function pool(){
+  // keys: a preset's module list; without it, whatever is ticked in the picker.
+  function pool(keys){
     var out=[];
-    MODS.forEach(function(m){ if(m.on) m.bank().forEach(function(q){ q.m=m.k; out.push(q) }) });
+    MODS.forEach(function(m){
+      if(keys ? keys.indexOf(m.k)>=0 : m.on) m.bank().forEach(function(q){ q.m=m.k; out.push(q) });
+    });
     return out;
   }
+  var cur={keys:null,n:20};   // what "Test again" repeats
   function refresh(){
     var p=pool().length, picked=MODS.filter(function(m){return m.on}).length;
     $('pool').textContent= p? txt.pool(picked,p,(nWanted&&nWanted<p?nWanted:p)) : s('pickOne');
@@ -486,11 +610,53 @@ td.num{font-variant-numeric:tabular-nums;font-family:var(--font-display);font-we
   var secStart=$('start'), secDrill=$('drill'), secDone=$('done'), inp=$('ans');
   function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var k=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[k];a[k]=t}return a}
 
-  function begin(list,cap){
+  /* ---------- adaptive picking ----------
+     Each question keeps its last 12 attempts. Recent attempts count more (×0.8 per step back).
+     Per attempt: fast & right (≤60% of the limit) 0.25 · right 0.4 · slow 3 · very slow 5 · wrong 10.
+     Floor MIN_W = 0.7 was tuned by simulation (4000 rounds, default pool of 264): a mastered question
+     still appears in ~5% of 20-question rounds (an unseen one: ~7.6%), so a skill
+     that slips still gets caught; untouched for 14+ days, it goes back to "never seen" (1).
+     Never seen = 1. So 3 × 11 answered in 1.2 s comes back only now and then (~5% of rounds), and 9 × 7 missed twice
+     scores 10 and is always pulled in (up to 40% of a round is reserved for scores ≥ 5). */
+  var HIST_N=12, MUST=5;
+  function attemptScore(a,th){
+    if(a.v==='ok') return a.ms<=th*0.6 ? 0.25 : 0.4;
+    return a.v==='slow' ? 3 : a.v==='vslow' ? 5 : 10;
+  }
+  var MIN_W=0.7, STALE_DAYS=14;
+  function weight(it,th){
+    if(!it) return 1;
+    if(it.lastAt && (Date.now()-Date.parse(it.lastAt))/864e5 >= STALE_DAYS) return Math.max(1,rawWeight(it,th));
+    return Math.max(MIN_W,rawWeight(it,th));
+  }
+  function rawWeight(it,th){
+    var h=it.h;
+    if(!h || !h.length){                       // records saved before attempt history existed
+      if(!it.fail) return it.streak ? 0.4 : 1;
+      return it.streak>=2 ? 0.4 : MUST;
+    }
+    var w=0, tot=0, n=h.length;
+    for(var i=0;i<n;i++){ var r=Math.pow(0.8,n-1-i); w+=r*attemptScore(h[i],th); tot+=r }
+    return w/tot;
+  }
+  function pickAdaptive(list,n){
+    if(!n || n>=list.length) return shuffle(list);
+    var st=loadStore();
+    var sc=list.map(function(q){ return {q:q, w:weight(st.items[K(q.t)], MAP[q.m].th)} });
+    var must=sc.filter(function(x){return x.w>=MUST})
+               .sort(function(a,b){return b.w-a.w}).slice(0,Math.ceil(n*0.4));
+    // Weighted sampling without replacement (Efraimidis–Spirakis): key = u^(1/w), keep the largest.
+    var rest=sc.filter(function(x){return must.indexOf(x)<0})
+               .map(function(x){return {q:x.q, key:Math.pow(Math.random(),1/Math.max(x.w,0.01))}})
+               .sort(function(a,b){return b.key-a.key}).slice(0,n-must.length);
+    return shuffle(must.concat(rest).map(function(x){return x.q}));
+  }
+
+  function begin(list,cap,adaptive){
     if(!list.length) return;
-    qs=shuffle(list);
     var n= cap===undefined?nWanted:cap;
-    if(n && qs.length>n) qs=qs.slice(0,n);
+    if(adaptive) qs=pickAdaptive(list,n);
+    else { qs=shuffle(list); if(n && qs.length>n) qs=qs.slice(0,n) }
     idx=0; res=[];
     secStart.hidden=true; secDone.hidden=true; secDrill.hidden=false;
     toTop();
@@ -507,9 +673,50 @@ td.num{font-variant-numeric:tabular-nums;font-family:var(--font-display);font-we
       hintline.textContent=s('choiceHint');
       [].forEach.call(box.children,function(b){ b.lastChild.textContent=T(b._val) });
     }else{
-      hintline.innerHTML=s('typeHint');
+      hintline.innerHTML=s(padOn?'typeHintPad':'typeHint');
     }
   }
+
+  /* ---------- number pad ----------
+     Shown by default on touch screens, folded away on desktop; the toggle choice is remembered. */
+  var pad=$('pad'), padBtn=$('padToggle'), PADKEY='mathdrill.pad';
+  var padOn=(function(){
+    try{ var v=localStorage.getItem(PADKEY); if(v==='1') return true; if(v==='0') return false }catch(e){}
+    return !!(window.matchMedia && matchMedia('(pointer:coarse)').matches);
+  })();
+  [['7','7'],['8','8'],['9','9'],['4','4'],['5','5'],['6','6'],['1','1'],['2','2'],['3','3'],
+   ['−','-'],['0','0'],['.','.'],['⌫','del'],['✓','enter']].forEach(function(p){
+    var b=document.createElement('button'); b.type='button'; b.textContent=p[0]; b.dataset.k=p[1];
+    if(p[1]==='enter') b.className='enter';
+    if(p[1]==='del') b.setAttribute('aria-label','Backspace');
+    if(p[1]==='-') b.setAttribute('aria-label','minus');
+    pad.appendChild(b);
+  });
+  // Keep focus (and the caret) in the answer box when a pad key is pressed.
+  pad.addEventListener('mousedown',function(e){ if(e.target.closest('button')) e.preventDefault() });
+  pad.addEventListener('click',function(e){
+    var b=e.target.closest('button'); if(!b || busy || inp.hidden) return;
+    var k=b.dataset.k;
+    if(k==='enter'){ submitTyped(); return }
+    if(k==='del'){ inp.value=inp.value.slice(0,-1); return }
+    if(!firstKey) firstKey=performance.now()-shown;
+    inp.value += k==='-' ? '−' : k;
+  });
+  function syncPad(){
+    var typed=!secDrill.hidden && !inp.hidden;
+    padBtn.hidden=!typed;
+    pad.hidden=!(typed && padOn);
+    padBtn.setAttribute('aria-pressed',String(padOn));
+    // With our pad open, don't let the phone's own keyboard slide up over it.
+    inp.setAttribute('inputmode', padOn ? 'none' : 'text');
+  }
+  padBtn.addEventListener('click',function(){
+    padOn=!padOn;
+    try{ localStorage.setItem(PADKEY, padOn?'1':'0') }catch(e){}
+    syncPad();
+    if(qs[idx] && !busy) questionText();
+    inp.blur(); inp.focus({preventScroll:true});
+  });
   function render(){
     var q=qs[idx];
     busy=false;
@@ -530,12 +737,12 @@ td.num{font-variant-numeric:tabular-nums;font-family:var(--font-display);font-we
         b.addEventListener('click',function(){ if(busy) return; if(!firstKey) firstKey=performance.now()-shown; commit(o,K(o)===K(q.ans),b) });
         box.appendChild(b);
       });
-      questionText();
+      questionText(); syncPad();
       box.firstChild.focus({preventScroll:true});
     }else{
       inp.hidden=false; box.hidden=true;
       inp.value=''; inp.className='';
-      questionText();
+      syncPad(); questionText();
       inp.focus({preventScroll:true});
     }
   }
@@ -548,7 +755,8 @@ td.num{font-variant-numeric:tabular-nums;font-family:var(--font-display);font-we
     if(busy) return;            // ignore a second Enter/click during the 180 ms feedback flash
     busy=true;
     var q=qs[idx], ms=firstKey||(performance.now()-shown);
-    var v= !ok ? 'miss' : (ms>=MAP[q.m].th ? 'slow' : 'ok');
+    var th=MAP[q.m].th;
+    var v= !ok ? 'miss' : ms>=2*th ? 'vslow' : ms>=th ? 'slow' : 'ok';   // 'vslow' = over twice the limit
     res.push({q:q,raw:raw,ms:Math.round(ms),v:v});
     if(btn) btn.className='opt '+(ok?'hit':'no'); else inp.className= ok?'pulse-ok':'pulse-miss';
     idx++;
@@ -562,21 +770,22 @@ td.num{font-variant-numeric:tabular-nums;font-family:var(--font-display);font-we
     return Number(raw);         // strict: "12-3" or "5abc" don't count as 12 / 5
   }
   inp.addEventListener('input',function(){ if(!firstKey && inp.value.length) firstKey=performance.now()-shown });
-  inp.addEventListener('keydown',function(e){
-    if(e.key!=='Enter' || busy) return;
+  function submitTyped(){
+    if(busy) return;
     var raw=inp.value.trim(); if(raw==='') return;
     var got=parseAns(raw);
     commit(raw, isFinite(got) && Math.abs(got-qs[idx].ans)<1e-9, null);
-  });
+  }
+  inp.addEventListener('keydown',function(e){ if(e.key==='Enter') submitTyped() });
 
   function fmt(n){ return typeof n==='number' ? (Number.isInteger(n)?String(n):String(parseFloat(n.toFixed(6)))) : T(n) }
   function weakOf(){ return res.filter(function(r){return r.v!=='ok'}) }
 
   function finish(){
-    secDrill.hidden=true; secDone.hidden=false;
+    secDrill.hidden=true; secDone.hidden=false; syncPad();
     toTop();
+    save(weakOf());   // first, so the speed chart can read this round next to the history
     results();
-    save(weakOf());
   }
   function results(){
     var weak=weakOf();
@@ -591,8 +800,9 @@ td.num{font-variant-numeric:tabular-nums;font-family:var(--font-display);font-we
       $('weakTitle').textContent=txt.weakTitle(weak.length);
       weak.slice().sort(function(x,y){return y.ms-x.ms}).forEach(function(r){
         var c=document.createElement('span');c.className='chip '+r.v;c.textContent=T(r.q.t);wl.appendChild(c)});
-      var slow=weak.filter(function(r){return r.v==='slow'}).length;
-      $('weakNote').textContent=txt.weakNote(slow);
+      var slow=weak.filter(function(r){return r.v==='slow'}).length,
+          vslow=weak.filter(function(r){return r.v==='vslow'}).length;
+      $('weakNote').textContent=txt.weakNote(slow,vslow);
     }
 
     var bs=$('bars'); bs.textContent='';
@@ -616,11 +826,45 @@ td.num{font-variant-numeric:tabular-nums;font-family:var(--font-display);font-we
       tr.appendChild(td(r.v==='miss' ? T(r.raw)+txt.should(fmt(r.q.ans)) : fmt(r.q.ans),'num'));
       tr.appendChild(td(txt.secs(r.ms),'num'));
       var t=document.createElement('td'), sp=document.createElement('span');
-      sp.className='tag '+r.v; sp.textContent= s(r.v==='ok'?'tagOk': r.v==='slow'?'tagSlow':'tagMiss');
+      sp.className='tag '+r.v; sp.textContent= s(r.v==='ok'?'tagOk': r.v==='slow'?'tagSlow': r.v==='vslow'?'tagVslow':'tagMiss');
       t.appendChild(sp); tr.appendChild(t); tb.appendChild(tr);
     });
+    speedChart();
     if(saveOk!==null) $('saveMsg').textContent=s(saveOk?'saved':'noSave');
   }
+
+  /* Average reaction time: this round (coral) next to up to 11 earlier rounds, dashed line = their average. */
+  var curRun=null;
+  function speedChart(){
+    var box=$('speed'), note=$('speedNote'); box.textContent='';
+    if(!curRun) return;
+    var prev=loadStore().runs.filter(function(r){return r.avgMs && r.at!==curRun.at});
+    var hist= prev.length ? prev.reduce(function(a,r){return a+r.avgMs},0)/prev.length : null;
+    var series=prev.slice(-11).concat([curRun]);
+    var NS='http://www.w3.org/2000/svg', W=Math.max(260,box.clientWidth||600), H=150, top=22, bot=8;
+    var max=Math.max.apply(null,series.map(function(r){return r.avgMs}).concat([hist||0]))*1.12;
+    var slot=W/Math.max(series.length,6), bw=Math.min(34,slot*0.62);
+    function y(v){ return top+(H-top-bot)*(1-v/max) }
+    function el(tag,attrs,text){ var e=document.createElementNS(NS,tag);
+      for(var k in attrs) e.setAttribute(k,attrs[k]); if(text) e.textContent=text; return e }
+    var svg=el('svg',{width:W,height:H,viewBox:'0 0 '+W+' '+H,role:'img','aria-label':s('speedTitle')});
+    var x0=W-slot*series.length;   // right-aligned: newest at the right edge
+    series.forEach(function(r,i){
+      var isCur=i===series.length-1, x=x0+slot*i+(slot-bw)/2, yy=y(r.avgMs);
+      svg.appendChild(el('rect',{x:x,y:yy,width:bw,height:H-bot-yy,rx:3,
+        fill:isCur?'var(--accent)':'var(--muted)','fill-opacity':isCur?1:.28}));
+      if(isCur) svg.appendChild(el('text',{x:x+bw/2,y:yy-6,'text-anchor':'middle','font-size':12,
+        'font-weight':600,fill:'var(--accent)','font-family':'var(--font-body)'},txt.secs(r.avgMs)));
+    });
+    if(hist!==null){
+      svg.appendChild(el('line',{x1:0,x2:W,y1:y(hist),y2:y(hist),stroke:'var(--muted)','stroke-dasharray':'4 4','stroke-width':1}));
+      svg.appendChild(el('text',{x:2,y:y(hist)-5,'font-size':11,fill:'var(--muted)','font-family':'var(--font-body)'},txt.avgLabel(hist)));
+    }
+    svg.appendChild(el('line',{x1:0,x2:W,y1:H-bot,y2:H-bot,stroke:'var(--line)','stroke-width':1}));
+    box.appendChild(svg);
+    note.textContent=txt.speedNote(curRun.avgMs,hist,prev.length);
+  }
+  window.addEventListener('resize',function(){ if(!secDone.hidden) speedChart() });
 
   /* ---------- local history (localStorage; nothing goes to a server) ---------- */
   var KEY='mathdrill.v1', ALL=null;
@@ -640,10 +884,13 @@ td.num{font-variant-numeric:tabular-nums;font-family:var(--font-display);font-we
     res.forEach(function(r){
       var key=K(r.q.t), it=st.items[key]||{m:r.q.m,streak:0,fail:0};
       if(r.v==='ok'){ it.streak++ } else { it.streak=0; it.fail++ }
+      it.h=(it.h||[]).concat([{v:r.v,ms:r.ms}]).slice(-HIST_N);   // last 12 attempts, for adaptive picking
       it.m=r.q.m; it.lastAt=new Date().toISOString().slice(0,10);
       st.items[key]=it;
     });
-    st.runs.push({at:new Date().toISOString(),total:res.length,solid:res.length-weak.length});
+    curRun={at:new Date().toISOString(),total:res.length,solid:res.length-weak.length,
+            avgMs:Math.round(res.reduce(function(a,r){return a+r.ms},0)/res.length)};
+    st.runs.push(curRun);
     if(st.runs.length>40) st.runs=st.runs.slice(-40);
     saveOk=writeStore(st);
     $('saveMsg').textContent=s(saveOk?'saved':'noSave');
@@ -700,12 +947,12 @@ td.num{font-variant-numeric:tabular-nums;font-family:var(--font-display);font-we
     if(list.length) begin(list,0);
   });
 
-  $('go').addEventListener('click',function(){ begin(pool()) });
-  $('again').addEventListener('click',function(){ begin(pool()) });
+  $('go').addEventListener('click',function(){ cur={keys:null,n:nWanted}; begin(pool(),nWanted,true) });
+  $('again').addEventListener('click',function(){ begin(pool(cur.keys),cur.n,true) });
   $('back').addEventListener('click',function(){ secDone.hidden=true; secStart.hidden=false; toTop(); refresh(); renderHistory() });
   $('onlyWeak').addEventListener('click',function(){
     var w=weakOf().map(function(r){return r.q});
-    w.length ? begin(w,0) : begin(pool());
+    w.length ? begin(w,0) : begin(pool(cur.keys),cur.n,true);
   });
 
   /* ---------- switching language without losing progress ---------- */
@@ -725,6 +972,10 @@ td.num{font-variant-numeric:tabular-nums;font-family:var(--font-display);font-we
 
   applyStatic(); pickerText(); refresh();
   try{ renderHistory() }catch(e){ $('hist').hidden=true }
+
+  // Read-only hooks for checking the drill from a test script.
+  window.__mathDrill={weight:weight, pickAdaptive:pickAdaptive, parseAns:parseAns,
+    banks:function(){ return MODS.map(function(m){ return {k:m.k, on:m.on, th:m.th, qs:m.bank()} }) }};
 })();
 </script>
 
