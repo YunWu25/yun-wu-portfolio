@@ -301,11 +301,11 @@ td.num{font-variant-numeric:tabular-nums;font-family:var(--font-display);font-we
     again:L('再测一次','Test again'), onlyWeak:L('只测要练的','Practice weak ones'), back:L('换类别','Change categories'),
     answer:L('答案','Answer'),
     choiceHint:L('点一个，或按 1–4','Tap one, or press 1–4'),
-    typeHint:L('按 Enter 提交 · 负号用 <b>-</b>，小数用 <b>.</b>，分数用 <b>/</b>','Press Enter to submit · use <b>-</b> for negatives, <b>.</b> for decimals, <b>/</b> for fractions'),
+    typeHint:L('答对自动跳下一题 · 答错按 Enter · 负号用 <b>-</b>，小数用 <b>.</b>，分数用 <b>/</b>','Right answers move on by themselves · press Enter to give up on a wrong one · use <b>-</b> for negatives, <b>.</b> for decimals, <b>/</b> for fractions'),
     tagOk:L('稳','Solid'), tagSlow:L('慢','Slow'), tagVslow:L('很慢','Very slow'), tagMiss:L('错','Wrong'),
     quick:L('快捷组合','Quick sets'),
     padToggle:L('数字键盘','Number pad'),
-    typeHintPad:L('点 ✓ 提交 · 也可以按 Enter','Tap ✓ to submit · Enter works too'),
+    typeHintPad:L('答对自动跳下一题 · 答错点 ✓','Right answers move on by themselves · tap ✓ to give up on a wrong one'),
     speedTitle:L('平均反应速度','Average reaction time'),
     saved:L('已记在这台设备的浏览器里 ✓','Saved in this browser on this device ✓'),
     noSave:L('这个浏览器不让存记录（可能是无痕模式）。','This browser won’t save records (it may be in private mode).'),
@@ -1120,6 +1120,7 @@ td.num{font-variant-numeric:tabular-nums;font-family:var(--font-display);font-we
     if(k==='del'){ inp.value=inp.value.slice(0,-1); return }
     if(!firstKey) firstKey=performance.now()-shown;
     inp.value += k==='-' ? '−' : k;
+    autoCheck();
   });
   function syncPad(){
     var typed=!secDrill.hidden && !inp.hidden;
@@ -1188,7 +1189,14 @@ td.num{font-variant-numeric:tabular-nums;font-family:var(--font-display);font-we
     if(f) return parseInt(f[1],10)/parseInt(f[2],10);
     return Number(raw);         // strict: "12-3" or "5abc" don't count as 12 / 5
   }
-  inp.addEventListener('input',function(){ if(!firstKey && inp.value.length) firstKey=performance.now()-shown });
+  inp.addEventListener('input',function(){ if(!firstKey && inp.value.length) firstKey=performance.now()-shown; autoCheck() });
+  /* Move on as soon as what's typed equals the answer — no Enter needed. A wrong answer still needs
+     Enter (or ✓), because while typing "1" we can't tell whether "12" is coming. */
+  function autoCheck(){
+    if(busy || inp.hidden || !qs[idx]) return;
+    var got=parseAns(inp.value);
+    if(isFinite(got) && Math.abs(got-qs[idx].ans)<1e-9) commit(inp.value.trim(), true, null);
+  }
   function submitTyped(){
     if(busy) return;
     var raw=inp.value.trim(); if(raw==='') return;
