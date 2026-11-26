@@ -500,7 +500,7 @@ td.num{font-variant-numeric:tabular-nums;font-family:var(--font-display);font-we
 
     {g:L('代数 —— ALEKS 的主体','Algebra — the core of ALEKS'),
      k:'eq',  nm:L('一次方程','Linear equations'), eg:'3x+7=22', d:L('解出 x —— 分级考占比最大的一块','Solve for x — the biggest part of the placement test'), bank:eqBank, th:3500, on:true},
-    {k:'pow', nm:L('幂','Powers'), eg:'2⁶', d:L('2、3、5、10 的幂 —— 对数的底子','Powers of 2, 3, 5 and 10 — the groundwork for logs'), bank:powBank, th:2500, on:false},
+    {k:'pow', nm:L('幂','Powers'), eg:'2⁶', d:L('2、3、5、10 的幂 —— 对数的底子','Powers of 2, 3, 5 and 10 — the groundwork for logs'), bank:powBank, th:2500, on:true},
     {k:'exp', nm:L('指数法则','Exponent rules'), eg:'x³·x⁴', d:L('指数加减乘 —— 通向根式和对数','Adding, subtracting and multiplying exponents — the way into radicals and logs'), bank:expBank, th:3000, on:false},
 
     {g:L('选择题 —— 按学习进度打开','Multiple choice — turn on as you learn'),
@@ -612,16 +612,24 @@ td.num{font-variant-numeric:tabular-nums;font-family:var(--font-display);font-we
 
   /* ---------- adaptive picking ----------
      Each question keeps its last 12 attempts. Recent attempts count more (×0.8 per step back).
-     Per attempt: fast & right (≤60% of the limit) 0.05 · right 0.4 · slow 3 · very slow 5 · wrong 10.
-     Never seen = 1. So 3 × 11 answered in 1.2 s almost never returns, and 9 × 7 missed twice
+     Per attempt: fast & right (≤60% of the limit) 0.25 · right 0.4 · slow 3 · very slow 5 · wrong 10.
+     Floor MIN_W = 0.7 was tuned by simulation (4000 rounds, default pool of 264): a mastered question
+     still appears in ~5% of 20-question rounds (an unseen one: ~7.6%), so a skill
+     that slips still gets caught; untouched for 14+ days, it goes back to "never seen" (1).
+     Never seen = 1. So 3 × 11 answered in 1.2 s comes back only now and then (~5% of rounds), and 9 × 7 missed twice
      scores 10 and is always pulled in (up to 40% of a round is reserved for scores ≥ 5). */
   var HIST_N=12, MUST=5;
   function attemptScore(a,th){
-    if(a.v==='ok') return a.ms<=th*0.6 ? 0.05 : 0.4;
+    if(a.v==='ok') return a.ms<=th*0.6 ? 0.25 : 0.4;
     return a.v==='slow' ? 3 : a.v==='vslow' ? 5 : 10;
   }
+  var MIN_W=0.7, STALE_DAYS=14;
   function weight(it,th){
     if(!it) return 1;
+    if(it.lastAt && (Date.now()-Date.parse(it.lastAt))/864e5 >= STALE_DAYS) return Math.max(1,rawWeight(it,th));
+    return Math.max(MIN_W,rawWeight(it,th));
+  }
+  function rawWeight(it,th){
     var h=it.h;
     if(!h || !h.length){                       // records saved before attempt history existed
       if(!it.fail) return it.streak ? 0.4 : 1;
