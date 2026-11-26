@@ -52,12 +52,24 @@ p{margin:0}
 /* Sections sit directly on the page background: no box, just a divider line above. */
 .card{background:transparent;border:none;border-top:1px solid var(--line);border-radius:0;padding:20px 0 0;
   display:flex;flex-direction:column;gap:13px}
-.ghd{display:flex;justify-content:space-between;align-items:baseline;gap:10px;
-  font-size:.74rem;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:500;
-  margin-top:6px;padding-top:12px;border-top:1px solid var(--line)}
-.ghd:first-child{margin-top:0;padding-top:0;border-top:none}
-.ghd button{font-size:.72rem;font-weight:500;padding:3px 10px;border-radius:999px;background:transparent;
-  color:var(--accent);border:1px solid var(--line);text-transform:none;letter-spacing:0;flex:0 0 auto}
+.grp{border-top:1px solid var(--line)}
+.grp:first-child{border-top:none}
+.ghd{width:100%;display:flex;align-items:center;gap:9px;padding:13px 2px;background:transparent;border:none;
+  border-radius:0;color:var(--fg);font-size:.95rem;font-weight:500;text-align:left;line-height:1.35}
+.ghd:hover{opacity:1}
+.ghd:hover .gnm{color:var(--accent)}
+.ghd .chev{flex:0 0 12px;color:var(--muted);font-size:1.15rem;line-height:1;transition:transform .15s}
+.ghd[aria-expanded="true"] .chev{transform:rotate(90deg)}
+.ghd .gnm{min-width:0;transition:color .15s}
+.ghd .gst{flex:0 0 auto;font-size:.7rem;font-weight:500;color:var(--muted);border:1px solid var(--line);
+  border-radius:999px;padding:1px 8px;white-space:nowrap}
+.ghd .gct{flex:0 0 auto;margin-left:auto;font-size:.78rem;font-weight:400;color:var(--muted);white-space:nowrap;
+  font-variant-numeric:tabular-nums}
+.ghd .gct.on{color:var(--accent)}
+.gbody{padding:0 0 10px 21px}
+.gtools{display:flex;justify-content:flex-end}
+.gall{font-size:.72rem;font-weight:500;padding:3px 10px;border-radius:999px;background:transparent;
+  color:var(--accent);border:1px solid var(--line)}
 .mods{display:flex;flex-direction:column;gap:0}
 .mod{display:flex;gap:12px;align-items:flex-start;padding:11px 2px;cursor:pointer}
 .mod input{margin:3px 0 0;width:18px;height:18px;flex:0 0 auto;accent-color:var(--accent);cursor:pointer}
@@ -84,6 +96,7 @@ button:disabled{opacity:.4;cursor:not-allowed}
 .q{font-family:var(--font-display);font-weight:700;font-size:clamp(2.1rem,10vw,3.4rem);
   text-align:center;letter-spacing:-.02em;font-variant-numeric:tabular-nums;line-height:1.15;margin:14px 0 2px;
   overflow-wrap:break-word}
+.q.long{font-size:clamp(1.2rem,5.2vw,1.7rem);letter-spacing:0;line-height:1.35;margin-top:18px}
 .qhint{text-align:center;font-size:.85rem;color:var(--muted);min-height:1.3em}
 #ans{width:100%;font-family:var(--font-display);font-weight:700;font-size:2.3rem;text-align:center;
   background:transparent;color:var(--fg);border:none;border-bottom:3px solid var(--line);
@@ -108,7 +121,7 @@ button:disabled{opacity:.4;cursor:not-allowed}
 .tile .l{font-size:.79rem;color:var(--muted)}
 .weak{display:flex;flex-wrap:wrap;gap:7px}
 .chip{font-family:var(--font-display);font-weight:700;font-size:1.02rem;font-variant-numeric:tabular-nums;
-  padding:6px 11px;border-radius:9px;border:1.5px solid;white-space:nowrap}
+  padding:6px 11px;border-radius:9px;border:1.5px solid;max-width:100%;overflow-wrap:anywhere}
 .chip.slow{color:var(--slow);border-color:var(--slow)}
 .chip.miss{color:var(--miss);border-color:var(--miss)}
 .chip.vslow{color:var(--vslow);border-color:var(--vslow)}
@@ -129,7 +142,7 @@ button:disabled{opacity:.4;cursor:not-allowed}
   background:var(--surface);color:var(--fg);border:1px solid var(--line);border-radius:12px;
   touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 .pad button:active{background:var(--sunk)}
-.pad .enter{grid-column:span 2;background:var(--accent);color:var(--on-accent);border-color:transparent;
+.pad .enter{background:var(--accent);color:var(--on-accent);border-color:transparent;
   font-family:var(--font-body);font-size:1.15rem;font-weight:500}
 /* Speed chart */
 .speed svg{display:block}
@@ -288,7 +301,7 @@ td.num{font-variant-numeric:tabular-nums;font-family:var(--font-display);font-we
     again:L('再测一次','Test again'), onlyWeak:L('只测要练的','Practice weak ones'), back:L('换类别','Change categories'),
     answer:L('答案','Answer'),
     choiceHint:L('点一个，或按 1–4','Tap one, or press 1–4'),
-    typeHint:L('按 Enter 提交 · 负号用 <b>-</b>，小数用 <b>.</b>','Press Enter to submit · use <b>-</b> for negatives and <b>.</b> for decimals'),
+    typeHint:L('按 Enter 提交 · 负号用 <b>-</b>，小数用 <b>.</b>，分数用 <b>/</b>','Press Enter to submit · use <b>-</b> for negatives, <b>.</b> for decimals, <b>/</b> for fractions'),
     tagOk:L('稳','Solid'), tagSlow:L('慢','Slow'), tagVslow:L('很慢','Very slow'), tagMiss:L('错','Wrong'),
     quick:L('快捷组合','Quick sets'),
     padToggle:L('数字键盘','Number pad'),
@@ -304,6 +317,7 @@ td.num{font-variant-numeric:tabular-nums;font-family:var(--font-display);font-we
   var txt={
     count:function(i,n){return LANG==='zh'?'第 '+i+' / '+n+' 题':'Question '+i+' / '+n},
     pool:function(c,p,n){return LANG==='zh'?'选中 '+c+' 类，题库共 '+p+' 题，这次抽 '+n+' 题':c+' categories · '+p+' questions in the bank · '+n+' this round'},
+    grpCount:function(n,m){return LANG==='zh'?'已开 '+n+' / 共 '+m:n+' / '+m+' on'},
     watch:function(n){return LANG==='zh'?'盯着的 '+n+' 个':'Watching '+n},
     weakTitle:function(n){return LANG==='zh'?'要练的 '+n+' 个':n+' to practice'},
     weakNote:function(n,v){return LANG==='zh'
@@ -486,41 +500,419 @@ td.num{font-variant-numeric:tabular-nums;font-family:var(--font-display);font-we
     F('√200',SIMPLIFY,'10√2','2√10','100√2','20√5')
   ]}
 
-  var MODS=[
-    {g:L('算术 —— 每天都用','Arithmetic — used every day'),
-     k:'mul', nm:L('乘法表','Times tables'), eg:'7 × 8', d:L('3–12 互乘，去掉 2、5、10 这些送分的','3–12 times each other, skipping the easy 2s, 5s and 10s'), bank:mulBank, th:2000, on:true},
-    {k:'div', nm:L('除法','Division'), eg:'72 ÷ 8', d:L('反着认乘法表 —— 约分、化简全靠它','Times tables in reverse — the key to reducing and simplifying'), bank:divBank, th:2500, on:true},
-    {k:'sq',  nm:L('平方','Squares'), eg:'14²', d:L('1–20 的平方 —— 因式分解、二次公式','Squares of 1–20 — for factoring and the quadratic formula'), bank:sqBank, th:2000, on:true},
-    {k:'sqrt',nm:L('开平方','Square roots'), eg:'√196', d:L('化简根式的瓶颈，12 月的缺口之一','The bottleneck in simplifying radicals; one of December’s gaps'), bank:sqrtBank, th:2500, on:true},
+  /* ================= CS route: new banks =================
+     Typed answers are numbers (fractions like 1/6 are accepted). Symbolic answers are multiple choice.
+     Every bank is recomputed by an independent checker before release (see the PR for the list). */
+  function sgnTerm(c,v,first){
+    if(!c) return '';
+    var a=Math.abs(c), body=(a===1&&v?'':String(a))+v;
+    return first ? (c<0?'−':'')+body : (c<0?' − ':' + ')+body;
+  }
+  function poly(a,b,c){ var o=sgnTerm(a,'x²',true); o+=sgnTerm(b,'x',!o); o+=sgnTerm(c,'',!o); return o }
+  function num(n){ return n<0?'−'+(-n):String(n) }
+  function lin(a,b,c){ return sgnTerm(a,'x',true)+sgnTerm(b,'y',false)+' = '+num(c) }
+  function TFQ(t,h,a){ return {t:t,h:h,ans:a,opts:[a, a==='T'?'F':'T']} }
 
-    {g:L('符号 —— 「会但写错」的重灾区','Signs — where “I knew it but wrote it wrong” happens'),
-     k:'neg', nm:L('正负号 ×','Signs ×'), eg:'(−6) × 8', d:L('乘除的符号规则','Sign rules for multiplying and dividing'), bank:negBank, th:2500, on:true},
-    {k:'nadd',nm:L('正负号 ±','Signs ±'), eg:'(−5) − 8', d:L('加减的符号比乘除更容易错','Signs go wrong more often when adding and subtracting'), bank:naddBank, th:2500, on:true},
-    {k:'trap',nm:L('陷阱题','Trap questions'), eg:'−3² vs (−3)²', d:L('长得像、算法不同：运算顺序和负号。−3² 是 −9，(−3)² 才是 9','Look alike, work differently: order of operations and signs. −3² is −9; only (−3)² is 9'), bank:trapBank, th:4000, on:true},
+  /* ----- MATH& 141 ----- */
+  var H_FN=L('代入求值','evaluate');
+  function fnBank(){
+    var P=[['2x + 3',4,11],['x² − 1',3,8],['x² − 1',-3,8],['3x − 5',-2,-11],['x² + 2x',-1,-1],['5 − x',8,-3],
+           ['x³',-2,-8],['2x² − x',3,15],['(x + 1)²',4,25],['10 − x²',4,-6],['x/2 + 1',6,4],['−x²',5,-25]];
+    return P.map(function(p){ return {t:'f(x) = '+p[0]+'　f('+(p[1]<0?'−'+(-p[1]):p[1])+') = ?',ans:p[2],h:H_FN,fx:p[0],x:p[1]} })}
+  var DOM=L('定义域','domain'), ALLR=L('全体实数','all real numbers');
+  function domBank(){return [
+    F('f(x) = √(x − 3)',DOM,'x ≥ 3','x > 3','x ≥ −3','x ≤ 3'),
+    F('f(x) = 1/(x − 2)',DOM,'x ≠ 2','x > 2','x ≠ −2',ALLR),
+    F('f(x) = √(5 − x)',DOM,'x ≤ 5','x ≥ 5','x < 5','x ≥ −5'),
+    F('f(x) = ln x',DOM,'x > 0','x ≥ 0','x ≠ 0',ALLR),
+    F('f(x) = 1/(x² − 9)',DOM,'x ≠ ±3','x ≠ 3','x > 3','x ≠ 9'),
+    F('f(x) = x² + 1',DOM,ALLR,'x ≥ 0','x ≥ 1','x ≠ 0'),
+    F('f(x) = √(2x + 6)',DOM,'x ≥ −3','x ≥ 3','x > −3','x ≥ −6'),
+    F('f(x) = log(x + 4)',DOM,'x > −4','x ≥ −4','x > 4','x ≠ −4'),
+    F('f(x) = 1/√x',DOM,'x > 0','x ≥ 0','x ≠ 0',ALLR),
+    F('f(x) = (x + 1)/(x − 1)',DOM,'x ≠ 1','x ≠ −1','x ≠ ±1','x > 1')
+  ]}
+  var H_COMP=L('由内往外算','work inside out');
+  function compBank(){
+    var P=[['x + 1','2x','fg',3,7],['x + 1','2x','gf',3,8],['x²','x − 2','fg',5,9],['x²','x − 2','gf',5,23],
+           ['3x','x + 4','fg',-1,9],['x − 1','x²','gf',-2,9],['2x + 1','x/2','fg',6,7],['x²','x + 3','fg',-3,0],
+           ['10 − x','x²','fg',3,1],['2x','x + 5','ff',5,20]];
+    return P.map(function(p){
+      var a=p[3]<0?'−'+(-p[3]):p[3], call= p[2]==='fg'?'f(g('+a+'))': p[2]==='gf'?'g(f('+a+'))':'f(f('+a+'))';
+      var defs= p[2]==='ff' ? 'f(x) = '+p[0] : 'f(x) = '+p[0]+',  g(x) = '+p[1];
+      return {t:defs+'　'+call+' = ?',ans:p[4],h:H_COMP,f:p[0],g:p[1],how:p[2],x:p[3]} })}
+  var INV=L('求 f⁻¹(x)','find f⁻¹(x)');
+  function invBank(){return [
+    F('f(x) = 2x + 3',INV,'(x − 3)/2','(x + 3)/2','2x − 3','1/(2x + 3)'),
+    F('f(x) = x − 7',INV,'x + 7','7 − x','1/(x − 7)','x/7'),
+    F('f(x) = 5x',INV,'x/5','5/x','−5x','x − 5'),
+    F('f(x) = x³',INV,'∛x','x/3','1/x³','3x'),
+    F('f(x) = (x − 1)/4',INV,'4x + 1','4x − 1','(x + 1)/4','4(x − 1)'),
+    F('f(x) = 3x − 6',INV,'x/3 + 2','x/3 − 2','3x + 6','(x − 6)/3'),
+    F('f(x) = 1/x',INV,'1/x','x','−1/x','−x'),
+    F('f(x) = x/2 − 1',INV,'2x + 2','2x − 2','2x + 1','x/2 + 1'),
+    F('f(x) = 4 − x',INV,'4 − x','x − 4','x + 4','1/(4 − x)'),
+    F('f(x) = 2x/3',INV,'3x/2','2x/3','3/(2x)','x − 2/3')
+  ]}
+  var TRANS=L('相对 y = f(x) 怎么变','compared with y = f(x)');
+  var R3=L('右移 3','right 3'), L3=L('左移 3','left 3'), U3=L('上移 3','up 3'), D3=L('下移 3','down 3'),
+      FX=L('沿 x 轴翻转','reflect over the x-axis'), FY=L('沿 y 轴翻转','reflect over the y-axis'),
+      VS2=L('竖直拉伸 2 倍','vertical stretch ×2'), HS2=L('水平拉伸 2 倍','horizontal stretch ×2'),
+      VC2=L('竖直压缩为 1/2','vertical shrink ×1/2'), HC2=L('水平压缩为 1/2','horizontal shrink ×1/2');
+  function mv(zh,en){return L(zh,en)}
+  function transBank(){return [
+    F('y = f(x − 3)',TRANS,R3,L3,U3,D3),
+    F('y = f(x + 3)',TRANS,L3,R3,U3,D3),
+    F('y = f(x) + 3',TRANS,U3,D3,L3,R3),
+    F('y = f(x) − 3',TRANS,D3,U3,R3,L3),
+    F('y = −f(x)',TRANS,FX,FY,mv('下移 1','down 1'),mv('左移 1','left 1')),
+    F('y = f(−x)',TRANS,FY,FX,mv('左移 1','left 1'),mv('下移 1','down 1')),
+    F('y = 2f(x)',TRANS,VS2,HS2,VC2,mv('上移 2','up 2')),
+    F('y = f(2x)',TRANS,HC2,HS2,VS2,mv('右移 2','right 2')),
+    F('y = f(x − 2) + 1',TRANS,mv('右移 2，上移 1','right 2, up 1'),mv('左移 2，上移 1','left 2, up 1'),mv('右移 2，下移 1','right 2, down 1'),mv('右移 1，上移 2','right 1, up 2')),
+    F('y = f(x + 1) − 4',TRANS,mv('左移 1，下移 4','left 1, down 4'),mv('右移 1，下移 4','right 1, down 4'),mv('左移 1，上移 4','left 1, up 4'),mv('左移 4，下移 1','left 4, down 1'))
+  ]}
+  function quadBank(){
+    var P=[[1,-6,5,'axis',3],[2,8,1,'axis',-2],[3,-12,2,'axis',2],[1,-4,7,'vy',3],[-1,-2,3,'vy',4],
+           [1,-7,10,'sum',7],[1,-7,10,'prod',10],[2,6,-8,'sum',-3],[2,6,-8,'prod',-4],
+           [1,4,5,'disc',-4],[1,-6,9,'disc',0],[1,-5,6,'big',3]];
+    var ASK={axis:L('对称轴 x = ?','axis of symmetry x = ?'), vy:L('顶点的 y = ?','y of the vertex = ?'),
+             sum:L('两根之和 = ?','sum of the roots = ?'), prod:L('两根之积 = ?','product of the roots = ?'),
+             disc:L('判别式 Δ = ?','discriminant Δ = ?'), big:L('较大的根 = ?','larger root = ?')};
+    return P.map(function(p){
+      var eq = (p[3]==='axis'||p[3]==='vy') ? 'y = '+poly(p[0],p[1],p[2]) : poly(p[0],p[1],p[2])+' = 0';
+      return {t:L(eq+'　'+ASK[p[3]].zh, eq+'　'+ASK[p[3]].en),ans:p[4],abc:[p[0],p[1],p[2]],kind:p[3]} })}
+  var SOLVE=L('解出 x','solve for x');
+  function eqlogBank(){
+    var P=[['2ˣ = 32',5],['3ˣ = 81',4],['10ˣ = 1000',3],['2ˣ⁺¹ = 16',3],['5ˣ = 1/25',-2],['4ˣ = 8',1.5],['eˣ = 1',0],
+           ['log₂ x = 5',32],['log₃ x = 2',9],['log x = 2',100],['ln x = 0',1],['log₂(x − 1) = 3',9]];
+    return P.map(function(p){return {t:p[0],ans:p[1],h:SOLVE}})}
+  function sysBank(){
+    var P=[[1,1,10,1,-1,4,'x',7],[1,1,10,1,-1,4,'y',3],[2,1,7,1,-1,2,'x',3],[1,2,8,3,-1,3,'y',3],
+           [3,2,12,1,-2,-4,'x',2],[3,2,12,1,-2,-4,'y',3],[5,-1,9,2,1,5,'x',2],[4,3,10,2,-1,0,'y',2],
+           [1,-1,-1,1,1,5,'x',2],[2,3,13,1,1,5,'y',3]];
+    return P.map(function(p){
+      return {t:lin(p[0],p[1],p[2])+',  '+lin(p[3],p[4],p[5])+'　'+p[6]+' = ?',ans:p[7],sys:p.slice(0,6),ask:p[6]} })}
 
-    {g:L('代数 —— ALEKS 的主体','Algebra — the core of ALEKS'),
-     k:'eq',  nm:L('一次方程','Linear equations'), eg:'3x+7=22', d:L('解出 x —— 分级考占比最大的一块','Solve for x — the biggest part of the placement test'), bank:eqBank, th:3500, on:true},
-    {k:'pow', nm:L('幂','Powers'), eg:'2⁶', d:L('2、3、5、10 的幂 —— 对数的底子','Powers of 2, 3, 5 and 10 — the groundwork for logs'), bank:powBank, th:2500, on:true},
-    {k:'exp', nm:L('指数法则','Exponent rules'), eg:'x³·x⁴', d:L('指数加减乘 —— 通向根式和对数','Adding, subtracting and multiplying exponents — the way into radicals and logs'), bank:expBank, th:3000, on:false},
+  /* ----- MATH& 142 ----- */
+  var SIGN=['+','−'], QN=[L('第一象限','Quadrant I'),L('第二象限','Quadrant II'),L('第三象限','Quadrant III'),L('第四象限','Quadrant IV')];
+  function astcBank(){
+    var o=[], Q=[[2,'+','−','−'],[3,'−','−','+'],[4,'−','+','−']];
+    Q.forEach(function(q){
+      ['sin','cos','tan'].forEach(function(fn,i){
+        var a=q[i+1];
+        o.push({t:L('θ 在'+QN[q[0]-1].zh+'　'+fn+' θ 的符号','θ in '+QN[q[0]-1].en+'　sign of '+fn+' θ'),ans:a,opts:[a,a==='+'?'−':'+'],quad:q[0],fn:fn});
+      });
+    });
+    function where(zh,en,qi){ var opts=[QN[qi]].concat(QN.filter(function(_,i){return i!==qi})); return {t:L(zh,en),ans:QN[qi],opts:opts,cond:zh} }
+    o.push(where('sin θ > 0 且 cos θ < 0','sin θ > 0 and cos θ < 0',1));
+    o.push(where('sin θ < 0 且 tan θ > 0','sin θ < 0 and tan θ > 0',2));
+    o.push(where('cos θ > 0 且 tan θ < 0','cos θ > 0 and tan θ < 0',3));
+    return o;
+  }
+  var EQV=L('等于','equals');
+  function identBank(){return [
+    F('1 + tan²θ',EQV,'sec²θ','csc²θ','cot²θ','1'),
+    F('1 + cot²θ',EQV,'csc²θ','sec²θ','tan²θ','1'),
+    F('sin 2θ',EQV,'2 sin θ cos θ','2 sin θ','sin²θ − cos²θ','sin θ cos θ'),
+    F('cos 2θ',EQV,'cos²θ − sin²θ','2 cos θ','sin²θ − cos²θ','2 sin θ cos θ'),
+    F('sin(−θ)',EQV,'−sin θ','sin θ','cos θ','−cos θ'),
+    F('cos(−θ)',EQV,'cos θ','−cos θ','sin θ','−sin θ'),
+    F('sin θ / cos θ',EQV,'tan θ','cot θ','sec θ','csc θ'),
+    F('sin(90° − θ)',EQV,'cos θ','sin θ','−cos θ','tan θ'),
+    F('cos(90° − θ)',EQV,'sin θ','cos θ','−sin θ','cot θ'),
+    F('1 − sin²θ',EQV,'cos²θ','sin²θ','tan²θ','1 + cos²θ'),
+    F('sin(θ + 180°)',EQV,'−sin θ','sin θ','cos θ','−cos θ'),
+    F('1 / cos θ',EQV,'sec θ','csc θ','cot θ','tan θ')
+  ]}
+  var PRIN=L('主值，弧度','principal value, radians');
+  function invtrigBank(){return [
+    F('arcsin(1/2)',PRIN,'π/6','π/3','5π/6','−π/6'),
+    F('arccos(1/2)',PRIN,'π/3','π/6','−π/3','2π/3'),
+    F('arctan(1)',PRIN,'π/4','π/2','3π/4','−π/4'),
+    F('arcsin(−1/2)',PRIN,'−π/6','7π/6','5π/6','π/6'),
+    F('arccos(−1/2)',PRIN,'2π/3','−π/3','4π/3','π/3'),
+    F('arctan(−1)',PRIN,'−π/4','3π/4','7π/4','π/4'),
+    F('arcsin(1)',PRIN,'π/2','0','π','3π/2'),
+    F('arccos(0)',PRIN,'π/2','0','π','−π/2'),
+    F('arccos(−1)',PRIN,'π','−π','0','π/2'),
+    F('arctan(√3)',PRIN,'π/3','π/6','4π/3','2π/3'),
+    F('arcsin(√2/2)',PRIN,'π/4','3π/4','π/3','−π/4')
+  ]}
+  var AMP=L('振幅','amplitude'), PER=L('周期','period'), MAXV=L('最大值','maximum');
+  function ampBank(){return [
+    {t:L('y = 3 sin x　振幅','y = 3 sin x　amplitude'),ans:3,fx:'3 sin x',kind:'amp'},
+    {t:L('y = −2 cos x　振幅','y = −2 cos x　amplitude'),ans:2,fx:'−2 cos x',kind:'amp'},
+    {t:L('y = (1/2) sin 4x　振幅','y = (1/2) sin 4x　amplitude'),ans:0.5,fx:'(1/2) sin 4x',kind:'amp'},
+    {t:L('y = 5 cos(x − π) + 1　振幅','y = 5 cos(x − π) + 1　amplitude'),ans:5,fx:'5 cos(x − π) + 1',kind:'amp'},
+    {t:L('y = 2 sin x + 3　最大值','y = 2 sin x + 3　maximum'),ans:5,fx:'2 sin x + 3',kind:'max'},
+    F('y = sin 2x',PER,'π','2π','π/2','4π'),
+    F('y = cos 3x',PER,'2π/3','3π/2','6π','π/3'),
+    F('y = sin(x/2)',PER,'4π','π','2π','π/2'),
+    F('y = tan x',PER,'π','2π','π/2','4π'),
+    F('y = tan 2x',PER,'π/2','π','2π','4π'),
+    F('y = 4 sin(πx)',PER,'2','2π','π','4')
+  ]}
 
-    {g:L('选择题 —— 按学习进度打开','Multiple choice — turn on as you learn'),
-     k:'factor',nm:L('因式分解','Factoring'), eg:'x²−5x+6', d:L('二次三项式、平方差、完全平方 —— ABE Math 6 学过，现在就能开','Trinomials, difference of squares, perfect squares — covered in ABE Math 6, ready to turn on now'), bank:factorBank, th:6000, on:false},
-    {k:'root',nm:L('根式化简','Simplifying radicals'), eg:'√48 = 4√3', d:L('化成最简根式 —— 12-21 那周学完再开','Simplest radical form — turn on after the week of 12-21'), bank:rootBank, th:5000, on:false},
+  /* ----- Calculus 151 / 152 + series (153) ----- */
+  var LIM=L('极限','limit');
+  function limBank(){
+    var P=[['lim x→3  (x² − 9)/(x − 3)',6],['lim x→2  (x² − 4)/(x − 2)',4],['lim x→0  sin x / x',1],
+           ['lim x→∞  (3x² + 1)/(x² − 5)',3],['lim x→∞  (2x + 1)/(x² + 1)',0],['lim x→1  (x³ − 1)/(x − 1)',3],
+           ['lim x→4  (√x − 2)/(x − 4)',0.25],['lim x→0  (1 − cos x)/x',0],['lim x→∞  (5x³ − x)/(2x³ + 7)',2.5]];
+    return P.map(function(p){return {t:p[0],ans:p[1],h:LIM}})}
+  var RULE=L('求导法则','derivative rule'), DER=L('求导','derivative');
+  function druleBank(){return [
+    F('(f · g)′',RULE,'f′g + fg′','f′g′','f′g − fg′','f′ + g′'),
+    F('(f / g)′',RULE,'(f′g − fg′)/g²','(fg′ − f′g)/g²','f′/g′','(f′g + fg′)/g²'),
+    F('[f(g(x))]′',RULE,'f′(g(x)) · g′(x)','f′(g′(x))','f′(x) · g′(x)','f(g′(x)) · g′(x)'),
+    F('(xⁿ)′',RULE,'nxⁿ⁻¹','xⁿ⁻¹','nxⁿ','xⁿ⁺¹/(n + 1)'),
+    F(L('(c)′，c 是常数','(c)′, c a constant'),RULE,'0','c','1','x'),
+    F('(c · f)′',RULE,'c · f′','f′','c′ · f′','c · f'),
+    F('(f + g)′',RULE,'f′ + g′','f′g′','f′ + g','f′g + fg′'),
+    F('(x⁵)′',DER,'5x⁴','4x⁵','5x⁵','x⁴'),
+    F('(3x² + 2x)′',DER,'6x + 2','3x + 2','6x² + 2','6x')
+  ]}
+  function dcommonBank(){return [
+    F('(sin x)′',DER,'cos x','−cos x','sin x','−sin x'),
+    F('(cos x)′',DER,'−sin x','sin x','cos x','−cos x'),
+    F('(eˣ)′',DER,'eˣ','x · eˣ','eˣ/x','ln x'),
+    F('(ln x)′',DER,'1/x','x','eˣ','1/ln x'),
+    F('(tan x)′',DER,'sec²x','cot x','−csc²x','sec x tan x'),
+    F('(sec x)′',DER,'sec x tan x','sec²x','tan²x','−csc x cot x'),
+    F('(√x)′',DER,'1/(2√x)','√x/2','2√x','1/√x'),
+    F('(1/x)′',DER,'−1/x²','1/x²','ln x','−1/x'),
+    F('(sin 2x)′',DER,'2 cos 2x','cos 2x','−2 cos 2x','2 sin 2x')
+  ]}
+  var INT=L('积分','integrate');
+  function integBank(){return [
+    F('∫ x² dx',INT,'x³/3 + C','2x + C','x³ + C','3x³ + C'),
+    F('∫ cos x dx',INT,'sin x + C','−sin x + C','cos x + C','−cos x + C'),
+    F('∫ sin x dx',INT,'−cos x + C','cos x + C','sin x + C','−sin x + C'),
+    F('∫ eˣ dx',INT,'eˣ + C','x · eˣ + C','eˣ/x + C','ln x + C'),
+    F('∫ 1/x dx',INT,'ln|x| + C','−1/x² + C','eˣ + C','x · ln x + C'),
+    F('∫ 2x dx',INT,'x² + C','2x² + C','2 + C','x²/2 + C'),
+    F('∫ sec²x dx',INT,'tan x + C','sec x + C','−tan x + C','sec x tan x + C'),
+    {t:'∫₀¹ x dx',ans:0.5,h:INT},
+    {t:'∫₀² 3x² dx',ans:8,h:INT}
+  ]}
+  var SUM=L('求和','sum'), NTH=L('求这一项','find the term');
+  function seriesBank(){return [
+    {t:'2 + 4 + 6 + … + 20',ans:110,h:SUM},
+    {t:'1 + 2 + 3 + … + 100',ans:5050,h:SUM},
+    {t:L('等差数列 a₁ = 3, d = 4　a₁₀ = ?','arithmetic a₁ = 3, d = 4　a₁₀ = ?'),ans:39,h:NTH},
+    {t:L('等比数列 a₁ = 2, r = 3　a₅ = ?','geometric a₁ = 2, r = 3　a₅ = ?'),ans:162,h:NTH},
+    {t:'1 + 1/2 + 1/4 + 1/8 + …',ans:2,h:L('无穷级数','infinite series')},
+    {t:'9 + 3 + 1 + 1/3 + …',ans:13.5,h:L('无穷级数','infinite series')},
+    {t:'1 − 1/2 + 1/4 − 1/8 + …',ans:2/3,h:L('无穷级数，可写分数','infinite series; a fraction is fine')},
+    {t:'1 + 2 + 4 + … + 2⁹',ans:1023,h:SUM},
+    {t:'Σ k²  (k = 1 … 5)',ans:55,h:SUM},
+    {t:'Σ (2k − 1)  (k = 1 … 4)',ans:16,h:SUM}
+  ]}
 
-    {g:L('换算 —— 默认不测','Conversions — off by default'),
-     k:'frac',nm:L('分数⇄小数','Fraction ⇄ decimal'), eg:'3/8', d:L('换算慢会拖掉整道题','A slow conversion drags down the whole problem'), bank:fracBank, th:3000, on:false},
-    {k:'pct', nm:L('百分比','Percentages'), eg:'25% of 64', d:L('分级考里的常客','A regular on the placement test'), bank:pctBank, th:3000, on:false},
+  /* ----- Discrete math (UW CSE 311) ----- */
+  var TV=L('真值','truth value'), EQUIV=L('等价于','equivalent to');
+  function logicBank(){return [
+    TFQ('p = T, q = F　p → q',TV,'F'),
+    TFQ('p = F, q = T　p → q',TV,'T'),
+    TFQ('p = F, q = F　p → q',TV,'T'),
+    TFQ('p = T, q = T　p ↔ q',TV,'T'),
+    TFQ('p = T, q = F　p ∧ q',TV,'F'),
+    TFQ('p = T, q = F　p ∨ q',TV,'T'),
+    TFQ('p = T, q = F　¬p ∨ q',TV,'F'),
+    F('¬(p ∧ q)',EQUIV,'¬p ∨ ¬q','¬p ∧ ¬q','p ∨ q','¬p ∨ q'),
+    F('¬(p ∨ q)',EQUIV,'¬p ∧ ¬q','¬p ∨ ¬q','p ∧ q','¬p ∧ q'),
+    F(L('p → q 的逆否命题','contrapositive of p → q'),EQUIV,'¬q → ¬p','q → p','¬p → ¬q','¬q → p'),
+    F('p → q',EQUIV,'¬p ∨ q','p ∨ ¬q','¬p ∧ q','q → p'),
+    F('¬(p → q)',EQUIV,'p ∧ ¬q','¬p ∧ q','¬p → ¬q','¬p ∨ ¬q')
+  ]}
+  var CNT=L('数一数','count');
+  function setsBank(){return [
+    {t:'|A| = 10, |B| = 7, |A ∩ B| = 3　|A ∪ B| = ?',ans:14},
+    {t:'|A| = 12, |B| = 9, |A ∪ B| = 15　|A ∩ B| = ?',ans:6},
+    {t:L('{a, b, c, d} 有几个子集','How many subsets does {a, b, c, d} have'),ans:16,h:CNT},
+    {t:L('|A| = 5，子集有几个','|A| = 5: how many subsets'),ans:32,h:CNT},
+    {t:L('|A| = 6，幂集 P(A) 有几个元素','|A| = 6: how many elements in P(A)'),ans:64,h:CNT},
+    {t:'|A| = 3, |B| = 4　|A × B| = ?',ans:12},
+    {t:L('{1, 2, 3} 的非空真子集有几个','Non-empty proper subsets of {1, 2, 3}'),ans:6,h:CNT},
+    {t:'A = {1,2,3,4}, B = {3,4,5}　|A ∩ B| = ?',ans:2},
+    {t:'A = {1,2,3,4}, B = {3,4,5}　|A ∪ B| = ?',ans:5},
+    {t:'A = {1,2,3,4}, B = {3,4,5}　|A − B| = ?',ans:2}
+  ]}
+  function combBank(){return [
+    {t:'5!',ans:120},{t:'0!',ans:1},{t:'6! / 4!',ans:30},{t:'C(5, 2)',ans:10},{t:'P(5, 2)',ans:20},
+    {t:'C(6, 3)',ans:20},{t:'C(8, 8)',ans:1},{t:'P(4, 4)',ans:24},{t:'C(7, 2)',ans:21},
+    {t:L('5 个人排成一排，几种排法','Ways to line up 5 people'),ans:120},
+    {t:L('6 人选 2 人组队（不分先后）','Choose a team of 2 from 6 (order doesn’t matter)'),ans:15},
+    {t:L('3 位密码，每位 0–9','3-digit code, each digit 0–9'),ans:1000}
+  ]}
+  function modBank(){return [
+    {t:'17 mod 5',ans:2},{t:'23 mod 7',ans:2},{t:'100 mod 9',ans:1},{t:'48 mod 6',ans:0},{t:'7 mod 10',ans:7},
+    {t:'1024 mod 3',ans:1},{t:'91 mod 10',ans:1},
+    {t:L('17 // 5（整除）','17 // 5 (integer division)'),ans:3},
+    {t:L('(8 + 7) mod 12　时钟','(8 + 7) mod 12　clock'),ans:3},
+    {t:L('循环数组长度 5，下标 4 的下一个','Circular array of length 5: index after 4'),ans:0},
+    {t:L('哈希表 10 个桶，key 37 进几号桶','Hash table with 10 buckets: bucket for key 37'),ans:7},
+    {t:L('今天周三（3），100 天后周几（0 = 周日）','Today is Wed (3); weekday in 100 days (0 = Sun)'),ans:5}
+  ]}
+  function graphBank(){return [
+    {t:L('完全图 K₅ 的边数','Edges in the complete graph K₅'),ans:10},
+    {t:L('完全图 K₆ 的边数','Edges in K₆'),ans:15},
+    {t:L('完全图 K₁₀ 的边数','Edges in K₁₀'),ans:45},
+    {t:L('8 个节点的树有几条边','Edges in a tree with 8 nodes'),ans:7},
+    {t:L('20 个节点的树有几条边','Edges in a tree with 20 nodes'),ans:19},
+    {t:L('6 条边的图，度数之和','Sum of degrees in a graph with 6 edges'),ans:12},
+    {t:L('度数之和 18，几条边','Degree sum 18: how many edges'),ans:9},
+    {t:L('二叉树第 4 层最多几个节点（根是第 1 层）','Max nodes on level 4 of a binary tree (root = level 1)'),ans:8},
+    {t:L('高度 3 的满二叉树有几个节点（只有根时高度 0）','Nodes in a perfect binary tree of height 3 (root alone = 0)'),ans:15},
+    {t:L('4 个节点的有向图最多几条边（无自环）','Max edges in a directed graph with 4 nodes (no self-loops)'),ans:12}
+  ]}
 
-    {g:L('公式 —— 记错了，算得再快也是错的','Formulas — remember it wrong and speed won’t help'),
-     k:'alg', nm:L('代数公式','Algebra formulas'), eg:'(a+b)²', d:L('二次公式、判别式、因式分解、直线方程','Quadratic formula, discriminant, factoring, line equations'), bank:algBank, th:5000, on:false},
-    {k:'geo', nm:L('几何公式','Geometry formulas'), eg:L('斜率 m','slope m'), d:L('斜率、距离、中点、勾股、圆','Slope, distance, midpoint, Pythagoras, circles'), bank:geoBank, th:5000, on:false},
-    {k:'lgt', nm:L('对数三角公式','Log & trig formulas'), eg:'log(ab)', d:L('对数四条法则 + SOH-CAH-TOA','The four log rules + SOH-CAH-TOA'), bank:lgtBank, th:5000, on:false},
+  /* ----- Probability & statistics (UW CSE 312) ----- */
+  var PR=L('分数或小数','fraction or decimal');
+  function probBank(){
+    var P=[[L('掷一个骰子得 6','Roll one die: a 6'),1/6],[L('掷一个骰子得偶数','Roll one die: even'),1/2],
+           [L('抛 2 枚硬币，都是正面','Flip 2 coins: both heads'),1/4],[L('抛 3 枚硬币，全是正面','Flip 3 coins: all heads'),1/8],
+           [L('掷 2 个骰子，点数和为 7','Roll 2 dice: sum is 7'),1/6],[L('掷 2 个骰子，点数和为 12','Roll 2 dice: sum is 12'),1/36],
+           [L('52 张牌抽一张，是红桃','Draw 1 of 52 cards: a heart'),1/4],[L('52 张牌抽一张，是 A','Draw 1 of 52 cards: an ace'),1/13],
+           ['P(A) = 0.3　P(not A) = ?',0.7],[L('A、B 独立，P(A) = 0.5, P(B) = 0.4　P(A 且 B)','A, B independent, P(A) = 0.5, P(B) = 0.4　P(A and B)'),0.2],
+           [L('A、B 互斥，P(A) = 0.2, P(B) = 0.5　P(A 或 B)','A, B mutually exclusive, P(A) = 0.2, P(B) = 0.5　P(A or B)'),0.7],
+           [L('掷一个骰子，期望值 E[X]','Roll one die: expected value E[X]'),3.5]];
+    return P.map(function(p){return {t:p[0],ans:p[1],h:PR}})}
+  function statsBank(){
+    var P=[['mean','2, 4, 6, 8',5],['median','3, 7, 7, 2, 9',7],['mode','3, 7, 7, 2, 9',7],['median','1, 2, 3, 4',2.5],
+           ['mean','10, 20, 30',20],['range','5, 1, 9',8],['sd','2, 4, 4, 4, 5, 5, 7, 9',2],['var','1, 3',1],
+           ['median','4, 8, 15, 16, 23, 42',15.5],['mean','1, 1, 1, 9',3]];
+    var N={mean:L('平均数','mean'),median:L('中位数','median'),mode:L('众数','mode'),range:L('极差','range'),
+           sd:L('总体标准差','population SD'),'var':L('总体方差','population variance')};
+    return P.map(function(p){return {t:L(p[1]+'　'+N[p[0]].zh, p[1]+'　'+N[p[0]].en),ans:p[2],stat:p[0],data:p[1]}})}
 
-    {g:L('12 月学完再打开 —— 选择题','Turn on after December — multiple choice'),
-     k:'trig',nm:L('三角特殊角','Special angles'), eg:'sin 60°', d:L('选精确值，不是小数。sin 60° 是 √3/2，不是 0.866','Pick the exact value, not a decimal: sin 60° is √3/2, not 0.866'), bank:trigBank, th:4000, on:false},
-    {k:'rad', nm:L('角度⇄弧度','Degrees ⇄ radians'), eg:'60° = π/3', d:L('学三角的第一道坎，大学数学全用弧度','The first hurdle in trig; college math uses radians throughout'), bank:radBank, th:4000, on:false},
-    {k:'log', nm:L('对数','Logarithms'), eg:'log₂ 32', d:L('认出 32 = 2⁵ —— 对数就通了一半','Spot that 32 = 2⁵ and logs are half done'), bank:logBank, th:3000, on:false}
+  /* ----- Linear algebra ----- */
+  function linalgBank(){return [
+    {t:'det [2 3; 1 4]',ans:5},{t:'det [5 2; 3 1]',ans:-1},{t:'det [4 6; 2 3]',ans:0},{t:'det [1 0; 0 1]',ans:1},
+    {t:'(1, 2) · (3, 4)',ans:11},{t:'(2, −1, 3) · (1, 4, 2)',ans:4},{t:'(1, 0) · (0, 1)',ans:0},
+    {t:'|(3, 4)|',ans:5},{t:'|(6, 8)|',ans:10},{t:'|(1, 2, 2)|',ans:3},
+    {t:L('[1 2; 3 4] × [1; 1]　第 1 个元素','[1 2; 3 4] × [1; 1]　first entry'),ans:3},
+    {t:L('2×3 矩阵 × 3×4 矩阵，结果几列','(2×3) × (3×4): how many columns'),ans:4}
+  ]}
+
+  /* ----- CS essentials ----- */
+  var TODEC=L('换成十进制','to decimal'), TOBIN=L('换成二进制','to binary'), TOHEX=L('换成十六进制','to hex');
+  function binBank(){
+    var o=[], A=['1011','1111','10000','110010','1000000','11111111'], B=[13,6,20,31,100,9];
+    A.forEach(function(b){ o.push({t:b+'₂ = ?',ans:parseInt(b,2),h:TODEC}) });
+    B.forEach(function(n){ o.push({t:n+' = ?₂',ans:Number(n.toString(2)),h:TOBIN}) });
+    return o;
+  }
+  function hexBank(){
+    var o=[];
+    ['FF','10','1F','A','64','2A','80'].forEach(function(h){ o.push({t:'0x'+h+' = ?',ans:parseInt(h,16),h:TODEC}) });
+    o.push(F('255 = 0x?',TOHEX,'FF','EF','F0','1F'));
+    o.push(F('16 = 0x?',TOHEX,'10','F','16','1F'));
+    o.push(F('200 = 0x?',TOHEX,'C8','8C','C0','D8'));
+    o.push(F('11 = 0x?',TOHEX,'B','A','C','11'));
+    o.push(F('1111₂ = 0x?',TOHEX,'F','E','15','1F'));
+    return o;
+  }
+  var VAL=L('结果','result'), NEG=L('取反（!）','negation (!)');
+  function boolBank(){
+    function tf(t,a){ return {t:t,h:VAL,ans:a,opts:[a, a==='true'?'false':'true']} }
+    return [
+    tf('true && false','false'), tf('true || false','true'), tf('!(true && false)','true'),
+    tf('true XOR true','false'), tf('true XOR false','true'), tf('false XOR false','false'),
+    tf('!true || false','false'), tf('(5 > 3) && (2 > 4)','false'),
+    F('!(a && b)',EQUIV,'!a || !b','!a && !b','a || b','!a || b'),
+    F('!(a || b)',EQUIV,'!a && !b','!a || !b','a && b','!a && b'),
+    F('!(x > 0)',NEG,'x <= 0','x < 0','x >= 0','x != 0'),
+    F('!(x >= 5 && x <= 10)',NEG,'x < 5 || x > 10','x < 5 && x > 10','x <= 5 || x >= 10','x > 5 || x < 10')
+  ]}
+  var BIGO=['O(1)','O(log n)','O(n)','O(n log n)','O(n²)','O(2ⁿ)'];
+  function bigoBank(){
+    var P=[[L('遍历数组一次','One pass over an array'),'O(n)'],[L('两层嵌套循环，都到 n','Two nested loops, both to n'),'O(n²)'],
+           [L('二分查找','Binary search'),'O(log n)'],[L('按下标取 a[i]','Index into a[i]'),'O(1)'],
+           [L('哈希表查找（平均）','Hash table lookup (average)'),'O(1)'],[L('归并排序','Merge sort'),'O(n log n)'],
+           [L('冒泡排序（最坏）','Bubble sort (worst case)'),'O(n²)'],[L('列出 n 个元素的所有子集','List every subset of n items'),'O(2ⁿ)'],
+           [L('链表找第 k 个（k 接近 n）','Linked list: find the k-th (k near n)'),'O(n)'],
+           ['for (i = 1; i < n; i *= 2)','O(log n)'],[L('O(3n² + 100n + 7) 化简','Simplify O(3n² + 100n + 7)'),'O(n²)'],
+           [L('平衡二叉搜索树查找','Balanced BST lookup'),'O(log n)']];
+    return P.map(function(p){return {t:p[0],ans:p[1],pool:BIGO}})}
+  function bitsBank(){return [
+    {t:'1 << 4',ans:16},{t:'13 & 6',ans:4},{t:'12 | 3',ans:15},{t:'5 ^ 3',ans:6,h:'XOR'},{t:'40 >> 3',ans:5},
+    {t:'log₂ 65536',ans:16},
+    {t:L('一百万个有序元素，二分查找最多约几步','Binary search over 1,000,000 sorted items: about how many steps'),ans:20,h:L('2²⁰ ≈ 一百万','2²⁰ ≈ one million')},
+    {t:L('1 KB = ? 字节','1 KB = ? bytes'),ans:1024},
+    {t:L('8 位能表示几个不同的值','Distinct values in 8 bits'),ans:256},
+    {t:L('8 位有符号整数（补码）的最小值','Minimum of a signed 8-bit integer (two’s complement)'),ans:-128}
+  ]}
+
+  /* Groups follow the CS route, one stage per group. Groups with a module on start expanded;
+     the rest stay folded until you open them (both choices are remembered on this device). */
+  var NOW=L('现在','Now'), OPT=L('可选','Optional'), LATER=L('以后','Later');
+  var GROUPS=[
+    {id:'arith', nm:L('算术','Arithmetic'), st:NOW, mods:[
+      {k:'mul', nm:L('乘法表','Times tables'), eg:'7 × 8', d:L('3–12 互乘，去掉 2、5、10 这些送分的','3–12 times each other, skipping the easy 2s, 5s and 10s'), bank:mulBank, th:2000, on:true},
+      {k:'div', nm:L('除法','Division'), eg:'72 ÷ 8', d:L('反着认乘法表 —— 约分、化简全靠它','Times tables in reverse — the key to reducing and simplifying'), bank:divBank, th:2500, on:true},
+      {k:'sq',  nm:L('平方','Squares'), eg:'14²', d:L('1–20 的平方 —— 因式分解、二次公式','Squares of 1–20 — for factoring and the quadratic formula'), bank:sqBank, th:2000, on:true},
+      {k:'sqrt',nm:L('开平方','Square roots'), eg:'√196', d:L('化简根式的瓶颈，12 月的缺口之一','The bottleneck in simplifying radicals; one of December’s gaps'), bank:sqrtBank, th:2500, on:true}]},
+    {id:'signs', nm:L('符号','Signs'), st:NOW, mods:[
+      {k:'neg', nm:L('正负号 ×','Signs ×'), eg:'(−6) × 8', d:L('乘除的符号规则','Sign rules for multiplying and dividing'), bank:negBank, th:2500, on:true},
+      {k:'nadd',nm:L('正负号 ±','Signs ±'), eg:'(−5) − 8', d:L('加减的符号比乘除更容易错','Signs go wrong more often when adding and subtracting'), bank:naddBank, th:2500, on:true},
+      {k:'trap',nm:L('陷阱题','Trap questions'), eg:'−3² vs (−3)²', d:L('长得像、算法不同：运算顺序和负号。−3² 是 −9，(−3)² 才是 9','Look alike, work differently: order of operations and signs. −3² is −9; only (−3)² is 9'), bank:trapBank, th:4000, on:true}]},
+    {id:'alg0', nm:L('代数基础','Algebra basics'), st:NOW, mods:[
+      {k:'eq',  nm:L('一次方程','Linear equations'), eg:'3x+7=22', d:L('解出 x —— 分级考占比最大的一块','Solve for x — the biggest part of the placement test'), bank:eqBank, th:3500, on:true},
+      {k:'pow', nm:L('幂','Powers'), eg:'2⁶', d:L('2、3、5、10 的幂 —— 对数的底子','Powers of 2, 3, 5 and 10 — the groundwork for logs'), bank:powBank, th:2500, on:true},
+      {k:'exp', nm:L('指数法则','Exponent rules'), eg:'x³·x⁴', d:L('指数加减乘 —— 通向根式和对数','Adding, subtracting and multiplying exponents — the way into radicals and logs'), bank:expBank, th:3000, on:false}]},
+    {id:'conv', nm:L('换算','Conversions'), st:OPT, mods:[
+      {k:'frac',nm:L('分数⇄小数','Fraction ⇄ decimal'), eg:'3/8', d:L('换算慢会拖掉整道题','A slow conversion drags down the whole problem'), bank:fracBank, th:3000, on:false},
+      {k:'pct', nm:L('百分比','Percentages'), eg:'25% of 64', d:L('分级考里的常客','A regular on the placement test'), bank:pctBank, th:3000, on:false}]},
+    {id:'fx', nm:L('公式速记','Formula recall'), st:OPT, mods:[
+      {k:'alg', nm:L('代数公式','Algebra formulas'), eg:'(a+b)²', d:L('二次公式、判别式、因式分解、直线方程','Quadratic formula, discriminant, factoring, line equations'), bank:algBank, th:5000, on:false},
+      {k:'geo', nm:L('几何公式','Geometry formulas'), eg:L('斜率 m','slope m'), d:L('斜率、距离、中点、勾股、圆','Slope, distance, midpoint, Pythagoras, circles'), bank:geoBank, th:5000, on:false},
+      {k:'lgt', nm:L('对数三角公式','Log & trig formulas'), eg:'log(ab)', d:L('对数四条法则 + SOH-CAH-TOA','The four log rules + SOH-CAH-TOA'), bank:lgtBank, th:5000, on:false}]},
+    {id:'m141', nm:L('MATH& 141 函数与代数','MATH& 141 Functions & algebra'), st:L('冬季','Winter'), mods:[
+      {k:'fn',  nm:L('函数记号','Function notation'), eg:'f(4) = ?', d:L('把数代进 f(x) —— 读懂函数的第一步','Plug a number into f(x) — the first step in reading functions'), bank:fnBank, th:6000, on:false},
+      {k:'dom', nm:L('定义域','Domain'), eg:'√(x − 3)', d:L('根号里不能负，分母不能 0，对数里要正','No negatives under a root, no zero denominators, logs need positives'), bank:domBank, th:6000, on:false},
+      {k:'comp',nm:L('复合函数','Composition'), eg:'f(g(2))', d:L('由内往外 —— 和函数套函数的代码一样','Inside out — just like calling a function inside a function'), bank:compBank, th:7000, on:false},
+      {k:'inv', nm:L('反函数','Inverse functions'), eg:'f⁻¹(x)', d:L('对调 x 和 y 再解出 y','Swap x and y, then solve for y'), bank:invBank, th:7000, on:false},
+      {k:'trans',nm:L('图像变换','Graph transformations'), eg:'f(x − 3)', d:L('括号里的方向是反的：x − 3 是右移','Inside the brackets the direction flips: x − 3 moves right'), bank:transBank, th:6000, on:false},
+      {k:'quad',nm:L('二次函数','Quadratic functions'), eg:L('顶点 · 两根和积','vertex · roots'), d:L('顶点、对称轴、两根之和与积、判别式','Vertex, axis, sum and product of roots, discriminant'), bank:quadBank, th:8000, on:false},
+      {k:'factor',nm:L('因式分解','Factoring'), eg:'x²−5x+6', d:L('二次三项式、平方差、完全平方 —— ABE Math 6 学过，现在就能开','Trinomials, difference of squares, perfect squares — covered in ABE Math 6, ready to turn on now'), bank:factorBank, th:6000, on:false},
+      {k:'root',nm:L('根式化简','Simplifying radicals'), eg:'√48 = 4√3', d:L('化成最简根式 —— 12-21 那周学完再开','Simplest radical form — turn on after the week of 12-21'), bank:rootBank, th:5000, on:false},
+      {k:'eqlog',nm:L('指数对数方程','Exponential & log equations'), eg:'2ˣ = 32', d:L('化成同底，或者两边取对数','Match the bases, or take logs of both sides'), bank:eqlogBank, th:6000, on:false},
+      {k:'log', nm:L('对数','Logarithms'), eg:'log₂ 32', d:L('认出 32 = 2⁵ —— 对数就通了一半','Spot that 32 = 2⁵ and logs are half done'), bank:logBank, th:3000, on:false},
+      {k:'sys', nm:L('方程组','Systems of equations'), eg:'x + y = 10', d:L('加减消元 —— 两个未知数','Elimination — two unknowns'), bank:sysBank, th:9000, on:false}]},
+    {id:'m142', nm:L('MATH& 142 三角','MATH& 142 Trigonometry'), st:L('春季','Spring'), mods:[
+      {k:'trig',nm:L('三角特殊角','Special angles'), eg:'sin 60°', d:L('选精确值，不是小数。sin 60° 是 √3/2，不是 0.866','Pick the exact value, not a decimal: sin 60° is √3/2, not 0.866'), bank:trigBank, th:4000, on:false},
+      {k:'rad', nm:L('角度⇄弧度','Degrees ⇄ radians'), eg:'60° = π/3', d:L('学三角的第一道坎，大学数学全用弧度','The first hurdle in trig; college math uses radians throughout'), bank:radBank, th:4000, on:false},
+      {k:'astc',nm:L('象限符号','Quadrant signs'), eg:'ASTC', d:L('All · Sin · Tan · Cos —— 哪个象限谁是正的','All · Sin · Tan · Cos — which ones are positive where'), bank:astcBank, th:4000, on:false},
+      {k:'ident',nm:L('三角恒等式','Trig identities'), eg:'sin 2θ', d:L('倍角、余角、负角、毕达哥拉斯','Double angle, cofunction, negative angle, Pythagorean'), bank:identBank, th:6000, on:false},
+      {k:'invtrig',nm:L('反三角','Inverse trig'), eg:'arcsin(1/2)', d:L('注意主值范围：arcsin(−1/2) 是 −π/6，不是 7π/6','Mind the range: arcsin(−1/2) is −π/6, not 7π/6'), bank:invtrigBank, th:6000, on:false},
+      {k:'amp', nm:L('振幅周期','Amplitude & period'), eg:'sin 2x', d:L('振幅 |A|，周期 2π/|B|（tan 是 π/|B|）','Amplitude |A|, period 2π/|B| (π/|B| for tan)'), bank:ampBank, th:6000, on:false}]},
+    {id:'calc', nm:L('微积分 151/152 + 数列级数','Calculus 151/152 + series'), st:LATER, mods:[
+      {k:'lim', nm:L('极限','Limits'), eg:'lim x→3', d:L('先约分，∞ 时看最高次','Cancel first; at ∞ compare the highest powers'), bank:limBank, th:8000, on:false},
+      {k:'drule',nm:L('导数法则','Derivative rules'), eg:'(fg)′', d:L('乘积、商、链式、幂','Product, quotient, chain, power'), bank:druleBank, th:6000, on:false},
+      {k:'dcommon',nm:L('常见导数','Common derivatives'), eg:'(sin x)′', d:L('sin、cos、eˣ、ln x、tan —— 背熟','sin, cos, eˣ, ln x, tan — know them cold'), bank:dcommonBank, th:5000, on:false},
+      {k:'integ',nm:L('基本积分','Basic integrals'), eg:'∫ x² dx', d:L('求导反过来，别忘了 + C','Derivatives in reverse; don’t forget + C'), bank:integBank, th:6000, on:false},
+      {k:'series',nm:L('数列与级数','Sequences & series'), eg:'1 + ½ + ¼ + …', d:L('MATH& 153：等差、等比、无穷等比 a/(1 − r)','MATH& 153: arithmetic, geometric, infinite geometric a/(1 − r)'), bank:seriesBank, th:9000, on:false}]},
+    {id:'disc', nm:L('离散数学','Discrete math'), st:L('CS 核心','CS core'), mods:[
+      {k:'logic',nm:L('逻辑','Logic'), eg:'p → q', d:L('真值、德摩根律、逆否命题 —— if 条件写对的底子','Truth values, De Morgan, contrapositive — the basis of getting if-conditions right'), bank:logicBank, th:5000, on:false},
+      {k:'sets',nm:L('集合','Sets'), eg:'|A ∪ B|', d:L('容斥：|A∪B| = |A| + |B| − |A∩B|；n 个元素有 2ⁿ 个子集','Inclusion–exclusion; n items have 2ⁿ subsets'), bank:setsBank, th:6000, on:false},
+      {k:'comb',nm:L('排列组合','Counting'), eg:'C(5, 2)', d:L('阶乘、C(n,k)、P(n,k) —— 算复杂度和概率都要','Factorials, C(n,k), P(n,k) — needed for complexity and probability'), bank:combBank, th:5000, on:false},
+      {k:'mod', nm:L('模运算','Modular arithmetic'), eg:'17 mod 5', d:L('哈希表下标、循环数组绕回、加密 —— 写代码天天用','Hash table slots, wrap-around arrays, crypto — used in code every day'), bank:modBank, th:4000, on:false},
+      {k:'graph',nm:L('图论','Graphs'), eg:'Kₙ = n(n−1)/2', d:L('完全图边数、树有 n − 1 条边、度数和 = 2 × 边数','Complete graph edges, a tree has n − 1 edges, degree sum = 2 × edges'), bank:graphBank, th:5000, on:false}]},
+    {id:'prob', nm:L('概率与统计','Probability & statistics'), st:LATER, mods:[
+      {k:'prob',nm:L('概率','Probability'), eg:'1/6', d:L('有利 / 全部、独立相乘、互斥相加、期望值 —— UW CSE 312','Favourable / total, multiply independent, add exclusive, expected value — UW CSE 312'), bank:probBank, th:6000, on:false},
+      {k:'stats',nm:L('统计','Statistics'), eg:L('中位数','median'), d:L('平均数、中位数、众数、方差、标准差','Mean, median, mode, variance, standard deviation'), bank:statsBank, th:7000, on:false}]},
+    {id:'linalg', nm:L('线性代数','Linear algebra'), st:LATER, mods:[
+      {k:'linalg',nm:L('向量与矩阵','Vectors & matrices'), eg:'det, a · b', d:L('行列式、点积、长度、矩阵乘法 —— 机器学习和图形学的底子','Determinants, dot product, length, matrix product — the base of ML and graphics'), bank:linalgBank, th:7000, on:false}]},
+    {id:'cs', nm:L('CS 专用','CS essentials'), st:L('随时','Anytime'), mods:[
+      {k:'bin', nm:L('二进制','Binary'), eg:'1011₂', d:L('数学课不教，但计算机里一切都是它','Math classes skip it, but everything in a computer is binary'), bank:binBank, th:6000, on:false},
+      {k:'hex', nm:L('十六进制','Hexadecimal'), eg:'0xFF', d:L('颜色 #ff6b6b、内存地址、字节','Colours like #ff6b6b, memory addresses, bytes'), bank:hexBank, th:5000, on:false},
+      {k:'bool',nm:L('布尔逻辑','Boolean logic'), eg:'XOR', d:L('&&、||、!、XOR，条件取反最容易写错','&&, ||, !, XOR — negating a condition is where bugs hide'), bank:boolBank, th:4000, on:false},
+      {k:'bigo',nm:L('Big-O','Big-O'), eg:'O(n log n)', d:L('一眼看出代码有多慢 —— 面试必考','See how slow code is at a glance — always on interviews'), bank:bigoBank, th:5000, on:false},
+      {k:'bits',nm:L('位运算与 2 的幂','Bits & powers of two'), eg:'1 << 4', d:L('<< >> & | ^、log₂、KB、补码 —— 估算和底层都靠它','<< >> & | ^, log₂, KB, two’s complement — for estimates and low-level code'), bank:bitsBank, th:5000, on:false}]}
   ];
+  var MODS=[]; GROUPS.forEach(function(g){ g.mods.forEach(function(m){ m.grp=g; MODS.push(m) }) });
   var MAP={}; MODS.forEach(function(m){MAP[m.k]=m});
 
   /* One-click sets. They don't change the checkboxes below; "Test again" repeats the last set. */
@@ -532,7 +924,11 @@ td.num{font-variant-numeric:tabular-nums;font-family:var(--font-display);font-we
     {nm:L('ALEKS 冲刺','ALEKS sprint'), sub:L('方程、指数、换算、公式 · 30 题','Equations, exponents, conversions, formulas · 30'), n:30,
      keys:['trap','eq','pow','exp','frac','pct','alg','geo','factor']},
     {nm:L('12 月攻坚','December push'), sub:L('根式、三角、对数 · 20 题','Radicals, trig, logs · 20'), n:20,
-     keys:['sqrt','root','exp','trig','rad','log']}
+     keys:['sqrt','root','exp','trig','rad','log']},
+    {nm:L('CS 基本功','CS essentials'), sub:L('进制、布尔、Big-O、位运算、取模 · 20 题','Bases, Boolean, Big-O, bits, mod · 20'), n:20,
+     keys:['bin','hex','bool','bigo','bits','mod']},
+    {nm:L('离散数学','Discrete math'), sub:L('逻辑、集合、排列组合、模、图 · 20 题','Logic, sets, counting, mod, graphs · 20'), n:20,
+     keys:['logic','sets','comb','mod','graph']}
   ];
 
   /* ---------- static text ---------- */
@@ -544,38 +940,55 @@ td.num{font-variant-numeric:tabular-nums;font-family:var(--font-display);font-we
   }
 
   /* ---------- picker ---------- */
-  var nWanted=20, holder=$('mods'), curGroup=null, groupEls=[];
-  MODS.forEach(function(m){
-    if(m.g){
-      var h=document.createElement('div'); h.className='ghd';
-      var gs=document.createElement('span'); h.appendChild(gs);
-      var b=document.createElement('button'); b.type='button';
-      var grp=[]; curGroup=grp;
-      groupEls.push({m:m,span:gs,btn:b});
-      b.addEventListener('click',function(){
-        var any=grp.some(function(x){return !x.m.on});
-        grp.forEach(function(x){x.m.on=any; x.cb.checked=any}); refresh();
-      });
-      h.appendChild(b); holder.appendChild(h);
-    }
-    var lab=document.createElement('label'); lab.className='mod';
-    var cb=document.createElement('input'); cb.type='checkbox'; cb.checked=m.on;
-    var t=document.createElement('span'); t.className='t';
-    var nm=document.createElement('span'); nm.className='nm';
-    var nmText=document.createTextNode('');
-    var eg=document.createElement('span'); eg.className='eg';
-    nm.appendChild(nmText); nm.appendChild(eg);
-    var d=document.createElement('span'); d.className='d';
-    t.appendChild(nm); t.appendChild(d); lab.appendChild(cb); lab.appendChild(t);
-    cb.addEventListener('change',function(){m.on=cb.checked; refresh()});
-    if(curGroup) curGroup.push({m:m,cb:cb});
-    m.el={nm:nmText,eg:eg,d:d};
-    holder.appendChild(lab);
+  var nWanted=20, holder=$('mods'), PICK='mathdrill.on', OPEN='mathdrill.open';
+  function readJSON(k){ try{ var v=JSON.parse(localStorage.getItem(k)); return v&&typeof v==='object'?v:{} }catch(e){ return {} } }
+  function writeJSON(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)) }catch(e){} }
+  var picked=readJSON(PICK), opened=readJSON(OPEN);
+  MODS.forEach(function(m){ if(typeof picked[m.k]==='boolean') m.on=picked[m.k] });
+  function savePick(){ var o={}; MODS.forEach(function(m){ o[m.k]=m.on }); writeJSON(PICK,o) }
+  function setOpen(g,o){ g.open=o; g.el.h.setAttribute('aria-expanded',String(o)); g.el.body.hidden=!o }
+
+  GROUPS.forEach(function(g){
+    var box=document.createElement('div'); box.className='grp';
+    var h=document.createElement('button'); h.type='button'; h.className='ghd';
+    var chev=document.createElement('span'); chev.className='chev'; chev.setAttribute('aria-hidden','true'); chev.textContent='›';
+    var gn=document.createElement('span'); gn.className='gnm';
+    var gs=document.createElement('span'); gs.className='gst';
+    var gc=document.createElement('span'); gc.className='gct';
+    h.appendChild(chev); h.appendChild(gn); h.appendChild(gs); h.appendChild(gc);
+    var body=document.createElement('div'); body.className='gbody'; body.id='g-'+g.id;
+    h.setAttribute('aria-controls',body.id);
+    var tools=document.createElement('div'); tools.className='gtools';
+    var all=document.createElement('button'); all.type='button'; all.className='gall';
+    tools.appendChild(all); body.appendChild(tools);
+    g.mods.forEach(function(m){
+      var lab=document.createElement('label'); lab.className='mod';
+      var cb=document.createElement('input'); cb.type='checkbox'; cb.checked=m.on;
+      var t=document.createElement('span'); t.className='t';
+      var nm=document.createElement('span'); nm.className='nm';
+      var nmText=document.createTextNode('');
+      var eg=document.createElement('span'); eg.className='eg';
+      nm.appendChild(nmText); nm.appendChild(eg);
+      var d=document.createElement('span'); d.className='d';
+      t.appendChild(nm); t.appendChild(d); lab.appendChild(cb); lab.appendChild(t);
+      cb.addEventListener('change',function(){ m.on=cb.checked; savePick(); refresh() });
+      m.cb=cb; m.el={nm:nmText,eg:eg,d:d};
+      body.appendChild(lab);
+    });
+    box.appendChild(h); box.appendChild(body); holder.appendChild(box);
+    g.el={h:h,body:body,nm:gn,st:gs,ct:gc,all:all};
+    setOpen(g, typeof opened[g.id]==='boolean' ? opened[g.id] : g.mods.some(function(m){return m.on}));
+    h.addEventListener('click',function(){ setOpen(g,!g.open); opened[g.id]=g.open; writeJSON(OPEN,opened) });
+    all.addEventListener('click',function(){
+      var any=g.mods.some(function(m){return !m.on});
+      g.mods.forEach(function(m){ m.on=any; m.cb.checked=any }); savePick(); refresh();
+    });
   });
   function pickerText(){
-    groupEls.forEach(function(g){ g.span.textContent=T(g.m.g); g.btn.textContent=s('toggleAll') });
+    GROUPS.forEach(function(g){ g.el.nm.textContent=T(g.nm); g.el.st.textContent=T(g.st); g.el.all.textContent=s('toggleAll') });
     MODS.forEach(function(m){ m.el.nm.nodeValue=T(m.nm); m.el.eg.textContent=T(m.eg); m.el.d.textContent=T(m.d) });
     PRESETS.forEach(function(p){ p.el.nm.textContent=T(p.nm); p.el.sub.textContent=T(p.sub) });
+    refresh();
   }
   PRESETS.forEach(function(p){
     var b=document.createElement('button'); b.type='button'; b.className='preset';
@@ -603,6 +1016,11 @@ td.num{font-variant-numeric:tabular-nums;font-family:var(--font-display);font-we
     var p=pool().length, picked=MODS.filter(function(m){return m.on}).length;
     $('pool').textContent= p? txt.pool(picked,p,(nWanted&&nWanted<p?nWanted:p)) : s('pickOne');
     $('go').disabled = p===0;
+    GROUPS.forEach(function(g){
+      var n=g.mods.filter(function(m){return m.on}).length;
+      g.el.ct.textContent=txt.grpCount(n,g.mods.length);
+      g.el.ct.className='gct'+(n?' on':'');
+    });
   }
 
   /* ---------- drill ---------- */
@@ -666,6 +1084,7 @@ td.num{font-variant-numeric:tabular-nums;font-family:var(--font-display);font-we
   function questionText(){
     var q=qs[idx];
     $('q').textContent=T(q.t);
+    $('q').className='q'+(String(T(q.t)).length>14?' long':'');
     $('qhint').textContent=T(q.h)||'';
     $('count').textContent=txt.count(idx+1,qs.length);
     $('modnow').textContent=T(MAP[q.m].nm);
@@ -685,7 +1104,7 @@ td.num{font-variant-numeric:tabular-nums;font-family:var(--font-display);font-we
     return !!(window.matchMedia && matchMedia('(pointer:coarse)').matches);
   })();
   [['7','7'],['8','8'],['9','9'],['4','4'],['5','5'],['6','6'],['1','1'],['2','2'],['3','3'],
-   ['−','-'],['0','0'],['.','.'],['⌫','del'],['✓','enter']].forEach(function(p){
+   ['−','-'],['0','0'],['.','.'],['⌫','del'],['/','/'],['✓','enter']].forEach(function(p){
     var b=document.createElement('button'); b.type='button'; b.textContent=p[0]; b.dataset.k=p[1];
     if(p[1]==='enter') b.className='enter';
     if(p[1]==='del') b.setAttribute('aria-label','Backspace');
